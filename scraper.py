@@ -69,6 +69,17 @@ TARGET_SITES = [
     }
 ]
 
+def extract_images(soup, base_url):
+    """ ページ内の画像URLとaltテキストを抽出 """
+    images = []
+    for img in soup.find_all("img", src=True):
+        src = img["src"]
+        if src.startswith("data:"): continue # Base64画像は無視
+        full_img_url = urljoin(base_url, src)
+        alt_text = img.get("alt", "").strip()
+        images.append({"src": full_img_url, "alt": alt_text})
+    return images[:10] # 1ページあたり最大10枚まで取得
+
 async def scrape_atwiki(page, site):
     wiki_id = site["wiki_id"]
     base_url = f"https://w.atwiki.jp/{wiki_id}/"
@@ -97,10 +108,9 @@ async def scrape_atwiki(page, site):
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             await page.wait_for_timeout(3000)
 
-            # Cloudflare等のチェック・人間のふりをする待機
             html_content = await page.content()
             if "Just a moment" in html_content or "ロボットではありません" in html_content:
-                print("    └ BOT保護画面を検知。回避用追加待機中...")
+                print("    └ BOT保護画面を検知。回避待機中...")
                 await page.wait_for_timeout(8000)
                 html_content = await page.content()
 
@@ -114,7 +124,15 @@ async def scrape_atwiki(page, site):
             if "Just a moment" in body_text or "ロボットではありません" in body_text:
                 body_text = ""
 
-            data_list.append({"site_name": site["site_name"], "title": title, "url": url, "content": body_text})
+            images = extract_images(page_soup, url)
+
+            data_list.append({
+                "site_name": site["site_name"],
+                "title": title,
+                "url": url,
+                "content": body_text,
+                "images": images
+            })
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
@@ -148,8 +166,15 @@ async def scrape_google_sites(page, site):
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = page_soup.find("title").text.strip() if page_soup.find("title") else "無題"
             body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
+            images = extract_images(page_soup, url)
 
-            data_list.append({"site_name": site["site_name"], "title": title, "url": url, "content": body_text})
+            data_list.append({
+                "site_name": site["site_name"],
+                "title": title,
+                "url": url,
+                "content": body_text,
+                "images": images
+            })
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
@@ -188,8 +213,15 @@ async def scrape_generic(page, site):
             
             title = page_soup.find("h1").text.strip() if page_soup.find("h1") else (page_soup.find("title").text.strip() if page_soup.find("title") else "無題")
             body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
+            images = extract_images(page_soup, url)
 
-            data_list.append({"site_name": site["site_name"], "title": title, "url": url, "content": body_text})
+            data_list.append({
+                "site_name": site["site_name"],
+                "title": title,
+                "url": url,
+                "content": body_text,
+                "images": images
+            })
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
@@ -205,8 +237,15 @@ async def scrape_single_page(page, site):
         page_soup = BeautifulSoup(await page.content(), "html.parser")
         title = page_soup.find("title").text.strip() if page_soup.find("title") else site["site_name"]
         body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
+        images = extract_images(page_soup, url)
 
-        return [{"site_name": site["site_name"], "title": title, "url": url, "content": body_text}]
+        return [{
+            "site_name": site["site_name"],
+            "title": title,
+            "url": url,
+            "content": body_text,
+            "images": images
+        }]
     except Exception as e:
         print(f"  └ 取得失敗: {e}")
         return []
@@ -229,7 +268,6 @@ async def main():
         )
         
         page = await context.new_page()
-        # ボット検出回避スクリプトの注入
         await page.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
             window.navigator.chrome = { runtime: {} };
