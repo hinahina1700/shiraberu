@@ -111,6 +111,12 @@
             color: #4d5156;
             line-height: 1.5;
         }
+        .snippet mark {
+            background-color: #fce8e6;
+            color: #d93025;
+            font-weight: bold;
+            padding: 0 2px;
+        }
         .more-btn {
             background: none;
             border: none;
@@ -124,7 +130,6 @@
             background-color: #f1f3f4;
         }
         
-        /* モーダル (ポップアップ) のスタイル */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -147,11 +152,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-        }
-        .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
         }
         .modal-close {
             background: none;
@@ -186,10 +186,13 @@
             line-height: 1.6;
             color: #3c4043;
         }
-        .source-info h4 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-        }
+
+        /* 検討中機能メモ欄用スタイリング（将来拡張用） */
+        /*
+        .feature-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .feature-tab { padding: 6px 12px; border-radius: 16px; background: #eee; cursor: pointer; }
+        */
+
         footer {
             text-align: center;
             padding: 20px 0;
@@ -234,7 +237,7 @@
     </div>
 
     <footer>
-        しらべる/hinahina_1700
+        shiraberu/hinahina_1700
     </footer>
 
     <script>
@@ -244,7 +247,7 @@
         let currentShareUrl = "";
         let currentShareTitle = "";
 
-        // URLパラメータからの検索ワード自動入力対応
+        // URLパラメータからの検索ワード解析 (?q= / search?q= に対応)
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
 
@@ -256,11 +259,12 @@
 
                 const options = {
                     keys: [
-                        { name: 'title', weight: 0.7 },
-                        { name: 'content', weight: 0.3 }
+                        { name: 'title', weight: 0.6 },
+                        { name: 'content', weight: 0.4 }
                     ],
                     threshold: 0.4,
-                    ignoreLocation: true
+                    ignoreLocation: true,
+                    includeMatches: true
                 };
 
                 fuse = new Fuse(allItems, options);
@@ -296,11 +300,10 @@
                 return;
             }
 
-            // URLのパラメーター更新（共有用）
+            // search?q= 形式のURL構造を模倣・反映
             const newUrl = `${window.location.pathname}?q=${encodeURIComponent(query)}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
 
-            // 処理時間計測開始
             const startTime = performance.now();
             const searchResults = fuse.search(query);
             const endTime = performance.now();
@@ -308,10 +311,10 @@
             const durationSeconds = ((endTime - startTime) / 1000).toFixed(3);
             document.getElementById('metaInfo').textContent = `約 ${durationSeconds} 秒 （${searchResults.length} 件）`;
 
-            displayResults(searchResults);
+            displayResults(searchResults, query);
         }
 
-        function displayResults(results) {
+        function displayResults(results, query) {
             const container = document.getElementById('results');
             container.innerHTML = '';
 
@@ -320,8 +323,8 @@
                 const card = document.createElement('div');
                 card.className = 'card';
 
-                const snippetText = item.content ? item.content.substring(0, 120) + '...' : '本文なし';
                 const siteName = item.site_name || 'Webサイト';
+                const snippetText = createSnippet(item.content, query);
 
                 card.innerHTML = `
                     <div class="card-header">
@@ -336,6 +339,27 @@
 
                 container.appendChild(card);
             });
+        }
+
+        // 本文からヒットしたキーワード周辺を抽出する関数
+        function createSnippet(content, query) {
+            if (!content) return '本文なし';
+            
+            const index = content.toLowerCase().indexOf(query.toLowerCase());
+            if (index === -1) {
+                return escapeHtml(content.substring(0, 120)) + '...';
+            }
+
+            const start = Math.max(0, index - 40);
+            const end = Math.min(content.length, index + query.length + 80);
+            let snippet = content.substring(start, end);
+
+            if (start > 0) snippet = '...' + snippet;
+            if (end < content.length) snippet = snippet + '...';
+
+            const escapedSnippet = escapeHtml(snippet);
+            const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+            return escapedSnippet.replace(regex, '<mark>$1</mark>');
         }
 
         function openModal(siteName, title, url) {
@@ -371,6 +395,10 @@
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
     </script>
 </body>
