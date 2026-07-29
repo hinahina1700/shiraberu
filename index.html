@@ -57,19 +57,41 @@
         .search-btn:hover {
             background-color: #1557b0;
         }
+        
+        /* タブ切替ナビゲーション */
+        .tabs {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #dadce0;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #5f6368;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        .tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+
         .meta-info {
             font-size: 13px;
             color: #70757a;
             margin-bottom: 20px;
             min-height: 18px;
         }
+
+        /* 通常検索カード */
         .card {
             background: #fff;
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 16px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            position: relative;
         }
         .card-header {
             display: flex;
@@ -117,6 +139,49 @@
             font-weight: bold;
             padding: 0 2px;
         }
+
+        /* 画像検索グリッド */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .image-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+        .image-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .image-card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background-color: #f1f3f4;
+        }
+        .image-info {
+            padding: 8px;
+            font-size: 12px;
+        }
+        .image-title {
+            font-weight: bold;
+            color: #202124;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .image-source {
+            color: #70757a;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
         .more-btn {
             background: none;
             border: none;
@@ -187,12 +252,6 @@
             color: #3c4043;
         }
 
-        /* 検討中機能メモ欄用スタイリング（将来拡張用） */
-        /*
-        .feature-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .feature-tab { padding: 6px 12px; border-radius: 16px; background: #eee; cursor: pointer; }
-        */
-
         footer {
             text-align: center;
             padding: 20px 0;
@@ -211,6 +270,11 @@
         <div class="search-container">
             <input type="text" id="searchInput" class="search-box" placeholder="キーワードを入力..." disabled>
             <button id="searchBtn" class="search-btn" disabled>検索</button>
+        </div>
+
+        <div class="tabs">
+            <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
+            <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
         </div>
 
         <div id="metaInfo" class="meta-info">インデックスデータを準備中...</div>
@@ -237,7 +301,7 @@
     </div>
 
     <footer>
-        shiraberu/hinahina_1700
+        ©shiraberu/hinahina_1700
     </footer>
 
     <script>
@@ -246,8 +310,10 @@
         let lastUpdatedTime = "";
         let currentShareUrl = "";
         let currentShareTitle = "";
+        let currentTab = 'all';
+        let currentSearchResults = [];
+        let currentQuery = "";
 
-        // URLパラメータからの検索ワード解析 (?q= / search?q= に対応)
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
 
@@ -263,8 +329,7 @@
                         { name: 'content', weight: 0.4 }
                     ],
                     threshold: 0.4,
-                    ignoreLocation: true,
-                    includeMatches: true
+                    ignoreLocation: true
                 };
 
                 fuse = new Fuse(allItems, options);
@@ -293,29 +358,44 @@
             });
 
         function executeSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) {
+            currentQuery = document.getElementById('searchInput').value.trim();
+            if (!currentQuery) {
                 document.getElementById('results').innerHTML = '';
                 document.getElementById('metaInfo').textContent = `全 ${allItems.length} 件のインデックスから検索可能`;
                 return;
             }
 
-            // search?q= 形式のURL構造を模倣・反映
-            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(query)}`;
+            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(currentQuery)}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
 
             const startTime = performance.now();
-            const searchResults = fuse.search(query);
+            currentSearchResults = fuse.search(currentQuery);
             const endTime = performance.now();
 
             const durationSeconds = ((endTime - startTime) / 1000).toFixed(3);
-            document.getElementById('metaInfo').textContent = `約 ${durationSeconds} 秒 （${searchResults.length} 件）`;
+            document.getElementById('metaInfo').textContent = `約 ${durationSeconds} 秒 （${currentSearchResults.length} 件）`;
 
-            displayResults(searchResults, query);
+            renderCurrentView();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tabAll').classList.toggle('active', tab === 'all');
+            document.getElementById('tabImages').classList.toggle('active', tab === 'images');
+            renderCurrentView();
+        }
+
+        function renderCurrentView() {
+            if (currentTab === 'all') {
+                displayResults(currentSearchResults, currentQuery);
+            } else {
+                displayImageResults(currentSearchResults);
+            }
         }
 
         function displayResults(results, query) {
             const container = document.getElementById('results');
+            container.className = '';
             container.innerHTML = '';
 
             results.forEach(result => {
@@ -341,14 +421,46 @@
             });
         }
 
-        // 本文からヒットしたキーワード周辺を抽出する関数
+        function displayImageResults(results) {
+            const container = document.getElementById('results');
+            container.className = 'image-grid';
+            container.innerHTML = '';
+
+            let imageCount = 0;
+
+            results.forEach(result => {
+                const item = result.item;
+                if (item.images && item.images.length > 0) {
+                    item.images.forEach(img => {
+                        imageCount++;
+                        const imgCard = document.createElement('a');
+                        imgCard.className = 'image-card';
+                        imgCard.href = item.url;
+                        imgCard.target = '_blank';
+                        imgCard.rel = 'noopener';
+
+                        imgCard.innerHTML = `
+                            <img src="${img.src}" alt="${escapeHtml(img.alt || item.title)}" onerror="this.style.display='none'">
+                            <div class="image-info">
+                                <div class="image-title">${escapeHtml(item.title)}</div>
+                                <div class="image-source">${escapeHtml(item.site_name)}</div>
+                            </div>
+                        `;
+                        container.appendChild(imgCard);
+                    });
+                }
+            });
+
+            if (imageCount === 0) {
+                container.className = '';
+                container.innerHTML = '<div style="color:#70757a; text-align:center; padding: 20px;">関連する画像が見つかりませんでした。</div>';
+            }
+        }
+
         function createSnippet(content, query) {
             if (!content) return '本文なし';
-            
             const index = content.toLowerCase().indexOf(query.toLowerCase());
-            if (index === -1) {
-                return escapeHtml(content.substring(0, 120)) + '...';
-            }
+            if (index === -1) return escapeHtml(content.substring(0, 120)) + '...';
 
             const start = Math.max(0, index - 40);
             const end = Math.min(content.length, index + query.length + 80);
@@ -382,10 +494,7 @@
 
         function shareResult() {
             if (navigator.share) {
-                navigator.share({
-                    title: currentShareTitle,
-                    url: currentShareUrl
-                }).catch(() => {});
+                navigator.share({ title: currentShareTitle, url: currentShareUrl }).catch(() => {});
             } else {
                 navigator.clipboard.writeText(currentShareUrl);
                 alert("ページURLをクリップボードにコピーしました！");
