@@ -1,5 +1,6 @@
 import asyncio
 import json
+import random
 from datetime import datetime
 import zoneinfo
 from urllib.parse import urljoin, urlparse
@@ -8,13 +9,11 @@ from playwright.async_api import async_playwright
 
 # ★ 検索対象サイトの設定リスト
 TARGET_SITES = [
-    # 1. atwiki
     {
         "site_name": "七浜国wiki",
         "type": "atwiki",
         "wiki_id": "nanahamakoku"
     },
-    # 2. Google Sites群
     {
         "site_name": "キリッペのお部屋",
         "type": "google_sites",
@@ -30,7 +29,6 @@ TARGET_SITES = [
         "type": "google_sites",
         "base_url": "https://sites.google.com/view/kasumino-town/"
     },
-    # 3. 一般Webサイト群
     {
         "site_name": "KIRIPE公式サイト",
         "type": "generic",
@@ -56,7 +54,6 @@ TARGET_SITES = [
         "type": "generic",
         "start_url": "https://awafgs.github.io/Frontier_Building/"
     },
-    # 4. 単一ツール・単一ページ
     {
         "site_name": "nullpo乗換案内",
         "type": "single_page",
@@ -79,20 +76,33 @@ def extract_images(soup, base_url):
         images.append({"src": full_img_url, "alt": alt_text})
     return images[:15]
 
+async def random_delay(min_sec=5.0, max_sec=8.0):
+    """5秒〜8秒のランダム待機"""
+    wait_time = random.uniform(min_sec, max_sec)
+    print(f"      ⏳ 人間らしく {wait_time:.2f} 秒待機中...")
+    await asyncio.sleep(wait_time)
+
 async def scrape_atwiki(page, site):
     wiki_id = site["wiki_id"]
     base_url = f"https://w.atwiki.jp/{wiki_id}/"
     list_url = f"{base_url}list"
 
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
-    try:
-        await page.goto(list_url, wait_until="domcontentloaded", timeout=45000)
-        await page.wait_for_timeout(4000)
-    except Exception as e:
-        print(f"  └ 一覧取得失敗: {e}")
-        return []
+    
+    # 根性で一覧ページを取得（最大3回リトライ）
+    soup = None
+    for attempt in range(1, 4):
+        try:
+            print(f"  一覧を取得中 (試行 {attempt}/3)...")
+            await page.goto(list_url, wait_until="networkidle", timeout=60000)
+            await random_delay(5.0, 8.0)
+            soup = BeautifulSoup(await page.content(), "html.parser")
+            break
+        except Exception as e:
+            print(f"  └ 失敗: {e}")
+            if attempt == 3: return []
+            await asyncio.sleep(10)
 
-    soup = BeautifulSoup(await page.content(), "html.parser")
     page_urls = []
     for a_tag in soup.find_all("a", href=True):
         full_url = urljoin(base_url, a_tag["href"])
@@ -100,57 +110,64 @@ async def scrape_atwiki(page, site):
             if full_url not in page_urls:
                 page_urls.append(full_url)
 
+    print(f"  対象ページ数: {len(page_urls)} 件")
+
     data_list = []
     for index, url in enumerate(page_urls, 1):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
-        try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await page.wait_for_timeout(2500)
+        
+        # 根性リトライ（各ページ最大3回まで粘る）
+        for attempt in range(1, 4):
+            try:
+                await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                
+                # 5秒〜8秒のランダム待機（JavaScriptを完全実行させつつ人間を装う）
+                await random_delay(5.0, 8.0)
 
-            # Bot判定回避（人間らしいスクロール動作）
-            await page.evaluate("window.scrollBy(0, 300);")
-            await page.wait_for_timeout(1000)
+                # 少しスクロールしてアクティブ感を出す
+                await page.evaluate("window.scrollBy(0, 200);")
 
-            html_content = await page.content()
-            page_soup = BeautifulSoup(html_content, "html.parser")
-            
-            title_elem = page_soup.find("h2", id="page_title")
-            title = title_elem.text.strip() if title_elem else (page_soup.find("title").text.split("-")[0].strip() if page_soup.find("title") else "無題")
+                html_content = await page.content()
+                if "Just a moment" in html_content or "ロボットではありません" in html_content:
+                    print(f"    └ Cloudflareブロックを検出。10秒待機して再試行 ({attempt}/3)")
+                    await asyncio.sleep(10)
+                    continue
 
-            body_elem = page_soup.find("div", id="wikibody") or page_soup.find("div", id="atwiki-body")
-            body_text = " ".join(body_elem.text.split()) if body_elem else ""
+                page_soup = BeautifulSoup(html_content, "html.parser")
+                title_elem = page_soup.find("h2", id="page_title")
+                title = title_elem.text.strip() if title_elem else (page_soup.find("title").text.split("-")[0].strip() if page_soup.find("title") else "無題")
 
-            if "Just a moment" in body_text or "ロボットではありません" in body_text:
-                print("    └ アクセス制限を検知したため本文をスキップ")
-                body_text = ""
+                body_elem = page_soup.find("div", id="wikibody") or page_soup.find("div", id="atwiki-body")
+                body_text = " ".join(body_elem.text.split()) if body_elem else ""
 
-            images = extract_images(page_soup, url)
+                images = extract_images(page_soup, url)
 
-            data_list.append({
-                "site_name": site["site_name"],
-                "title": title,
-                "url": url,
-                "content": body_text,
-                "images": images
-            })
-        except Exception as e:
-            print(f"    └ スキップ: {e}")
+                data_list.append({
+                    "site_name": site["site_name"],
+                    "title": title,
+                    "url": url,
+                    "content": body_text,
+                    "images": images
+                })
+                break # 成功したらリトライ抜け
+            except Exception as e:
+                print(f"    └ エラー ({attempt}/3): {e}")
+                if attempt < 3: await asyncio.sleep(5)
+
     return data_list
 
 async def scrape_google_sites(page, site):
     base_url = site["base_url"]
     print(f"\n--- [Google Sites: {site['site_name']}] 取得開始 ---")
-
     try:
         await page.goto(base_url, wait_until="networkidle", timeout=30000)
-        await page.wait_for_timeout(3000)
+        await random_delay(2.0, 4.0)
     except Exception as e:
         print(f"  └ アクセス失敗: {e}")
         return []
 
     soup = BeautifulSoup(await page.content(), "html.parser")
     page_urls = [base_url]
-
     for a_tag in soup.find_all("a", href=True):
         full_url = urljoin(base_url, a_tag["href"])
         if full_url.startswith(base_url) and full_url not in page_urls:
@@ -161,19 +178,16 @@ async def scrape_google_sites(page, site):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
             await page.goto(url, wait_until="networkidle", timeout=30000)
-            await page.wait_for_timeout(2000)
-
+            await random_delay(2.0, 4.0)
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = page_soup.find("title").text.strip() if page_soup.find("title") else "無題"
             body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
-            images = extract_images(page_soup, url)
-
             data_list.append({
                 "site_name": site["site_name"],
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "images": images
+                "images": extract_images(page_soup, url)
             })
         except Exception as e:
             print(f"    └ スキップ: {e}")
@@ -182,17 +196,15 @@ async def scrape_google_sites(page, site):
 async def scrape_generic(page, site):
     start_url = site["start_url"]
     print(f"\n--- [一般Webサイト: {site['site_name']}] 取得開始 ---")
-
     try:
         await page.goto(start_url, wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(3000)
+        await random_delay(2.0, 4.0)
     except Exception as e:
         print(f"  └ アクセス失敗: {e}")
         return []
 
     soup = BeautifulSoup(await page.content(), "html.parser")
     page_urls = [start_url]
-
     start_parsed = urlparse(start_url)
     base_domain_path = start_parsed.netloc + start_parsed.path
 
@@ -207,19 +219,16 @@ async def scrape_generic(page, site):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await page.wait_for_timeout(2000)
-
+            await random_delay(1.5, 3.0)
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = page_soup.find("h1").text.strip() if page_soup.find("h1") else (page_soup.find("title").text.strip() if page_soup.find("title") else "無題")
             body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
-            images = extract_images(page_soup, url)
-
             data_list.append({
                 "site_name": site["site_name"],
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "images": images
+                "images": extract_images(page_soup, url)
             })
         except Exception as e:
             print(f"    └ スキップ: {e}")
@@ -228,22 +237,18 @@ async def scrape_generic(page, site):
 async def scrape_single_page(page, site):
     url = site.get("url") or site.get("start_url")
     print(f"\n--- [単一ページ: {site['site_name']}] 取得開始 ---")
-
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(3000)
-
+        await random_delay(2.0, 3.0)
         page_soup = BeautifulSoup(await page.content(), "html.parser")
         title = page_soup.find("title").text.strip() if page_soup.find("title") else site["site_name"]
         body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
-        images = extract_images(page_soup, url)
-
         return [{
             "site_name": site["site_name"],
             "title": title,
             "url": url,
             "content": body_text,
-            "images": images
+            "images": extract_images(page_soup, url)
         }]
     except Exception as e:
         print(f"  └ 取得失敗: {e}")
@@ -256,6 +261,7 @@ async def main():
             headless=True,
             args=['--disable-blink-features=AutomationControlled', '--no-sandbox']
         )
+        # 単一コンテキスト（単一ブラウザ・セッション維持）
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800},
