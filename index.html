@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>しらべる</title>
+    <title>しらべる - ぱわふるなけんさくえんじん</title>
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="logo-light.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -20,9 +20,13 @@
             --header-border: #dadce0;
             --mark-color: #d93025;
             --footer-bg: #f2f2f2;
-            --summary-bg: #f1f3f4;
+            --ai-bg: linear-gradient(135deg, #f0f4fe 0%, #f8f9fa 100%);
+            --ai-border: #c2e7ff;
             --suggest-bg: #ffffff;
             --suggest-hover: #f1f3f4;
+            --chip-bg: #f1f3f4;
+            --chip-active: #e8f0fe;
+            --chip-active-text: #1967d2;
         }
 
         [data-theme="dark"] {
@@ -37,9 +41,13 @@
             --header-border: #3c4043;
             --mark-color: #f28b82;
             --footer-bg: #171717;
-            --summary-bg: #28292c;
+            --ai-bg: linear-gradient(135deg, #1e293b 0%, #303134 100%);
+            --ai-border: #004a77;
             --suggest-bg: #303134;
             --suggest-hover: #3c4043;
+            --chip-bg: #303134;
+            --chip-active: #004a77;
+            --chip-active-text: #c2e7ff;
         }
 
         body {
@@ -106,11 +114,10 @@
         }
 
         .logo-container img {
-            width: 200px;
+            width: 220px;
             height: auto;
             transition: width 0.3s ease;
-            /* ダークモード時に黒文字ロゴが消えないようドロップシャドウを適用 */
-            filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.4));
+            filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.3));
         }
 
         body.has-results .logo-container {
@@ -171,7 +178,7 @@
             font-size: 18px;
         }
 
-        /* ①② サジェスト＆検索履歴ドロップダウン */
+        /* サジェスト＆検索履歴 */
         .suggestions-box {
             position: absolute;
             top: 48px;
@@ -200,16 +207,39 @@
             background-color: var(--suggest-hover);
         }
 
-        .suggest-item .delete-history {
-            color: var(--sub-text);
-            font-size: 12px;
-        }
-
         .suggest-header {
             padding: 8px 20px 4px;
             font-size: 11px;
             color: var(--sub-text);
-            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* トレンドタグ（トップ表示） */
+        .trends-container {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        body.has-results .trends-container {
+            display: none;
+        }
+
+        .trend-tag {
+            background: var(--chip-bg);
+            padding: 4px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background 0.2s;
+        }
+
+        .trend-tag:hover {
+            background: var(--border-color);
         }
 
         .home-buttons {
@@ -276,31 +306,87 @@
         .tab.active {
             color: var(--accent-color);
             border-bottom: 3px solid var(--accent-color);
+            font-weight: bold;
         }
 
-        /* ③ 検索フィルターバー */
+        /* 洗練されたフィルターチップ（洗練されたUI） */
         .filter-bar {
             display: flex;
-            gap: 15px;
-            margin: 10px 0 15px;
+            gap: 8px;
+            margin: 12px 0 18px;
+            overflow-x: auto;
+            padding-bottom: 4px;
             align-items: center;
-            font-size: 13px;
         }
 
-        .filter-select {
-            background: var(--button-bg);
+        .chip {
+            background: var(--chip-bg);
             color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 4px 8px;
+            padding: 6px 14px;
+            border-radius: 18px;
             font-size: 13px;
-            outline: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--border-color);
+        }
+
+        .chip.active {
+            background: var(--chip-active);
+            color: var(--chip-active-text);
+            font-weight: bold;
+            border-color: var(--accent-color);
+        }
+
+        .ai-mode-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
         }
 
         .meta-info {
             font-size: 13px;
             color: var(--sub-text);
             margin-bottom: 15px;
+        }
+
+        /* 🤖 AIモード概要カード */
+        .ai-overview-box {
+            background: var(--ai-bg);
+            border: 1px solid var(--ai-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+            max-width: 650px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .ai-overview-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .ai-overview-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .ai-overview-content ul {
+            margin: 6px 0;
+            padding-left: 20px;
         }
 
         .card { margin-bottom: 25px; max-width: 650px; }
@@ -310,18 +396,6 @@
         .card h2 a:hover { text-decoration: underline; }
         .snippet { font-size: 14px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
         .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
-
-        /* ④ AI風要約ボックス */
-        .ai-summary {
-            background: var(--summary-bg);
-            border-left: 3px solid var(--accent-color);
-            border-radius: 4px;
-            padding: 8px 12px;
-            margin-top: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        .ai-summary ul { margin: 4px 0 0; padding-left: 18px; }
 
         .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
         .image-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); background: var(--card-bg); }
@@ -358,10 +432,15 @@
                     <input type="text" id="searchInput" class="search-box" placeholder="しらべるで検索..." autocomplete="off" disabled>
                     <button id="searchBtn" class="search-btn" disabled>🔍</button>
                 </div>
+
                 <div id="suggestions" class="suggestions-box"></div>
+
+                <div class="trends-container" id="trendsArea">
+                    <span style="color:var(--sub-text); font-weight:bold;">🔥 トレンド:</span>
+                </div>
                 
                 <div class="home-buttons">
-                    <div class="home-btn" onclick="executeSearch()">しらべる検索</div>
+                    <div class="home-btn" id="mainSearchBtnText" onclick="executeSearch()">しらべる検索</div>
                     <div class="home-btn" onclick="location.href='https://github.com/hinahina1700/shiraberu/issues'">サイト登録申請</div>
                 </div>
             </div>
@@ -374,21 +453,19 @@
             <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
         </div>
 
-        <div class="filter-bar">
-            <label>サイト: 
-                <select id="siteFilter" class="filter-select" onchange="renderView()">
-                    <option value="all">すべてのサイト</option>
-                </select>
-            </label>
-            <label>順序: 
-                <select id="sortOrder" class="filter-select" onchange="renderView()">
-                    <option value="relevance">関連度順</option>
-                    <option value="title">タイトル順</option>
-                </select>
+        <div class="filter-bar" id="filterChips">
+            <div class="chip active" onclick="setSiteFilter('all', this)">すべてのサイト</div>
+            </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div id="metaInfo" class="meta-info"></div>
+            <label class="ai-mode-toggle">
+                <input type="checkbox" id="aiModeCheck" onchange="renderView()">
+                <span>🤖 AIまとめモード</span>
             </label>
         </div>
 
-        <div id="metaInfo" class="meta-info"></div>
+        <div id="aiOverviewContainer"></div>
         <div id="results"></div>
     </div>
 
@@ -415,15 +492,14 @@
         let currentTab = 'all';
         let currentSearchResults = [];
         let isDarkMode = false;
+        let activeSiteFilter = 'all';
         let searchHistory = JSON.parse(localStorage.getItem('shiraberu_history') || '[]');
 
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             setTheme(true);
         }
 
-        function toggleTheme() {
-            setTheme(!isDarkMode);
-        }
+        function toggleTheme() { setTheme(!isDarkMode); }
 
         function setTheme(dark) {
             isDarkMode = dark;
@@ -447,15 +523,19 @@
                 allItems = data.items || [];
                 lastUpdatedTime = data.last_updated || "不明";
 
-                // フィルタのサイト一覧を自動生成
+                // サイト指定フィルタ用チップを自動作成
                 const siteSet = new Set(allItems.map(i => i.site_name));
-                const siteSelect = document.getElementById('siteFilter');
+                const filterContainer = document.getElementById('filterChips');
                 siteSet.forEach(site => {
-                    const opt = document.createElement('option');
-                    opt.value = site;
-                    opt.textContent = site;
-                    siteSelect.appendChild(opt);
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+                    chip.textContent = site;
+                    chip.onclick = () => setSiteFilter(site, chip);
+                    filterContainer.appendChild(chip);
                 });
+
+                // 🔥 トレンド自動抽出（タイトルから主要ワードを設定）
+                setupTrends();
 
                 fuse = new Fuse(allItems, {
                     keys: [
@@ -472,7 +552,6 @@
                 input.disabled = false;
                 document.getElementById('searchBtn').disabled = false;
 
-                // サジェスト・履歴イベント
                 input.addEventListener('input', showSuggestions);
                 input.addEventListener('focus', showSuggestions);
 
@@ -486,29 +565,52 @@
                 const query = urlParams.get('q');
                 const tbm = urlParams.get('tbm');
 
-                if (tbm === 'isch') currentTab = 'images';
+                if (tbm === 'isch') switchTab('images', false);
                 if (query) {
                     input.value = query;
                     executeSearch();
                 }
             });
 
-        // ①② サジェスト & 検索履歴表示
+        // トレンドワードの設定
+        function setupTrends() {
+            const trendsArea = document.getElementById('trendsArea');
+            // タイトルの単語からおすすめピックアップ
+            const sampleKeywords = [...new Set(allItems.map(i => i.title.split(' ')[0]))].slice(0, 5);
+            sampleKeywords.forEach(word => {
+                if(!word || word.length < 2) return;
+                const tag = document.createElement('span');
+                tag.className = 'trend-tag';
+                tag.textContent = word;
+                tag.onclick = () => {
+                    document.getElementById('searchInput').value = word;
+                    executeSearch();
+                };
+                trendsArea.appendChild(tag);
+            });
+        }
+
+        function setSiteFilter(site, element) {
+            activeSiteFilter = site;
+            document.querySelectorAll('.filter-bar .chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            renderView();
+        }
+
         function showSuggestions() {
             const val = document.getElementById('searchInput').value.trim();
             const sugBox = document.getElementById('suggestions');
             sugBox.innerHTML = '';
 
             if (!val) {
-                // 検索履歴を表示
                 if (searchHistory.length > 0) {
                     sugBox.innerHTML = '<div class="suggest-header">最近の検索</div>';
                     searchHistory.slice(0, 5).forEach((h, idx) => {
                         const item = document.createElement('div');
                         item.className = 'suggest-item';
-                        item.innerHTML = `<span>🕒 ${escapeHtml(h)}</span><span class="delete-history" onclick="deleteHistory(event, ${idx})">削除</span>`;
+                        item.innerHTML = `<span>🕒 ${escapeHtml(h)}</span><span style="color:var(--sub-text);font-size:12px;" onclick="deleteHistory(event, ${idx})">削除</span>`;
                         item.onclick = (e) => {
-                            if(e.target.classList.contains('delete-history')) return;
+                            if(e.target.tagName === 'SPAN' && e.target.textContent === '削除') return;
                             document.getElementById('searchInput').value = h;
                             executeSearch();
                         };
@@ -521,7 +623,6 @@
                 return;
             }
 
-            // タイトル・コンテンツからキーワード候補を表示
             const matches = allItems.filter(i => i.title.toLowerCase().includes(val.toLowerCase())).slice(0, 5);
             if (matches.length > 0) {
                 sugBox.innerHTML = '<div class="suggest-header">検索候補</div>';
@@ -585,23 +686,39 @@
         function renderView() {
             updateLogo();
             const container = document.getElementById('results');
+            const aiContainer = document.getElementById('aiOverviewContainer');
             container.innerHTML = '';
+            aiContainer.innerHTML = '';
+
             const query = document.getElementById('searchInput').value;
-            const selectedSite = document.getElementById('siteFilter').value;
-            const sortOrder = document.getElementById('sortOrder').value;
+            const isAiMode = document.getElementById('aiModeCheck').checked;
 
-            document.getElementById('tabAll').classList.toggle('active', currentTab === 'all');
-            document.getElementById('tabImages').classList.toggle('active', currentTab === 'images');
-
-            // ③ フィルタ処理
             let filteredResults = currentSearchResults.filter(r => {
-                if (selectedSite === 'all') return true;
-                return r.item.site_name === selectedSite;
+                if (activeSiteFilter === 'all') return true;
+                return r.item.site_name === activeSiteFilter;
             });
 
-            // ③ 並び替え処理
-            if (sortOrder === 'title') {
-                filteredResults = [...filteredResults].sort((a, b) => a.item.title.localeCompare(b.item.title, 'ja'));
+            // 🤖 AIモードがONの時：トップに概要カードを生成
+            if (isAiMode && filteredResults.length > 0 && currentTab === 'all') {
+                const aiBox = document.createElement('div');
+                aiBox.className = 'ai-overview-box';
+                
+                let highlights = [];
+                filteredResults.slice(0, 3).forEach(r => {
+                    const c = r.item.content;
+                    if(c && c.length > 20) {
+                        highlights.push(`<b>${escapeHtml(r.item.title)}</b>: ${escapeHtml(c.substring(0, 80))}...`);
+                    }
+                });
+
+                aiBox.innerHTML = `
+                    <div class="ai-overview-header">🤖 AIによる検索概要 (しらべるAI)</div>
+                    <div class="ai-overview-content">
+                        「<b>${escapeHtml(query)}</b>」に関する上位ページの要約情報です：
+                        <ul>${highlights.map(h => `<li style="margin-bottom:6px;">${h}</li>`).join('')}</ul>
+                    </div>
+                `;
+                aiContainer.appendChild(aiBox);
             }
 
             if (currentTab === 'all') {
@@ -615,10 +732,6 @@
                     const item = r.item;
                     const card = document.createElement('div');
                     card.className = 'card';
-                    
-                    // ④ AI風箇条書き要約の生成
-                    const summary = generateSummary(item.content);
-
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between">
                             <div class="site-label">${escapeHtml(item.site_name)}</div>
@@ -626,7 +739,6 @@
                         </div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h2>
                         <div class="snippet">${createSnippet(item.content, query)}</div>
-                        ${summary ? `<div class="ai-summary"><b>💡 要約ポイント</b><ul>${summary}</ul></div>` : ''}
                     `;
                     container.appendChild(card);
                 });
@@ -651,20 +763,19 @@
             }
         }
 
-        // ④ 簡易要約生成ロジック
-        function generateSummary(content) {
-            if (!content || content.length < 50) return null;
-            const sentences = content.split(/。|\n/).map(s => s.trim()).filter(s => s.length > 10 && s.length < 60);
-            if (sentences.length === 0) return null;
-            const selected = sentences.slice(0, 2);
-            return selected.map(s => `<li>${escapeHtml(s)}</li>`).join('');
-        }
-
-        function switchTab(t) {
+        function switchTab(t, doSearch = true) {
             currentTab = t;
+            document.getElementById('tabAll').classList.toggle('active', currentTab === 'all');
+            document.getElementById('tabImages').classList.toggle('active', currentTab === 'images');
+            
+            // ボタンの表記切り替え
+            const btnText = document.getElementById('mainSearchBtnText');
+            btnText.textContent = (currentTab === 'images') ? 'しらべる画像検索' : 'しらべる検索';
+
             renderView();
-            const query = document.getElementById('searchInput').value.trim();
-            if (query) executeSearch();
+            if (doSearch && document.getElementById('searchInput').value.trim()) {
+                executeSearch();
+            }
         }
 
         function createSnippet(c, q) {
