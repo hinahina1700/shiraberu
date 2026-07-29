@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>しらべる</title>
+    <meta name="referrer" content="no-referrer">
     <link rel="icon" href="logo-light.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <style>
@@ -19,6 +20,9 @@
             --header-border: #dadce0;
             --mark-color: #d93025;
             --footer-bg: #f2f2f2;
+            --summary-bg: #f1f3f4;
+            --suggest-bg: #ffffff;
+            --suggest-hover: #f1f3f4;
         }
 
         [data-theme="dark"] {
@@ -33,6 +37,9 @@
             --header-border: #3c4043;
             --mark-color: #f28b82;
             --footer-bg: #171717;
+            --summary-bg: #28292c;
+            --suggest-bg: #303134;
+            --suggest-hover: #3c4043;
         }
 
         body {
@@ -47,7 +54,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* テーマ切り替えボタン */
         .theme-toggle {
             position: absolute;
             top: 15px;
@@ -103,6 +109,8 @@
             width: 200px;
             height: auto;
             transition: width 0.3s ease;
+            /* ダークモード時に黒文字ロゴが消えないようドロップシャドウを適用 */
+            filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.4));
         }
 
         body.has-results .logo-container {
@@ -119,6 +127,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
         body.has-results .search-area {
@@ -135,6 +144,8 @@
             border-radius: 24px;
             padding: 2px 8px 2px 20px;
             box-sizing: border-box;
+            position: relative;
+            z-index: 10;
         }
 
         .search-input-wrapper:hover, .search-input-wrapper:focus-within {
@@ -158,6 +169,47 @@
             padding: 0 15px;
             color: var(--accent-color);
             font-size: 18px;
+        }
+
+        /* ①② サジェスト＆検索履歴ドロップダウン */
+        .suggestions-box {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            width: 100%;
+            background: var(--suggest-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 9;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .suggest-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .suggest-item:hover {
+            background-color: var(--suggest-hover);
+        }
+
+        .suggest-item .delete-history {
+            color: var(--sub-text);
+            font-size: 12px;
+        }
+
+        .suggest-header {
+            padding: 8px 20px 4px;
+            font-size: 11px;
+            color: var(--sub-text);
+            text-transform: uppercase;
         }
 
         .home-buttons {
@@ -211,7 +263,6 @@
         .tabs {
             display: flex;
             gap: 20px;
-            margin-bottom: 10px;
             font-size: 14px;
             color: var(--sub-text);
         }
@@ -227,10 +278,29 @@
             border-bottom: 3px solid var(--accent-color);
         }
 
+        /* ③ 検索フィルターバー */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0 15px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .filter-select {
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 13px;
+            outline: none;
+        }
+
         .meta-info {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--sub-text);
-            margin: 15px 0;
+            margin-bottom: 15px;
         }
 
         .card { margin-bottom: 25px; max-width: 650px; }
@@ -240,6 +310,18 @@
         .card h2 a:hover { text-decoration: underline; }
         .snippet { font-size: 14px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
         .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
+
+        /* ④ AI風要約ボックス */
+        .ai-summary {
+            background: var(--summary-bg);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .ai-summary ul { margin: 4px 0 0; padding-left: 18px; }
 
         .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
         .image-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); background: var(--card-bg); }
@@ -273,9 +355,10 @@
 
             <div class="search-area">
                 <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" class="search-box" placeholder="しらべるで検索..." disabled>
+                    <input type="text" id="searchInput" class="search-box" placeholder="しらべるで検索..." autocomplete="off" disabled>
                     <button id="searchBtn" class="search-btn" disabled>🔍</button>
                 </div>
+                <div id="suggestions" class="suggestions-box"></div>
                 
                 <div class="home-buttons">
                     <div class="home-btn" onclick="executeSearch()">しらべる検索</div>
@@ -290,6 +373,21 @@
             <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
             <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
         </div>
+
+        <div class="filter-bar">
+            <label>サイト: 
+                <select id="siteFilter" class="filter-select" onchange="renderView()">
+                    <option value="all">すべてのサイト</option>
+                </select>
+            </label>
+            <label>順序: 
+                <select id="sortOrder" class="filter-select" onchange="renderView()">
+                    <option value="relevance">関連度順</option>
+                    <option value="title">タイトル順</option>
+                </select>
+            </label>
+        </div>
+
         <div id="metaInfo" class="meta-info"></div>
         <div id="results"></div>
     </div>
@@ -317,8 +415,8 @@
         let currentTab = 'all';
         let currentSearchResults = [];
         let isDarkMode = false;
+        let searchHistory = JSON.parse(localStorage.getItem('shiraberu_history') || '[]');
 
-        // 初期ダークモード判定（OSの設定に合わせる）
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             setTheme(true);
         }
@@ -349,46 +447,127 @@
                 allItems = data.items || [];
                 lastUpdatedTime = data.last_updated || "不明";
 
-                // 高精度検索（Fuse.js）の設定
+                // フィルタのサイト一覧を自動生成
+                const siteSet = new Set(allItems.map(i => i.site_name));
+                const siteSelect = document.getElementById('siteFilter');
+                siteSet.forEach(site => {
+                    const opt = document.createElement('option');
+                    opt.value = site;
+                    opt.textContent = site;
+                    siteSelect.appendChild(opt);
+                });
+
                 fuse = new Fuse(allItems, {
                     keys: [
                         { name: 'title', weight: 0.5 },
                         { name: 'content', weight: 0.3 },
-                        { name: 'url', weight: 0.2 } // URL直接検索対応
+                        { name: 'url', weight: 0.2 }
                     ],
-                    threshold: 0.3,          // より厳密かつ高精度にマッチ
-                    ignoreLocation: true,    // どこにあってもヒットさせる
-                    useExtendedSearch: true  // 複数単語・アンド検索・アンドNOT検索に対応
+                    threshold: 0.3,
+                    ignoreLocation: true,
+                    useExtendedSearch: true
                 });
 
-                document.getElementById('searchInput').disabled = false;
+                const input = document.getElementById('searchInput');
+                input.disabled = false;
                 document.getElementById('searchBtn').disabled = false;
+
+                // サジェスト・履歴イベント
+                input.addEventListener('input', showSuggestions);
+                input.addEventListener('focus', showSuggestions);
+
+                document.addEventListener('click', e => {
+                    if (!e.target.closest('.search-area')) {
+                        document.getElementById('suggestions').style.display = 'none';
+                    }
+                });
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const query = urlParams.get('q');
                 const tbm = urlParams.get('tbm');
 
                 if (tbm === 'isch') currentTab = 'images';
-
                 if (query) {
-                    document.getElementById('searchInput').value = query;
+                    input.value = query;
                     executeSearch();
                 }
             });
+
+        // ①② サジェスト & 検索履歴表示
+        function showSuggestions() {
+            const val = document.getElementById('searchInput').value.trim();
+            const sugBox = document.getElementById('suggestions');
+            sugBox.innerHTML = '';
+
+            if (!val) {
+                // 検索履歴を表示
+                if (searchHistory.length > 0) {
+                    sugBox.innerHTML = '<div class="suggest-header">最近の検索</div>';
+                    searchHistory.slice(0, 5).forEach((h, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'suggest-item';
+                        item.innerHTML = `<span>🕒 ${escapeHtml(h)}</span><span class="delete-history" onclick="deleteHistory(event, ${idx})">削除</span>`;
+                        item.onclick = (e) => {
+                            if(e.target.classList.contains('delete-history')) return;
+                            document.getElementById('searchInput').value = h;
+                            executeSearch();
+                        };
+                        sugBox.appendChild(item);
+                    });
+                    sugBox.style.display = 'block';
+                } else {
+                    sugBox.style.display = 'none';
+                }
+                return;
+            }
+
+            // タイトル・コンテンツからキーワード候補を表示
+            const matches = allItems.filter(i => i.title.toLowerCase().includes(val.toLowerCase())).slice(0, 5);
+            if (matches.length > 0) {
+                sugBox.innerHTML = '<div class="suggest-header">検索候補</div>';
+                matches.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'suggest-item';
+                    item.innerHTML = `🔍 ${escapeHtml(m.title)}`;
+                    item.onclick = () => {
+                        document.getElementById('searchInput').value = m.title;
+                        executeSearch();
+                    };
+                    sugBox.appendChild(item);
+                });
+                sugBox.style.display = 'block';
+            } else {
+                sugBox.style.display = 'none';
+            }
+        }
+
+        function saveHistory(q) {
+            searchHistory = searchHistory.filter(h => h !== q);
+            searchHistory.unshift(q);
+            if (searchHistory.length > 10) searchHistory.pop();
+            localStorage.setItem('shiraberu_history', JSON.stringify(searchHistory));
+        }
+
+        function deleteHistory(e, idx) {
+            e.stopPropagation();
+            searchHistory.splice(idx, 1);
+            localStorage.setItem('shiraberu_history', JSON.stringify(searchHistory));
+            showSuggestions();
+        }
 
         function executeSearch() {
             const rawQuery = document.getElementById('searchInput').value.trim();
             if (!rawQuery) return;
 
+            document.getElementById('suggestions').style.display = 'none';
+            saveHistory(rawQuery);
             document.body.classList.add('has-results');
 
-            // URL構造の分離 (?q=キーワード&tbm=isch)
             const params = new URLSearchParams();
             params.set('q', rawQuery);
             if (currentTab === 'images') params.set('tbm', 'isch');
             window.history.pushState({}, '', `?${params.toString()}`);
 
-            // 複数単語（スペース区切り）対応処理
             const words = rawQuery.replace(/ /g, ' ').split(/\s+/).filter(Boolean);
             const formattedQuery = words.length > 1 ? words.map(w => `'${w}`).join(' ') : rawQuery;
 
@@ -408,21 +587,38 @@
             const container = document.getElementById('results');
             container.innerHTML = '';
             const query = document.getElementById('searchInput').value;
+            const selectedSite = document.getElementById('siteFilter').value;
+            const sortOrder = document.getElementById('sortOrder').value;
 
             document.getElementById('tabAll').classList.toggle('active', currentTab === 'all');
             document.getElementById('tabImages').classList.toggle('active', currentTab === 'images');
 
+            // ③ フィルタ処理
+            let filteredResults = currentSearchResults.filter(r => {
+                if (selectedSite === 'all') return true;
+                return r.item.site_name === selectedSite;
+            });
+
+            // ③ 並び替え処理
+            if (sortOrder === 'title') {
+                filteredResults = [...filteredResults].sort((a, b) => a.item.title.localeCompare(b.item.title, 'ja'));
+            }
+
             if (currentTab === 'all') {
                 container.className = '';
-                if(currentSearchResults.length === 0) {
+                if(filteredResults.length === 0) {
                     container.innerHTML = '<div style="color:var(--sub-text); padding: 20px 0;">一致する検索結果が見つかりませんでした。</div>';
                     return;
                 }
 
-                currentSearchResults.forEach(r => {
+                filteredResults.forEach(r => {
                     const item = r.item;
                     const card = document.createElement('div');
                     card.className = 'card';
+                    
+                    // ④ AI風箇条書き要約の生成
+                    const summary = generateSummary(item.content);
+
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between">
                             <div class="site-label">${escapeHtml(item.site_name)}</div>
@@ -430,19 +626,20 @@
                         </div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h2>
                         <div class="snippet">${createSnippet(item.content, query)}</div>
+                        ${summary ? `<div class="ai-summary"><b>💡 要約ポイント</b><ul>${summary}</ul></div>` : ''}
                     `;
                     container.appendChild(card);
                 });
             } else {
                 container.className = 'image-grid';
                 let imgCount = 0;
-                currentSearchResults.forEach(r => {
+                filteredResults.forEach(r => {
                     (r.item.images || []).forEach(img => {
                         imgCount++;
                         const a = document.createElement('a');
                         a.className = 'image-card';
                         a.href = r.item.url; a.target = '_blank'; a.rel = 'noopener';
-                        a.innerHTML = `<img src="${img.src}" onerror="this.parentElement.style.display='none'"><div class="image-info"><b>${escapeHtml(r.item.title)}</b><br>${escapeHtml(r.item.site_name)}</div>`;
+                        a.innerHTML = `<img src="${img.src}" referrerpolicy="no-referrer" onerror="this.parentElement.style.display='none'"><div class="image-info"><b>${escapeHtml(r.item.title)}</b><br>${escapeHtml(r.item.site_name)}</div>`;
                         container.appendChild(a);
                     });
                 });
@@ -452,6 +649,15 @@
                     container.innerHTML = '<div style="color:var(--sub-text); padding: 20px 0;">画像が見つかりませんでした。</div>';
                 }
             }
+        }
+
+        // ④ 簡易要約生成ロジック
+        function generateSummary(content) {
+            if (!content || content.length < 50) return null;
+            const sentences = content.split(/。|\n/).map(s => s.trim()).filter(s => s.length > 10 && s.length < 60);
+            if (sentences.length === 0) return null;
+            const selected = sentences.slice(0, 2);
+            return selected.map(s => `<li>${escapeHtml(s)}</li>`).join('');
         }
 
         function switchTab(t) {
