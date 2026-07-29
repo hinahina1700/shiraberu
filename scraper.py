@@ -70,15 +70,14 @@ TARGET_SITES = [
 ]
 
 def extract_images(soup, base_url):
-    """ ページ内の画像URLとaltテキストを抽出 """
     images = []
     for img in soup.find_all("img", src=True):
         src = img["src"]
-        if src.startswith("data:"): continue # Base64画像は無視
+        if src.startswith("data:"): continue
         full_img_url = urljoin(base_url, src)
         alt_text = img.get("alt", "").strip()
         images.append({"src": full_img_url, "alt": alt_text})
-    return images[:10] # 1ページあたり最大10枚まで取得
+    return images[:15]
 
 async def scrape_atwiki(page, site):
     wiki_id = site["wiki_id"]
@@ -87,8 +86,8 @@ async def scrape_atwiki(page, site):
 
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
     try:
-        await page.goto(list_url, wait_until="networkidle", timeout=45000)
-        await page.wait_for_timeout(5000)
+        await page.goto(list_url, wait_until="domcontentloaded", timeout=45000)
+        await page.wait_for_timeout(4000)
     except Exception as e:
         print(f"  └ 一覧取得失敗: {e}")
         return []
@@ -106,15 +105,15 @@ async def scrape_atwiki(page, site):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await page.wait_for_timeout(3000)
+            await page.wait_for_timeout(2500)
+
+            # Bot判定回避（人間らしいスクロール動作）
+            await page.evaluate("window.scrollBy(0, 300);")
+            await page.wait_for_timeout(1000)
 
             html_content = await page.content()
-            if "Just a moment" in html_content or "ロボットではありません" in html_content:
-                print("    └ BOT保護画面を検知。回避待機中...")
-                await page.wait_for_timeout(8000)
-                html_content = await page.content()
-
             page_soup = BeautifulSoup(html_content, "html.parser")
+            
             title_elem = page_soup.find("h2", id="page_title")
             title = title_elem.text.strip() if title_elem else (page_soup.find("title").text.split("-")[0].strip() if page_soup.find("title") else "無題")
 
@@ -122,6 +121,7 @@ async def scrape_atwiki(page, site):
             body_text = " ".join(body_elem.text.split()) if body_elem else ""
 
             if "Just a moment" in body_text or "ロボットではありません" in body_text:
+                print("    └ アクセス制限を検知したため本文をスキップ")
                 body_text = ""
 
             images = extract_images(page_soup, url)
@@ -210,7 +210,6 @@ async def scrape_generic(page, site):
             await page.wait_for_timeout(2000)
 
             page_soup = BeautifulSoup(await page.content(), "html.parser")
-            
             title = page_soup.find("h1").text.strip() if page_soup.find("h1") else (page_soup.find("title").text.strip() if page_soup.find("title") else "無題")
             body_text = " ".join(page_soup.body.text.split()) if page_soup.body else ""
             images = extract_images(page_soup, url)
@@ -255,18 +254,13 @@ async def main():
         print("ブラウザを起動しています...")
         browser = await p.chromium.launch(
             headless=True,
-            args=[
-                '--disable-blink-features=AutomationControlled',
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-            ]
+            args=['--disable-blink-features=AutomationControlled', '--no-sandbox']
         )
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800},
             locale="ja-JP"
         )
-        
         page = await context.new_page()
         await page.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
