@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>しらべる - ぱわふるなけんさくえんじん</title>
+    <title>しらべる - 検索エンジン</title>
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -64,15 +64,13 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ヘッダー全体構造 */
         .header-container {
             width: 100%; background: var(--bg-color); transition: all 0.3s ease;
         }
 
-        /* トップ画面のヘッダー */
         body:not(.has-results) .header-container {
             display: flex; flex-direction: column; align-items: center;
-            padding-top: 10vh; padding-bottom: 20px;
+            padding-top: 10vh; padding-bottom: 20px; position: relative;
         }
 
         .top-nav {
@@ -85,8 +83,8 @@
 
         .nav-btn {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
-            padding: 5px 10px; color: var(--text-color); cursor: pointer; font-size: 12px;
-            display: inline-flex; align-items: center; gap: 4px;
+            padding: 5px 12px; color: var(--text-color); cursor: pointer; font-size: 12px;
+            display: inline-flex; align-items: center; text-decoration: none;
         }
 
         .logo-container img {
@@ -113,10 +111,9 @@
 
         .search-btn {
             background: none; border: none; cursor: pointer;
-            padding: 0 8px; color: var(--accent-color); font-size: 16px;
+            padding: 0 12px; color: var(--accent-color); font-size: 13px; font-weight: bold;
         }
 
-        /* 検索後のヘッダー（全画面幅対応） */
         body.has-results .header-container {
             position: sticky; top: 0; z-index: 90;
             border-bottom: 1px solid var(--header-border);
@@ -138,10 +135,12 @@
 
         .trend-tag { background: var(--chip-bg); padding: 4px 10px; border-radius: 14px; cursor: pointer; }
         .home-buttons { margin-top: 20px; display: flex; gap: 10px; }
+        
         .home-btn {
             background-color: var(--button-bg); border: 1px solid var(--border-color);
             border-radius: 6px; color: var(--text-color); font-size: 13px;
             padding: 0 14px; height: 36px; line-height: 34px; cursor: pointer;
+            text-decoration: none; display: inline-block; text-align: center;
         }
 
         body.has-results .trends-container,
@@ -156,7 +155,6 @@
         .suggest-item { padding: 10px 16px; cursor: pointer; font-size: 13px; }
         .suggest-item:hover { background-color: var(--suggest-hover); }
 
-        /* メイン結果エリア */
         .results-container {
             width: 100%; max-width: 780px; padding: 12px 16px;
             display: none; margin: 0 auto;
@@ -171,7 +169,7 @@
 
         .tab {
             padding: 6px 2px; cursor: pointer; border-bottom: 3px solid transparent;
-            font-size: 14px; color: var(--sub-text); white-space: nowrap;
+            font-size: 14px; color: var(--sub-text); white-space: nowrap; text-decoration: none;
         }
 
         .tab.active {
@@ -180,16 +178,17 @@
 
         .meta-info { font-size: 12px; color: var(--sub-text); margin: 10px 0; }
 
-        /* 🤖 AI対話チャット */
+        /* AI対話エリア */
         .ai-chat-container {
             background: var(--ai-bg); border: 1px solid var(--ai-border);
             border-radius: 14px; padding: 16px; margin-bottom: 20px; display: none;
         }
 
-        .chat-messages { display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; margin-bottom: 12px; }
+        .chat-messages { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px; }
 
         .chat-bubble {
-            padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; max-width: 90%;
+            padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 88%;
+            word-wrap: break-word;
         }
 
         .chat-bubble.ai { background: var(--card-bg); border: 1px solid var(--ai-border); align-self: flex-start; }
@@ -203,10 +202,9 @@
         .ai-input-form input { flex: 1; border: none; outline: none; background: transparent; color: var(--text-color); font-size: 13px; }
         .ai-input-form button {
             background: var(--accent-color); color: white; border: none;
-            border-radius: 16px; padding: 6px 14px; cursor: pointer; font-size: 12px; font-weight: bold;
+            border-radius: 16px; padding: 6px 16px; cursor: pointer; font-size: 12px; font-weight: bold;
         }
 
-        /* 検索カード & 紫色リンク機能 */
         .card { margin-bottom: 20px; position: relative; }
         .card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
         .site-label { font-size: 12px; color: var(--sub-text); }
@@ -228,24 +226,17 @@
         .snippet { font-size: 13px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
         .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
 
-        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .image-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); background: var(--card-bg); }
-        .image-card img { width: 100%; height: 85px; object-fit: cover; background: #eee; display: block; }
-        .image-info { padding: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* レスポンシブ用モーダル */
         .modal-overlay {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
             background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;
-            backdrop-filter: blur(2px); padding: 12px;
+            backdrop-filter: blur(2px); padding: 16px;
         }
         .modal {
             background: var(--card-bg); color: var(--text-color); padding: 20px;
-            border-radius:14px; width:100%; max-width:440px; max-height: 85vh; overflow-y: auto;
+            border-radius:14px; width:100%; max-width:420px; max-height: 85vh; overflow-y: auto;
             border: 1px solid var(--border-color); box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
 
-        /* 📜 履歴削除コントロール */
         .history-controls { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
         .history-filter-btn {
             background: var(--button-bg); border: 1px solid var(--border-color);
@@ -260,7 +251,6 @@
         }
         .history-item-info { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
 
-        /* スマホ用スタイル調整 (768px以下) */
         @media (max-width: 768px) {
             body.has-results .header-inner { flex-wrap: wrap; gap: 6px; }
             body.has-results .logo-container img { width: 60px; }
@@ -287,34 +277,35 @@
             <div class="search-area">
                 <div class="search-input-wrapper">
                     <input type="text" id="searchInput" class="search-box" placeholder="検索ワードを入力..." autocomplete="off" disabled>
-                    <button id="searchBtn" class="search-btn" disabled>🔍</button>
+                    <button id="searchBtn" class="search-btn" disabled>検索</button>
                 </div>
 
                 <div id="suggestions" class="suggestions-box"></div>
 
                 <div class="trends-container" id="trendsArea">
-                    <span style="color:var(--sub-text); font-weight:bold;">🔥 トレンド:</span>
+                    <span style="color:var(--sub-text); font-weight:bold;">トレンド:</span>
                 </div>
                 
                 <div class="home-buttons">
                     <div class="home-btn" onclick="executeSearch()">検索</div>
+                    <a href="images.html" class="home-btn">画像検索</a>
                     <div class="home-btn" onclick="openComingSoonModal()">サイト登録申請</div>
                 </div>
             </div>
 
             <div class="top-nav">
-                <button class="nav-btn" onclick="openHistoryModal()">📜 履歴</button>
-                <button class="nav-btn" onclick="openUserSettingModal()">👤 <span id="navUserName">設定</span></button>
-                <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 ダーク</button>
+                <button class="nav-btn" onclick="openHistoryModal()">履歴</button>
+                <button class="nav-btn" onclick="openUserSettingModal()"><span id="navUserName">設定</span></button>
+                <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">ダーク</button>
             </div>
         </div>
     </div>
 
     <div class="results-container">
         <div class="tabs-nav">
-            <div id="tabAi" class="tab" onclick="switchTab('ai')">🤖 AIモード</div>
-            <div id="tabAll" class="tab active" onclick="switchTab('all')">🌐 すべて</div>
-            <div id="tabImages" class="tab" onclick="switchTab('images')">🖼️ 画像</div>
+            <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
+            <div id="tabAi" class="tab" onclick="switchTab('ai')">AIアシスタント</div>
+            <a href="images.html" class="tab">画像</a>
         </div>
 
         <div id="metaInfo" class="meta-info"></div>
@@ -322,7 +313,7 @@
         <div id="aiChatContainer" class="ai-chat-container">
             <div class="chat-messages" id="chatMessages"></div>
             <form class="ai-input-form" onsubmit="handleAiSubmit(event)">
-                <input type="text" id="aiFollowUpInput" placeholder="AIに追加で質問・対話する..." autocomplete="off">
+                <input type="text" id="aiFollowUpInput" placeholder="AIに追加質問・対話をする..." autocomplete="off">
                 <button type="submit">送信</button>
             </form>
         </div>
@@ -332,8 +323,8 @@
 
     <div id="historyModalOverlay" class="modal-overlay">
         <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">📜 閲覧・検索履歴</h3>
-            <input type="text" id="historySearchInput" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid var(--border-color); font-size:12px;" placeholder="履歴を絞り込み..." oninput="renderHistoryList()">
+            <h3 style="margin-top:0; font-size:15px;">閲覧・検索履歴</h3>
+            <input type="text" id="historySearchInput" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid var(--border-color); font-size:12px;" placeholder="履歴を検索..." oninput="renderHistoryList()">
             
             <div class="history-controls">
                 <button class="history-filter-btn" onclick="clearHistoryByTime(15)">15分以内</button>
@@ -343,14 +334,13 @@
             </div>
 
             <div class="history-list" id="historyList"></div>
-
             <button onclick="closeHistoryModal()" style="width:100%; margin-top:12px; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">閉じる</button>
         </div>
     </div>
 
     <div id="userModalOverlay" class="modal-overlay">
         <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">👤 ユーザー名設定</h3>
+            <h3 style="margin-top:0; font-size:15px;">ユーザー名設定</h3>
             <input type="text" id="userNameInput" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;" placeholder="例: しらべるユーザー">
             <div style="display:flex; gap:8px;">
                 <button onclick="skipUserName()" style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">スキップ</button>
@@ -361,7 +351,7 @@
 
     <div id="siteDetailModalOverlay" class="modal-overlay">
         <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">🌐 サイトの詳細</h3>
+            <h3 style="margin-top:0; font-size:15px;">サイトの詳細</h3>
             <div id="siteDetailContent" style="font-size:12px; line-height:1.6; margin:12px 0;"></div>
             <button onclick="closeSiteDetailModal()" style="width:100%; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold;">閉じる</button>
         </div>
@@ -369,8 +359,8 @@
 
     <div id="comingSoonOverlay" class="modal-overlay">
         <div class="modal" style="text-align:center;">
-            <h3 style="margin-top:0;">🚧 準備中</h3>
-            <p style="font-size:13px; color:var(--sub-text);">サイト登録申請機能は準備中です！</p>
+            <h3 style="margin-top:0;">準備中</h3>
+            <p style="font-size:13px; color:var(--sub-text);">サイト登録申請機能は準備中です。</p>
             <button onclick="closeComingSoonModal()" style="padding:6px 20px; border-radius:16px; border:none; background:var(--accent-color); color:white;">閉じる</button>
         </div>
     </div>
@@ -389,7 +379,7 @@
         let userName = localStorage.getItem('shiraberu_username') || '';
         let chatHistory = [];
 
-        // 閲覧履歴データ管理
+        // ローカルストレージを使用した履歴管理
         let historyData = JSON.parse(localStorage.getItem('shiraberu_history_items') || '[]');
         let visitedUrls = new Set(JSON.parse(localStorage.getItem('shiraberu_visited_urls') || '[]'));
 
@@ -409,17 +399,13 @@
         function setTheme(dark) {
             isDarkMode = dark;
             document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
-            document.getElementById('themeBtn').textContent = dark ? '☀️ ライト' : '🌙 ダーク';
+            document.getElementById('themeBtn').textContent = dark ? 'ライト' : 'ダーク';
             updateLogo();
         }
 
         function updateLogo() {
             const logo = document.getElementById('mainLogo');
-            if (currentMode === 'images') {
-                logo.src = isDarkMode ? 'logo-img-dark.png' : 'logo-img-light.png';
-            } else {
-                logo.src = isDarkMode ? 'logo-dark.png' : 'logo-light.png';
-            }
+            logo.src = isDarkMode ? 'logo-dark.png' : 'logo-light.png';
         }
 
         fetch('search_index.json')
@@ -514,6 +500,9 @@
             document.body.classList.add('has-results');
             updateLogo();
 
+            // 検索履歴に追加（ローカルストレージ）
+            recordSearchQuery(rawQuery);
+
             const params = new URLSearchParams();
             params.set('q', rawQuery);
             params.set('mode', currentMode);
@@ -539,7 +528,12 @@
         document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key === 'Enter') executeSearch(); });
         document.getElementById('searchBtn').addEventListener('click', executeSearch);
 
-        /* 📜 履歴機能の処理 */
+        function recordSearchQuery(query) {
+            const newEntry = { id: Date.now(), title: `検索: ${query}`, url: `?q=${encodeURIComponent(query)}`, timestamp: Date.now() };
+            historyData.unshift(newEntry);
+            localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
+        }
+
         function recordVisit(title, url) {
             visitedUrls.add(url);
             localStorage.setItem('shiraberu_visited_urls', JSON.stringify(Array.from(visitedUrls)));
@@ -555,13 +549,11 @@
             renderHistoryList();
         }
 
-        function closeHistoryModal() {
-            document.getElementById('historyModalOverlay').style.display = 'none';
-        }
+        function closeHistoryModal() { document.getElementById('historyModalOverlay').style.display = 'none'; }
 
         function renderHistoryList() {
             const listEl = document.getElementById('historyList');
-            const query = document.getElementById('historySearchInput').value.toLowerCase();
+            const query = (document.getElementById('historySearchInput').value || '').toLowerCase();
             listEl.innerHTML = '';
 
             const filtered = historyData.filter(h => h.title.toLowerCase().includes(query) || h.url.toLowerCase().includes(query));
@@ -580,7 +572,7 @@
                         <a href="${item.url}" target="_blank" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')" style="color:var(--link-color); text-decoration:none;">${escapeHtml(item.title)}</a>
                         <div style="font-size:10px; color:var(--sub-text);">${dateStr}</div>
                     </div>
-                    <button onclick="deleteSingleHistory(${item.id})" style="background:none; border:none; cursor:pointer; color:var(--sub-text);">🗑️</button>
+                    <button onclick="deleteSingleHistory(${item.id})" style="background:none; border:none; cursor:pointer; color:var(--sub-text); font-size:11px;">削除</button>
                 `;
                 listEl.appendChild(div);
             });
@@ -611,12 +603,12 @@
             localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
         }
 
-        /* 🤖 AI対話機能 (要約補正含む) */
+        /* 🤖 高度な対話型AIロジック */
         function getItemSummary(item) {
             if (item.ai_summary && item.ai_summary !== '要約データなし' && item.ai_summary !== 'AI要約の取得に失敗しました。') {
                 return item.ai_summary;
             }
-            return item.content ? item.content.substring(0, 160) + '...' : '詳細説明なし';
+            return item.content ? item.content.substring(0, 180) + '...' : '詳細説明なし';
         }
 
         function initAiChat(query) {
@@ -628,9 +620,9 @@
                 const topItem = currentSearchResults[0].item;
                 const summary = getItemSummary(topItem);
                 
-                initialResponse = `こんにちは！<b>${escapeHtml(activeUser)}</b>さん。「<b>${escapeHtml(query)}</b>」に関する要約です：<br><br>${escapeHtml(summary)}<br><br><small style="color:var(--sub-text);">出典: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
+                initialResponse = `<b>${escapeHtml(activeUser)}</b>さん、「<b>${escapeHtml(query)}</b>」に関する検索結果の要約です。<br><br>${escapeHtml(summary)}<br><br><small style="color:var(--sub-text);">出典: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
             } else {
-                initialResponse = `<b>${escapeHtml(activeUser)}</b>さん、「${escapeHtml(query)}」に関する情報が見つかりませんでした。`;
+                initialResponse = `<b>${escapeHtml(activeUser)}</b>さん、「${escapeHtml(query)}」に関する情報が見つかりませんでした。別の言葉で検索してみてください。`;
             }
 
             chatHistory.push({ role: 'ai', text: initialResponse });
@@ -660,16 +652,48 @@
             renderChatMessages();
 
             setTimeout(() => {
-                let aiReply = `「${escapeHtml(text)}」についてですね！<br>`;
-                if (currentSearchResults.length > 0) {
-                    const randomItem = currentSearchResults[Math.floor(Math.random() * currentSearchResults.length)].item;
-                    aiReply += `関連して「${escapeHtml(randomItem.title)}」の情報が利用できます。<br>${escapeHtml(getItemSummary(randomItem))}`;
-                } else {
-                    aiReply += `該当する追加情報が見つかりませんでした。`;
-                }
-                chatHistory.push({ role: 'ai', text: aiReply });
+                const reply = generateSmartAiResponse(text);
+                chatHistory.push({ role: 'ai', text: reply });
                 renderChatMessages();
-            }, 400);
+            }, 300);
+        }
+
+        function generateSmartAiResponse(userInput) {
+            const lower = userInput.toLowerCase();
+            
+            if (lower.includes('ありがとう') || lower.includes('感謝')) {
+                return `お役に立てて光栄です。他にも気になる点やご質問がありましたら、気軽にお尋ねください。`;
+            }
+
+            if (currentSearchResults.length === 0) {
+                return `申し訳ありません。該当する情報が見つかりませんでした。別の検索ワードをお試しください。`;
+            }
+
+            if (lower.includes('他') || lower.includes('ほか') || lower.includes('別')) {
+                if (currentSearchResults.length > 1) {
+                    const secondItem = currentSearchResults[1].item;
+                    return `別の関連情報「<b>${escapeHtml(secondItem.title)}</b>」についてご紹介します：<br><br>${escapeHtml(getItemSummary(secondItem))}<br><br><small style="color:var(--sub-text);">出典: <a href="${secondItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(secondItem.title)}', '${escapeHtml(secondItem.url)}')">${escapeHtml(secondItem.title)}</a></small>`;
+                } else {
+                    return `他に関連する結果が見つかりませんでした。`;
+                }
+            }
+
+            if (lower.includes('詳しく') || lower.includes('詳細') || lower.includes('もっと')) {
+                const topItem = currentSearchResults[0].item;
+                const fullText = topItem.content || '';
+                const detailPart = fullText.length > 180 ? fullText.substring(180, 400) + '...' : fullText;
+                return `「<b>${escapeHtml(topItem.title)}</b>」の詳しい内容です：<br><br>${escapeHtml(detailPart || getItemSummary(topItem))}`;
+            }
+
+            for (let r of currentSearchResults) {
+                const item = r.item;
+                if ((item.content || '').includes(userInput) || (item.title || '').includes(userInput)) {
+                    return `「${escapeHtml(userInput)}」に関する該当箇所の抜粋です：<br><br>${createSnippet(item.content || item.title, userInput)}<br><br><small style="color:var(--sub-text);">出典: <a href="${item.url}" target="_blank" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></small>`;
+                }
+            }
+
+            const randomItem = currentSearchResults[Math.floor(Math.random() * currentSearchResults.length)].item;
+            return `「${escapeHtml(userInput)}」に関して、検索結果に含まれる要約をお伝えします：<br><br>${escapeHtml(getItemSummary(randomItem))}`;
         }
 
         function renderView() {
@@ -680,62 +704,40 @@
 
             aiChatBox.style.display = (currentMode === 'ai') ? 'block' : 'none';
 
-            if (currentMode === 'images') {
-                container.className = 'image-grid';
-                let imgCount = 0;
-                currentSearchResults.forEach(r => {
-                    (r.item.images || []).forEach(img => {
-                        imgCount++;
-                        const a = document.createElement('a');
-                        a.className = 'image-card';
-                        a.href = r.item.url; a.target = '_blank'; a.rel = 'noopener';
-                        a.onclick = () => recordVisit(r.item.title, r.item.url);
-                        a.innerHTML = `<img src="${img.src}" referrerpolicy="no-referrer" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23ccc%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23666%22%20dy%3D%22.3em%22%20text-anchor%3D%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';"><div class="image-info">${escapeHtml(r.item.title)}</div>`;
-                        container.appendChild(a);
-                    });
-                });
-
-                if(imgCount === 0) {
-                    container.className = '';
-                    container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">画像が見つかりませんでした。</div>';
-                }
-            } else {
-                container.className = '';
-                if(currentSearchResults.length === 0) {
-                    container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">該当する検索結果がありません。</div>';
-                    return;
-                }
-
-                currentSearchResults.forEach((r, idx) => {
-                    const item = r.item;
-                    const isVisited = visitedUrls.has(item.url);
-                    const summaryOrContent = getItemSummary(item);
-
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-header-row">
-                            <div class="site-label">${escapeHtml(item.site_name)}</div>
-                            <button class="more-btn" onclick="toggleMenu(event, ${idx})">⋮</button>
-                            <div id="cardMenu_${idx}" class="card-menu">
-                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">🌐 サイトの詳細</div>
-                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">🔗 共有</div>
-                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">🕒 インデックス日時</div>
-                            </div>
-                        </div>
-                        <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
-                        <div class="snippet">${createSnippet(summaryOrContent, query)}</div>
-                    `;
-                    container.appendChild(card);
-                });
+            container.className = '';
+            if(currentSearchResults.length === 0) {
+                container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">該当する検索結果がありません。</div>';
+                return;
             }
+
+            currentSearchResults.forEach((r, idx) => {
+                const item = r.item;
+                const isVisited = visitedUrls.has(item.url);
+                const summaryOrContent = getItemSummary(item);
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header-row">
+                        <div class="site-label">${escapeHtml(item.site_name)}</div>
+                        <button class="more-btn" onclick="toggleMenu(event, ${idx})">メニュー</button>
+                        <div id="cardMenu_${idx}" class="card-menu">
+                            <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
+                            <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">共有</div>
+                            <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">インデックス日時</div>
+                        </div>
+                    </div>
+                    <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
+                    <div class="snippet">${createSnippet(summaryOrContent, query)}</div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         function switchTab(mode, doSearch = true) {
             currentMode = mode;
             document.getElementById('tabAi').classList.toggle('active', currentMode === 'ai');
             document.getElementById('tabAll').classList.toggle('active', currentMode === 'all');
-            document.getElementById('tabImages').classList.toggle('active', currentMode === 'images');
 
             updateLogo();
             renderView();
@@ -763,8 +765,8 @@
         }
 
         function closeSiteDetailModal() { document.getElementById('siteDetailModalOverlay').style.display = 'none'; }
-        function shareUrl(url) { navigator.clipboard.writeText(url).then(() => alert('コピーしました！')).catch(() => alert(url)); }
-        function showIndexedTime(timeStr) { alert('🕒 更新日時:\n' + timeStr); }
+        function shareUrl(url) { navigator.clipboard.writeText(url).then(() => alert('コピーしました')).catch(() => alert(url)); }
+        function showIndexedTime(timeStr) { alert('更新日時: ' + timeStr); }
 
         function createSnippet(c, q) {
             if(!c) return "本文なし";
