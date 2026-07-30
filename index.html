@@ -27,6 +27,8 @@
             --chip-bg: #f1f3f4;
             --chip-active: #e8f0fe;
             --chip-active-text: #1967d2;
+            --menu-bg: #ffffff;
+            --menu-hover: #f1f3f4;
         }
 
         [data-theme="dark"] {
@@ -48,6 +50,8 @@
             --chip-bg: #303134;
             --chip-active: #004a77;
             --chip-active-text: #c2e7ff;
+            --menu-bg: #303134;
+            --menu-hover: #3c4043;
         }
 
         body {
@@ -59,30 +63,30 @@
         }
 
         .top-nav {
-            position: absolute; top: 15px; right: 20px;
+            position: absolute; top: 12px; right: 20px;
             display: flex; gap: 8px; z-index: 100;
         }
 
         .nav-btn {
             background: none; border: 1px solid var(--border-color); border-radius: 20px;
-            padding: 6px 12px; color: var(--text-color); cursor: pointer;
+            padding: 5px 12px; color: var(--text-color); cursor: pointer;
             font-size: 13px;
         }
 
+        /* ヘッダー全体 */
         .main-wrapper {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; padding-top: 15vh;
-            transition: transform 0.3s ease, padding-top 0.4s ease;
+            transition: transform 0.3s ease, padding 0.3s ease;
         }
 
-        /* 検索後のヘッダー表示制御 */
+        /* 検索後のスリム固定ヘッダー */
         body.has-results .main-wrapper {
             position: sticky; top: 0; z-index: 90;
             background: var(--bg-color);
-            padding-top: 15px; padding-bottom: 15px;
+            padding: 8px 0;
             align-items: flex-start;
             border-bottom: 1px solid var(--header-border);
-            transition: transform 0.3s ease;
         }
 
         body.has-results.header-hidden .main-wrapper {
@@ -95,18 +99,24 @@
             padding: 0 20px; box-sizing: border-box;
         }
 
+        /* 検索後は完全横並びでコンパクト化 */
         body.has-results .header-content {
-            flex-direction: row; max-width: 100%; align-items: center; gap: 20px;
+            flex-direction: row;
+            max-width: 100%;
+            align-items: center;
+            gap: 16px;
+            padding: 0 20px;
         }
 
         .logo-container img {
             width: 220px; height: auto;
-            transition: width 0.3s ease;
+            transition: width 0.2s ease;
             filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.3));
             cursor: pointer;
+            display: block;
         }
 
-        body.has-results .logo-container img { width: 120px; }
+        body.has-results .logo-container img { width: 95px; }
 
         .search-area {
             width: 100%; max-width: 584px;
@@ -114,13 +124,17 @@
             position: relative;
         }
 
-        body.has-results .search-area { max-width: 600px; align-items: flex-start; }
+        body.has-results .search-area { max-width: 540px; align-items: flex-start; }
 
         .search-input-wrapper {
             width: 100%; display: flex; align-items: center;
             background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 24px; padding: 2px 8px 2px 20px; box-sizing: border-box;
+            border-radius: 24px; padding: 2px 8px 2px 16px; box-sizing: border-box;
             position: relative; z-index: 10;
+        }
+
+        body.has-results .search-input-wrapper {
+            height: 38px;
         }
 
         .search-input-wrapper:hover, .search-input-wrapper:focus-within {
@@ -128,13 +142,13 @@
         }
 
         .search-box {
-            flex: 1; height: 44px; font-size: 16px;
+            flex: 1; height: 38px; font-size: 15px;
             border: none; outline: none; background: transparent; color: var(--text-color);
         }
 
         .search-btn {
             background: none; border: none; cursor: pointer;
-            padding: 0 15px; color: var(--accent-color); font-size: 18px;
+            padding: 0 10px; color: var(--accent-color); font-size: 16px;
         }
 
         /* トレンドエリア */
@@ -153,10 +167,10 @@
         .trend-tag:hover { background: var(--border-color); }
 
         .suggestions-box {
-            position: absolute; top: 48px; left: 0; width: 100%;
+            position: absolute; top: 42px; left: 0; width: 100%;
             background: var(--suggest-bg); border: 1px solid var(--border-color);
             border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 9; overflow: hidden; box-sizing: border-box;
+            display: none; z-index: 99; overflow: hidden; box-sizing: border-box;
         }
 
         .suggest-item {
@@ -184,7 +198,7 @@
 
         .results-container {
             width: 100%; max-width: 800px;
-            margin-left: 160px; padding: 20px 20px; box-sizing: border-box;
+            margin-left: 130px; padding: 15px 20px; box-sizing: border-box;
             display: none;
         }
 
@@ -192,11 +206,11 @@
 
         @media (max-width: 900px) {
             body.has-results .results-container { margin-left: 0; }
-            body.has-results .header-content { flex-direction: column; }
+            body.has-results .header-content { flex-direction: row; }
         }
 
         .tabs { display: flex; gap: 20px; font-size: 14px; color: var(--sub-text); }
-        .tab { padding: 10px 0; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab { padding: 8px 0; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab.active {
             color: var(--accent-color); border-bottom: 3px solid var(--accent-color);
             font-weight: bold;
@@ -207,9 +221,9 @@
             font-size: 13px; cursor: pointer; user-select: none;
         }
 
-        .meta-info { font-size: 13px; color: var(--sub-text); margin: 15px 0; }
+        .meta-info { font-size: 13px; color: var(--sub-text); margin: 12px 0; }
 
-        /* しらべるAI検索モード カード */
+        /* AI検索モード カード */
         .ai-response-card {
             background: var(--ai-bg); border: 1px solid var(--ai-border);
             border-radius: 12px; padding: 18px; margin-bottom: 25px;
@@ -227,12 +241,41 @@
             width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
         }
 
-        .ai-content {
-            font-size: 14px; line-height: 1.7; color: var(--text-color);
+        .ai-content { font-size: 14px; line-height: 1.7; color: var(--text-color); }
+
+        /* 検索結果カード */
+        .card { margin-bottom: 22px; max-width: 650px; position: relative; }
+        
+        .card-header-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        
+        .site-label { font-size: 13px; color: var(--sub-text); }
+        
+        /* 縦三点ボタン */
+        .more-btn {
+            background: none; border: none; color: var(--sub-text);
+            cursor: pointer; font-size: 16px; padding: 2px 6px;
+            border-radius: 50%; transition: background 0.2s;
+        }
+        .more-btn:hover { background: var(--suggest-hover); }
+
+        /* ドロップダウンメニュー */
+        .card-menu {
+            position: absolute; right: 0; top: 24px;
+            background: var(--menu-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none; z-index: 100; min-width: 180px; overflow: hidden;
         }
 
-        .card { margin-bottom: 25px; max-width: 650px; }
-        .site-label { font-size: 13px; color: var(--sub-text); margin-bottom: 4px; }
+        .card-menu-item {
+            padding: 10px 14px; font-size: 13px; color: var(--text-color);
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+
+        .card-menu-item:hover { background: var(--menu-hover); }
+
         .card h2 { margin: 0 0 4px 0; font-size: 18px; font-weight: normal; }
         .card h2 a { color: var(--link-color); text-decoration: none; }
         .card h2 a:hover { text-decoration: underline; }
@@ -297,7 +340,7 @@
     </div>
 
     <div class="results-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--header-border); padding-bottom:5px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--header-border); padding-bottom:4px;">
             <div class="tabs">
                 <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
                 <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
@@ -327,6 +370,14 @@
         </div>
     </div>
 
+    <div id="siteDetailModalOverlay" class="modal-overlay">
+        <div class="modal">
+            <h3 style="margin-top:0; font-size:16px;">🌐 サイトの詳細情報</h3>
+            <div id="siteDetailContent" style="font-size:13px; line-height:1.6; color:var(--text-color); margin:15px 0;"></div>
+            <button onclick="closeSiteDetailModal()" style="width:100%; padding:8px; border-radius:8px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">閉じる</button>
+        </div>
+    </div>
+
     <div id="comingSoonOverlay" class="modal-overlay">
         <div class="modal" style="text-align:center;">
             <h3 style="margin-top:0;">🚧 近日リリース予定</h3>
@@ -350,12 +401,10 @@
         let isDarkMode = false;
         let userName = localStorage.getItem('shiraberu_username') || '';
 
-        // ひらがな ⇄ カタカナ 相互変換（かな表記揺れ吸収）
         function katakanaToHiragana(src) {
             return src ? src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)) : "";
         }
 
-        // 初期ユーザー名の自動生成
         function getDefaultUserName() {
             const randomNum = Math.floor(1000 + Math.random() * 9000);
             return `しらべるユーザー${randomNum}`;
@@ -391,7 +440,6 @@
                 allItems = data.items || [];
                 lastUpdatedTime = data.last_updated || "不明";
 
-                // 検索インデックス用に、ひらがな化した検索キーをデータ側にも付与
                 const preparedItems = allItems.map(item => ({
                     ...item,
                     normTitle: katakanaToHiragana(item.title),
@@ -425,6 +473,9 @@
                 document.addEventListener('click', e => {
                     if (!e.target.closest('.search-area')) {
                         document.getElementById('suggestions').style.display = 'none';
+                    }
+                    if (!e.target.closest('.more-btn') && !e.target.closest('.card-menu')) {
+                        document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
                     }
                 });
 
@@ -543,15 +594,12 @@
             if (isAiMode) params.set('ai', 'on');
             window.history.pushState({}, '', `?${params.toString()}`);
 
-            // かな変換を含めたクエリ生成
             const hiraQuery = katakanaToHiragana(rawQuery);
             const start = performance.now();
             
-            // 入力そのまま＋ひらがな化したクエリの両方で Fuse 検索
             const res1 = fuse.search(rawQuery);
             const res2 = fuse.search(hiraQuery);
             
-            // 重複除去して結合
             const resultMap = new Map();
             [...res1, ...res2].forEach(r => resultMap.set(r.item.url, r));
             currentSearchResults = Array.from(resultMap.values());
@@ -584,12 +632,20 @@
                     return;
                 }
 
-                currentSearchResults.forEach(r => {
+                currentSearchResults.forEach((r, idx) => {
                     const item = r.item;
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <div class="site-label">${escapeHtml(item.site_name)}</div>
+                        <div class="card-header-row">
+                            <div class="site-label">${escapeHtml(item.site_name)}</div>
+                            <button class="more-btn" onclick="toggleMenu(event, ${idx})">⋮</button>
+                            <div id="cardMenu_${idx}" class="card-menu">
+                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">🌐 サイトの詳細</div>
+                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">🔗 共有</div>
+                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">🕒 インデックス登録日時</div>
+                            </div>
+                        </div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h2>
                         <div class="snippet">${createSnippet(item.ai_summary || item.content, query)}</div>
                     `;
@@ -616,7 +672,47 @@
             }
         }
 
-        // しらべるAI検索モード（対話・Agent回答スタイル）
+        // 縦三点メニュー表示切替
+        function toggleMenu(event, idx) {
+            event.stopPropagation();
+            const targetMenu = document.getElementById(`cardMenu_${idx}`);
+            const isVisible = targetMenu.style.display === 'block';
+            document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
+            targetMenu.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // サイトの詳細を表示
+        function showSiteDetail(idx) {
+            const item = currentSearchResults[idx].item;
+            const content = document.getElementById('siteDetailContent');
+            content.innerHTML = `
+                <p><strong>サイト名:</strong> ${escapeHtml(item.site_name)}</p>
+                <p><strong>ページタイトル:</strong> ${escapeHtml(item.title)}</p>
+                <p style="word-break: break-all;"><strong>URL:</strong> <a href="${item.url}" target="_blank" style="color:var(--accent-color);">${escapeHtml(item.url)}</a></p>
+                <p><strong>インデックス日時:</strong> ${escapeHtml(item.indexed_at || lastUpdatedTime)}</p>
+            `;
+            document.getElementById('siteDetailModalOverlay').style.display = 'flex';
+        }
+
+        function closeSiteDetailModal() {
+            document.getElementById('siteDetailModalOverlay').style.display = 'none';
+        }
+
+        // 共有（URLコピー）
+        function shareUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('リンクをクリップボードにコピーしました！');
+            }).catch(() => {
+                alert('URL: ' + url);
+            });
+        }
+
+        // インデックス登録日時のポップアップ
+        function showIndexedTime(timeStr) {
+            alert('🕒 最終インデックス更新日時:\n' + timeStr);
+        }
+
+        // AI検索モード
         async function runAiSearch(query) {
             const aiContainer = document.getElementById('aiResponseContainer');
             const activeUser = userName || 'しらべるユーザー';
@@ -635,7 +731,6 @@
                 return;
             }
 
-            // 要約と対話回答の表示
             setTimeout(() => {
                 const topItem = currentSearchResults[0].item;
                 const summaryText = topItem.ai_summary && topItem.ai_summary !== '要約データなし' 
@@ -676,13 +771,13 @@
             return escapeHtml(s).replace(new RegExp(`(${escapeRegExp(firstWord)})`, 'gi'), '<mark>$1</mark>');
         }
 
-        // 上下スクロール検出によるヘッダーの出し入れ
+        // スクロール連動ヘッダーの表示切替
         let lastScrollY = window.scrollY;
         window.addEventListener('scroll', () => {
             if (!document.body.classList.contains('has-results')) return;
             const currentScrollY = window.scrollY;
 
-            if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            if (currentScrollY > lastScrollY && currentScrollY > 60) {
                 document.body.classList.add('header-hidden');
             } else {
                 document.body.classList.remove('header-hidden');
