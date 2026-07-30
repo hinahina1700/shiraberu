@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>しらべる-ぱわふるなけんさくえんじん</title>
+    <title>しらべる - ぱわふるなけんさくえんじん</title>
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -72,12 +72,21 @@
         .main-wrapper {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; padding-top: 15vh;
-            transition: padding-top 0.4s ease;
+            transition: transform 0.3s ease, padding-top 0.4s ease;
         }
 
+        /* 検索後のヘッダー表示制御 */
         body.has-results .main-wrapper {
-            padding-top: 20px; align-items: flex-start;
+            position: sticky; top: 0; z-index: 90;
+            background: var(--bg-color);
+            padding-top: 15px; padding-bottom: 15px;
+            align-items: flex-start;
             border-bottom: 1px solid var(--header-border);
+            transition: transform 0.3s ease;
+        }
+
+        body.has-results.header-hidden .main-wrapper {
+            transform: translateY(-100%);
         }
 
         .header-content {
@@ -94,6 +103,7 @@
             width: 220px; height: auto;
             transition: width 0.3s ease;
             filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.3));
+            cursor: pointer;
         }
 
         body.has-results .logo-container img { width: 120px; }
@@ -174,7 +184,7 @@
 
         .results-container {
             width: 100%; max-width: 800px;
-            margin-left: 160px; padding: 0 20px; box-sizing: border-box;
+            margin-left: 160px; padding: 20px 20px; box-sizing: border-box;
             display: none;
         }
 
@@ -197,7 +207,7 @@
             font-size: 13px; cursor: pointer; user-select: none;
         }
 
-        .meta-info { font-size: 13px; color: var(--sub-text); margin-bottom: 15px; }
+        .meta-info { font-size: 13px; color: var(--sub-text); margin: 15px 0; }
 
         /* しらべるAI検索モード カード */
         .ai-response-card {
@@ -260,7 +270,7 @@
         <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 ダーク</button>
     </div>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper" id="mainHeader">
         <div class="header-content">
             <div class="logo-container">
                 <a href="."><img id="mainLogo" src="logo-light.png" alt="しらべる"></a>
@@ -332,9 +342,6 @@
     </footer>
 
     <script>
-        // GEMINI API KEY（必要に応じて設定）
-        const GEMINI_API_KEY = ""; 
-
         let fuse;
         let allItems = [];
         let lastUpdatedTime = "";
@@ -343,13 +350,17 @@
         let isDarkMode = false;
         let userName = localStorage.getItem('shiraberu_username') || '';
 
-        // 初期ユーザー名の自動生成（未設定時）
+        // ひらがな ⇄ カタカナ 相互変換（かな表記揺れ吸収）
+        function katakanaToHiragana(src) {
+            return src ? src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)) : "";
+        }
+
+        // 初期ユーザー名の自動生成
         function getDefaultUserName() {
             const randomNum = Math.floor(1000 + Math.random() * 9000);
             return `しらべるユーザー${randomNum}`;
         }
 
-        // 初期化時にユーザー名表示更新
         updateUserNavDisplay();
 
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -380,16 +391,26 @@
                 allItems = data.items || [];
                 lastUpdatedTime = data.last_updated || "不明";
 
-                // 正式トレンドの作成（タイトル単語から動的抽出）
+                // 検索インデックス用に、ひらがな化した検索キーをデータ側にも付与
+                const preparedItems = allItems.map(item => ({
+                    ...item,
+                    normTitle: katakanaToHiragana(item.title),
+                    normContent: katakanaToHiragana(item.content),
+                    normSummary: katakanaToHiragana(item.ai_summary || "")
+                }));
+
                 setupTrends();
 
-                fuse = new Fuse(allItems, {
+                fuse = new Fuse(preparedItems, {
                     keys: [
-                        { name: 'title', weight: 0.5 },
-                        { name: 'content', weight: 0.3 },
-                        { name: 'url', weight: 0.2 }
+                        { name: 'title', weight: 0.4 },
+                        { name: 'normTitle', weight: 0.4 },
+                        { name: 'content', weight: 0.2 },
+                        { name: 'normContent', weight: 0.2 },
+                        { name: 'normSummary', weight: 0.2 },
+                        { name: 'site_name', weight: 0.1 }
                     ],
-                    threshold: 0.3,
+                    threshold: 0.35,
                     ignoreLocation: true,
                     useExtendedSearch: true
                 });
@@ -421,7 +442,6 @@
                 }
             });
 
-        // 検索インデックスに基づく正式トレンド生成
         function setupTrends() {
             const trendsArea = document.getElementById('trendsArea');
             const keywords = [...new Set(allItems.map(i => i.title.split(' ')[0]))].filter(w => w && w.length >= 2).slice(0, 6);
@@ -467,7 +487,6 @@
         }
 
         function toggleAiMode() {
-            // AIモード起動時にユーザー名が未設定なら確認ポップアップを出す
             if (document.getElementById('aiModeCheck').checked && !localStorage.getItem('shiraberu_username')) {
                 openUserSettingModal();
             }
@@ -484,7 +503,12 @@
                 return;
             }
 
-            const matches = allItems.filter(i => i.title.toLowerCase().includes(val.toLowerCase())).slice(0, 5);
+            const normVal = katakanaToHiragana(val.toLowerCase());
+            const matches = allItems.filter(i => {
+                const titleNorm = katakanaToHiragana(i.title.toLowerCase());
+                return titleNorm.includes(normVal);
+            }).slice(0, 5);
+
             if (matches.length > 0) {
                 sugBox.innerHTML = '<div class="suggest-header">検索候補</div>';
                 matches.forEach(m => {
@@ -519,11 +543,19 @@
             if (isAiMode) params.set('ai', 'on');
             window.history.pushState({}, '', `?${params.toString()}`);
 
-            const words = rawQuery.replace(/ /g, ' ').split(/\s+/).filter(Boolean);
-            const formattedQuery = words.length > 1 ? words.map(w => `'${w}`).join(' ') : rawQuery;
-
+            // かな変換を含めたクエリ生成
+            const hiraQuery = katakanaToHiragana(rawQuery);
             const start = performance.now();
-            currentSearchResults = fuse.search(formattedQuery);
+            
+            // 入力そのまま＋ひらがな化したクエリの両方で Fuse 検索
+            const res1 = fuse.search(rawQuery);
+            const res2 = fuse.search(hiraQuery);
+            
+            // 重複除去して結合
+            const resultMap = new Map();
+            [...res1, ...res2].forEach(r => resultMap.set(r.item.url, r));
+            currentSearchResults = Array.from(resultMap.values());
+
             const end = performance.now();
 
             document.getElementById('metaInfo').textContent = `約 ${((end - start) / 1000).toFixed(3)} 秒 （${currentSearchResults.length} 件）`;
@@ -559,7 +591,7 @@
                     card.innerHTML = `
                         <div class="site-label">${escapeHtml(item.site_name)}</div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h2>
-                        <div class="snippet">${createSnippet(item.content, query)}</div>
+                        <div class="snippet">${createSnippet(item.ai_summary || item.content, query)}</div>
                     `;
                     container.appendChild(card);
                 });
@@ -584,7 +616,7 @@
             }
         }
 
-        // しらべるAI検索モード（favicon.icoアイコン & ユーザー名呼称対応）
+        // しらべるAI検索モード（対話・Agent回答スタイル）
         async function runAiSearch(query) {
             const aiContainer = document.getElementById('aiResponseContainer');
             const activeUser = userName || 'しらべるユーザー';
@@ -592,9 +624,9 @@
             aiContainer.innerHTML = `
                 <div class="ai-header">
                     <img src="favicon.ico" onerror="this.style.display='none'"> 
-                    <span>しらべるAI検索モード</span>
+                    <span>🤖 しらべる AI エージェント</span>
                 </div>
-                <div class="ai-content">こんにちは、<b>${escapeHtml(activeUser)}</b>さん！「${escapeHtml(query)}」について検索結果からまとめを作成中...</div>
+                <div class="ai-content">こんにちは、<b>${escapeHtml(activeUser)}</b>さん！「${escapeHtml(query)}」について検索結果から回答を生成中...</div>
             `;
             aiContainer.style.display = 'block';
 
@@ -603,22 +635,21 @@
                 return;
             }
 
-            // 簡易要約まとめ
+            // 要約と対話回答の表示
             setTimeout(() => {
-                let highlights = [];
-                currentSearchResults.slice(0, 3).forEach(r => {
-                    if (r.item.content) {
-                        highlights.push(`<b>${escapeHtml(r.item.title)}</b>: ${escapeHtml(r.item.content.substring(0, 90))}...`);
-                    }
-                });
+                const topItem = currentSearchResults[0].item;
+                const summaryText = topItem.ai_summary && topItem.ai_summary !== '要約データなし' 
+                    ? topItem.ai_summary 
+                    : (topItem.content ? topItem.content.substring(0, 150) + '...' : '詳細情報なし');
 
                 aiContainer.querySelector('.ai-content').innerHTML = `
-                    <b>${escapeHtml(activeUser)}</b>さん、お探しのキーワードに関する主な情報です：
-                    <ul style="margin:8px 0; padding-left:20px;">
-                        ${highlights.map(h => `<li style="margin-bottom:6px;">${h}</li>`).join('')}
-                    </ul>
+                    <b>${escapeHtml(activeUser)}</b>さん、「<strong>${escapeHtml(query)}</strong>」についてお答えしますね！<br><br>
+                    ${escapeHtml(summaryText)}
+                    <div style="margin-top:10px; font-size:12px; color:var(--sub-text);">
+                        💡 出典元: <a href="${topItem.url}" target="_blank" style="color:var(--accent-color);">${escapeHtml(topItem.site_name)} - ${escapeHtml(topItem.title)}</a>
+                    </div>
                 `;
-            }, 600);
+            }, 400);
         }
 
         function switchTab(t, doSearch = true) {
@@ -626,7 +657,6 @@
             document.getElementById('tabAll').classList.toggle('active', currentTab === 'all');
             document.getElementById('tabImages').classList.toggle('active', currentTab === 'images');
 
-            // ボタン文言切り替え
             const btnText = document.getElementById('homeSearchBtnText');
             if(btnText) btnText.textContent = (currentTab === 'images') ? 'しらべる画像検索' : 'しらべる検索';
 
@@ -645,6 +675,20 @@
             let s = (start > 0 ? "..." : "") + c.substring(start, end) + (end < c.length ? "..." : "");
             return escapeHtml(s).replace(new RegExp(`(${escapeRegExp(firstWord)})`, 'gi'), '<mark>$1</mark>');
         }
+
+        // 上下スクロール検出によるヘッダーの出し入れ
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            if (!document.body.classList.contains('has-results')) return;
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                document.body.classList.add('header-hidden');
+            } else {
+                document.body.classList.remove('header-hidden');
+            }
+            lastScrollY = currentScrollY;
+        });
 
         function openComingSoonModal() { document.getElementById('comingSoonOverlay').style.display = 'flex'; }
         function closeComingSoonModal() { document.getElementById('comingSoonOverlay').style.display = 'none'; }
