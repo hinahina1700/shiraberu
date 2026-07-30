@@ -24,11 +24,10 @@
             --ai-bg: #f8faff;
             --ai-border: #c2e7ff;
             --user-msg-bg: #e8f0fe;
-            --suggest-bg: #ffffff;
-            --suggest-hover: #f1f3f4;
             --chip-bg: #f1f3f4;
             --menu-bg: #ffffff;
             --menu-hover: #f1f3f4;
+            --disabled-bg: #e0e0e0;
         }
 
         [data-theme="dark"] {
@@ -47,11 +46,10 @@
             --ai-bg: #1e293b;
             --ai-border: #004a77;
             --user-msg-bg: #004a77;
-            --suggest-bg: #303134;
-            --suggest-hover: #3c4043;
             --chip-bg: #303134;
             --menu-bg: #303134;
             --menu-hover: #3c4043;
+            --disabled-bg: #5f6368;
         }
 
         * { box-sizing: border-box; }
@@ -64,22 +62,15 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .header-container {
-            width: 100%; background: var(--bg-color); transition: all 0.3s ease;
-        }
+        .header-container { width: 100%; background: var(--bg-color); transition: all 0.3s ease; }
 
         body:not(.has-results) .header-container {
             display: flex; flex-direction: column; align-items: center;
             padding-top: 10vh; padding-bottom: 20px; position: relative;
         }
 
-        .top-nav {
-            display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;
-        }
-
-        body:not(.has-results) .top-nav {
-            position: absolute; top: 12px; right: 12px;
-        }
+        .top-nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+        body:not(.has-results) .top-nav { position: absolute; top: 12px; right: 12px; }
 
         .nav-btn {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
@@ -87,9 +78,7 @@
             display: inline-flex; align-items: center; text-decoration: none;
         }
 
-        .logo-container img {
-            width: 180px; height: auto; cursor: pointer; display: block; margin: 0 auto;
-        }
+        .logo-container img { width: 180px; height: auto; cursor: pointer; display: block; margin: 0 auto; }
 
         .search-area {
             width: 100%; max-width: 584px; display: flex;
@@ -100,7 +89,7 @@
         .search-input-wrapper {
             width: 100%; display: flex; align-items: center;
             background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 24px; padding: 2px 8px 2px 14px; height: 42px;
+            border-radius: 24px; padding: 2px 6px 2px 14px; height: 42px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
 
@@ -110,9 +99,11 @@
         }
 
         .search-btn {
-            background: none; border: none; cursor: pointer;
-            padding: 0 12px; color: var(--accent-color); font-size: 13px; font-weight: bold;
+            background: var(--accent-color); border: none; cursor: pointer;
+            padding: 6px 16px; color: #ffffff; font-size: 13px; font-weight: bold;
+            border-radius: 18px; margin-left: 4px; transition: opacity 0.2s;
         }
+        .search-btn:hover { opacity: 0.9; }
 
         body.has-results .header-container {
             position: sticky; top: 0; z-index: 90;
@@ -146,15 +137,6 @@
         body.has-results .trends-container,
         body.has-results .home-buttons { display: none; }
 
-        .suggestions-box {
-            position: absolute; top: 44px; left: 0; width: 100%;
-            background: var(--suggest-bg); border: 1px solid var(--border-color);
-            border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 99; overflow: hidden;
-        }
-        .suggest-item { padding: 10px 16px; cursor: pointer; font-size: 13px; }
-        .suggest-item:hover { background-color: var(--suggest-hover); }
-
         .results-container {
             width: 100%; max-width: 780px; padding: 12px 16px;
             display: none; margin: 0 auto;
@@ -169,7 +151,7 @@
 
         .tab {
             padding: 6px 2px; cursor: pointer; border-bottom: 3px solid transparent;
-            font-size: 14px; color: var(--sub-text); white-space: nowrap; text-decoration: none;
+            font-size: 14px; color: var(--sub-text); white-space: nowrap;
         }
 
         .tab.active {
@@ -178,19 +160,15 @@
 
         .meta-info { font-size: 12px; color: var(--sub-text); margin: 10px 0; }
 
-        /* AI対話エリア */
+        /* AIモード (しらべるん) 用スタイル */
         .ai-chat-container {
             background: var(--ai-bg); border: 1px solid var(--ai-border);
             border-radius: 14px; padding: 16px; margin-bottom: 20px; display: none;
         }
 
+        .ai-header-badge { font-size: 11px; color: var(--sub-text); margin-bottom: 8px; font-weight: bold; }
         .chat-messages { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px; }
-
-        .chat-bubble {
-            padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 88%;
-            word-wrap: break-word;
-        }
-
+        .chat-bubble { padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 88%; word-wrap: break-word; }
         .chat-bubble.ai { background: var(--card-bg); border: 1px solid var(--ai-border); align-self: flex-start; }
         .chat-bubble.user { background: var(--user-msg-bg); align-self: flex-end; }
 
@@ -198,23 +176,38 @@
             display: flex; gap: 8px; background: var(--card-bg);
             border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 6px 4px 14px;
         }
-
         .ai-input-form input { flex: 1; border: none; outline: none; background: transparent; color: var(--text-color); font-size: 13px; }
         .ai-input-form button {
             background: var(--accent-color); color: white; border: none;
             border-radius: 16px; padding: 6px 16px; cursor: pointer; font-size: 12px; font-weight: bold;
         }
+        .ai-input-form button:disabled { background: var(--disabled-bg); cursor: not-allowed; }
+
+        /* 画像表示用グリッドスタイル */
+        .image-grid-container { display: none; }
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .image-card {
+            border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);
+            text-decoration: none; color: var(--text-color); background: var(--card-bg); display: block;
+        }
+        .image-card img { width: 100%; height: 110px; object-fit: cover; display: block; background: #eee; }
+        .image-title { padding: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .card { margin-bottom: 20px; position: relative; }
         .card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
         .site-label { font-size: 12px; color: var(--sub-text); }
-        .more-btn { background: none; border: none; color: var(--sub-text); cursor: pointer; font-size: 16px; padding: 2px 6px; }
+        
+        /* 三点ボタン */
+        .more-btn {
+            background: none; border: none; color: var(--sub-text); cursor: pointer;
+            font-size: 18px; padding: 0 8px; line-height: 1; font-weight: bold;
+        }
         
         .card-menu {
             position: absolute; right: 0; top: 24px;
             background: var(--menu-bg); border: 1px solid var(--border-color);
             border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 100; min-width: 170px; overflow: hidden;
+            display: none; z-index: 100; min-width: 160px; overflow: hidden;
         }
         .card-menu-item { padding: 10px 12px; font-size: 12px; cursor: pointer; }
         .card-menu-item:hover { background: var(--menu-hover); }
@@ -222,7 +215,6 @@
         .card h2 { margin: 0 0 4px 0; font-size: 16px; font-weight: normal; }
         .card h2 a { color: var(--link-color); text-decoration: none; }
         .card h2 a.visited-link { color: var(--visited-color) !important; }
-        
         .snippet { font-size: 13px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
         .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
 
@@ -243,22 +235,9 @@
             border-radius: 12px; padding: 4px 10px; font-size: 11px; cursor: pointer; color: var(--text-color);
         }
         .history-filter-btn.danger { color: #d93025; border-color: #f28b82; }
-
         .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-top: 10px; }
-        .history-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px;
-        }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; }
         .history-item-info { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
-
-        @media (max-width: 768px) {
-            body.has-results .header-inner { flex-wrap: wrap; gap: 6px; }
-            body.has-results .logo-container img { width: 60px; }
-            body.has-results .search-area { order: 3; width: 100%; max-width: 100%; margin-top: 2px; }
-            body.has-results .top-nav { order: 2; margin-left: auto; }
-            .nav-btn { padding: 4px 8px; font-size: 11px; }
-            .card h2 { font-size: 15px; }
-        }
 
         footer {
             margin-top: auto; text-align: center; padding: 14px;
@@ -271,7 +250,7 @@
     <div class="header-container">
         <div class="header-inner">
             <div class="logo-container">
-                <a href="."><img id="mainLogo" src="logo-light.png" alt="しらべる"></a>
+                <a href="index.html"><img id="mainLogo" src="logo-light.png" alt="しらべる"></a>
             </div>
 
             <div class="search-area">
@@ -280,16 +259,14 @@
                     <button id="searchBtn" class="search-btn" disabled>検索</button>
                 </div>
 
-                <div id="suggestions" class="suggestions-box"></div>
-
                 <div class="trends-container" id="trendsArea">
                     <span style="color:var(--sub-text); font-weight:bold;">トレンド:</span>
                 </div>
                 
                 <div class="home-buttons">
-                    <div class="home-btn" onclick="executeSearch()">検索</div>
-                    <a href="images.html" class="home-btn">画像検索</a>
-                    <div class="home-btn" onclick="openComingSoonModal()">サイト登録申請</div>
+                    <div class="home-btn" onclick="switchTabAndSearch('ai')">しらべるAI検索</div>
+                    <div class="home-btn" onclick="switchTabAndSearch('all')">しらべる 検索</div>
+                    <div class="home-btn" onclick="switchTabAndSearch('images')">しらべる画像検索</div>
                 </div>
             </div>
 
@@ -303,22 +280,27 @@
 
     <div class="results-container">
         <div class="tabs-nav">
-            <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
-            <div id="tabAi" class="tab" onclick="switchTab('ai')">AIアシスタント</div>
-            <a href="images.html" class="tab">画像</a>
+            <div id="tabAi" class="tab" onclick="switchTab('ai')">しらべるAI検索</div>
+            <div id="tabAll" class="tab active" onclick="switchTab('all')">しらべる 検索</div>
+            <div id="tabImages" class="tab" onclick="switchTab('images')">しらべる画像検索</div>
         </div>
 
         <div id="metaInfo" class="meta-info"></div>
 
         <div id="aiChatContainer" class="ai-chat-container">
+            <div class="ai-header-badge">モデル: Shiraberun-a / 通称: しらべるん</div>
             <div class="chat-messages" id="chatMessages"></div>
             <form class="ai-input-form" onsubmit="handleAiSubmit(event)">
-                <input type="text" id="aiFollowUpInput" placeholder="AIに追加質問・対話をする..." autocomplete="off">
-                <button type="submit">送信</button>
+                <input type="text" id="aiFollowUpInput" placeholder="しらべるんにメッセージを送信..." autocomplete="off">
+                <button type="submit" id="aiSendBtn">送信</button>
             </form>
         </div>
         
         <div id="results"></div>
+
+        <div id="imageResults" class="image-grid-container">
+            <div id="imageGrid" class="image-grid"></div>
+        </div>
     </div>
 
     <div id="historyModalOverlay" class="modal-overlay">
@@ -357,14 +339,6 @@
         </div>
     </div>
 
-    <div id="comingSoonOverlay" class="modal-overlay">
-        <div class="modal" style="text-align:center;">
-            <h3 style="margin-top:0;">準備中</h3>
-            <p style="font-size:13px; color:var(--sub-text);">サイト登録申請機能は準備中です。</p>
-            <button onclick="closeComingSoonModal()" style="padding:6px 20px; border-radius:16px; border:none; background:var(--accent-color); color:white;">閉じる</button>
-        </div>
-    </div>
-
     <footer>
         &copy; shiraberu/hinahina_1700
     </footer>
@@ -373,13 +347,15 @@
         let fuse;
         let allItems = [];
         let lastUpdatedTime = "";
-        let currentMode = 'all'; 
+        let currentMode = 'all'; // 'all', 'images', 'ai'
         let currentSearchResults = [];
         let isDarkMode = false;
         let userName = localStorage.getItem('shiraberu_username') || '';
         let chatHistory = [];
+        
+        let aiCooldownTimer = null;
+        let aiCooldownSeconds = 0;
 
-        // ローカルストレージを使用した履歴管理
         let historyData = JSON.parse(localStorage.getItem('shiraberu_history_items') || '[]');
         let visitedUrls = new Set(JSON.parse(localStorage.getItem('shiraberu_visited_urls') || '[]'));
 
@@ -407,6 +383,11 @@
             const logo = document.getElementById('mainLogo');
             logo.src = isDarkMode ? 'logo-dark.png' : 'logo-light.png';
         }
+
+        // 外部のクリックで三点メニューを閉じる
+        window.addEventListener('click', () => {
+            document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
+        });
 
         fetch('search_index.json')
             .then(res => res.json())
@@ -443,8 +424,13 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const query = urlParams.get('q');
                 const mode = urlParams.get('mode');
+                const udm = urlParams.get('udm');
 
-                if (mode) switchTab(mode, false);
+                if (udm === '50' || mode === 'ai') currentMode = 'ai';
+                else if (mode === 'images') currentMode = 'images';
+                else if (mode) currentMode = mode;
+
+                updateTabUI();
 
                 if (query) {
                     document.getElementById('searchInput').value = query;
@@ -496,16 +482,15 @@
             const rawQuery = document.getElementById('searchInput').value.trim();
             if (!rawQuery) return;
 
-            document.getElementById('suggestions').style.display = 'none';
             document.body.classList.add('has-results');
             updateLogo();
-
-            // 検索履歴に追加（ローカルストレージ）
             recordSearchQuery(rawQuery);
 
             const params = new URLSearchParams();
             params.set('q', rawQuery);
-            params.set('mode', currentMode);
+            if (currentMode === 'ai') params.set('udm', '50');
+            else params.set('mode', currentMode);
+
             window.history.pushState({}, '', `?${params.toString()}`);
 
             const hiraQuery = katakanaToHiragana(rawQuery);
@@ -521,7 +506,10 @@
             const end = performance.now();
             document.getElementById('metaInfo').textContent = `約 ${((end - start) / 1000).toFixed(3)} 秒 （${currentSearchResults.length} 件）`;
 
-            initAiChat(rawQuery);
+            if (chatHistory.length === 0 || chatHistory.query !== rawQuery) {
+                initAiShiraberun(rawQuery);
+            }
+
             renderView();
         }
 
@@ -569,7 +557,7 @@
                 div.className = 'history-item';
                 div.innerHTML = `
                     <div class="history-item-info">
-                        <a href="${item.url}" target="_blank" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')" style="color:var(--link-color); text-decoration:none;">${escapeHtml(item.title)}</a>
+                        <a href="${item.url}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')" style="color:var(--link-color); text-decoration:none;">${escapeHtml(item.title)}</a>
                         <div style="font-size:10px; color:var(--sub-text);">${dateStr}</div>
                     </div>
                     <button onclick="deleteSingleHistory(${item.id})" style="background:none; border:none; cursor:pointer; color:var(--sub-text); font-size:11px;">削除</button>
@@ -603,29 +591,25 @@
             localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
         }
 
-        /* 🤖 高度な対話型AIロジック */
+        /* --- AI（しらべるん / Shiraberun-a）--- */
         function getItemSummary(item) {
-            if (item.ai_summary && item.ai_summary !== '要約データなし' && item.ai_summary !== 'AI要約の取得に失敗しました。') {
-                return item.ai_summary;
-            }
+            if (item.ai_summary && item.ai_summary !== '要約データなし') return item.ai_summary;
             return item.content ? item.content.substring(0, 180) + '...' : '詳細説明なし';
         }
 
-        function initAiChat(query) {
+        function initAiShiraberun(query) {
             chatHistory = [];
+            chatHistory.query = query;
             const activeUser = userName || 'ユーザー';
             
-            let initialResponse = "";
+            let greeting = `こんにちは！ボクは「しらべるん」（Shiraberun-a）だよ！<b>${escapeHtml(activeUser)}</b>さん、「<b>${escapeHtml(query)}</b>」について何か気になることはある？何でも聞いてね！`;
+
             if (currentSearchResults.length > 0) {
                 const topItem = currentSearchResults[0].item;
-                const summary = getItemSummary(topItem);
-                
-                initialResponse = `<b>${escapeHtml(activeUser)}</b>さん、「<b>${escapeHtml(query)}</b>」に関する検索結果の要約です。<br><br>${escapeHtml(summary)}<br><br><small style="color:var(--sub-text);">出典: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
-            } else {
-                initialResponse = `<b>${escapeHtml(activeUser)}</b>さん、「${escapeHtml(query)}」に関する情報が見つかりませんでした。別の言葉で検索してみてください。`;
+                greeting += `<br><br>【要約メモ】<br>${escapeHtml(getItemSummary(topItem))}<br><small style="color:var(--sub-text);">参考: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
             }
 
-            chatHistory.push({ role: 'ai', text: initialResponse });
+            chatHistory.push({ role: 'ai', text: greeting });
             renderChatMessages();
         }
 
@@ -641,8 +625,29 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
+        function startAiCooldown(seconds = 10) {
+            aiCooldownSeconds = seconds;
+            const btn = document.getElementById('aiSendBtn');
+            btn.disabled = true;
+
+            clearInterval(aiCooldownTimer);
+            aiCooldownTimer = setInterval(() => {
+                aiCooldownSeconds--;
+                if (aiCooldownSeconds > 0) {
+                    btn.textContent = `待機 (${aiCooldownSeconds}s)`;
+                } else {
+                    clearInterval(aiCooldownTimer);
+                    btn.disabled = false;
+                    btn.textContent = '送信';
+                }
+            }, 1000);
+            btn.textContent = `待機 (${aiCooldownSeconds}s)`;
+        }
+
         function handleAiSubmit(e) {
             e.preventDefault();
+            if (aiCooldownSeconds > 0) return;
+
             const input = document.getElementById('aiFollowUpInput');
             const text = input.value.trim();
             if (!text) return;
@@ -651,99 +656,109 @@
             input.value = '';
             renderChatMessages();
 
+            startAiCooldown(10);
+
             setTimeout(() => {
-                const reply = generateSmartAiResponse(text);
+                const reply = generateShiraberunResponse(text);
                 chatHistory.push({ role: 'ai', text: reply });
                 renderChatMessages();
-            }, 300);
+            }, 1000);
         }
 
-        function generateSmartAiResponse(userInput) {
-            const lower = userInput.toLowerCase();
-            
-            if (lower.includes('ありがとう') || lower.includes('感謝')) {
-                return `お役に立てて光栄です。他にも気になる点やご質問がありましたら、気軽にお尋ねください。`;
+        function generateShiraberunResponse(userInput) {
+            const q = userInput.toLowerCase();
+            if (q.includes('名前') || q.includes('だれ') || q.includes('誰')) {
+                return `ボクの名前は<b>「しらべるん」</b>！AIモデルの設定は<b>Shiraberun-a</b>だよ！よろしくね！`;
             }
 
-            if (currentSearchResults.length === 0) {
-                return `申し訳ありません。該当する情報が見つかりませんでした。別の検索ワードをお試しください。`;
+            if (currentSearchResults.length > 0) {
+                const randomItem = currentSearchResults[Math.floor(Math.random() * currentSearchResults.length)].item;
+                return `「${escapeHtml(userInput)}」についてだね！<br>ボク（Shiraberun-a）のデータによると、関連する情報「<b>${escapeHtml(randomItem.title)}</b>」があるよ。<br><br>${escapeHtml(getItemSummary(randomItem))}`;
             }
 
-            if (lower.includes('他') || lower.includes('ほか') || lower.includes('別')) {
-                if (currentSearchResults.length > 1) {
-                    const secondItem = currentSearchResults[1].item;
-                    return `別の関連情報「<b>${escapeHtml(secondItem.title)}</b>」についてご紹介します：<br><br>${escapeHtml(getItemSummary(secondItem))}<br><br><small style="color:var(--sub-text);">出典: <a href="${secondItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(secondItem.title)}', '${escapeHtml(secondItem.url)}')">${escapeHtml(secondItem.title)}</a></small>`;
-                } else {
-                    return `他に関連する結果が見つかりませんでした。`;
-                }
-            }
-
-            if (lower.includes('詳しく') || lower.includes('詳細') || lower.includes('もっと')) {
-                const topItem = currentSearchResults[0].item;
-                const fullText = topItem.content || '';
-                const detailPart = fullText.length > 180 ? fullText.substring(180, 400) + '...' : fullText;
-                return `「<b>${escapeHtml(topItem.title)}</b>」の詳しい内容です：<br><br>${escapeHtml(detailPart || getItemSummary(topItem))}`;
-            }
-
-            for (let r of currentSearchResults) {
-                const item = r.item;
-                if ((item.content || '').includes(userInput) || (item.title || '').includes(userInput)) {
-                    return `「${escapeHtml(userInput)}」に関する該当箇所の抜粋です：<br><br>${createSnippet(item.content || item.title, userInput)}<br><br><small style="color:var(--sub-text);">出典: <a href="${item.url}" target="_blank" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></small>`;
-                }
-            }
-
-            const randomItem = currentSearchResults[Math.floor(Math.random() * currentSearchResults.length)].item;
-            return `「${escapeHtml(userInput)}」に関して、検索結果に含まれる要約をお伝えします：<br><br>${escapeHtml(getItemSummary(randomItem))}`;
+            return `「${escapeHtml(userInput)}」について調べてみたけど、詳しい情報が見つからなかったよ。質問の言葉を変えてみてね！`;
         }
 
+        /* --- 画面描画制御 --- */
         function renderView() {
             const container = document.getElementById('results');
+            const imageResults = document.getElementById('imageResults');
             const aiChatBox = document.getElementById('aiChatContainer');
-            container.innerHTML = '';
             const query = document.getElementById('searchInput').value;
+            
+            container.innerHTML = '';
+            document.getElementById('imageGrid').innerHTML = '';
 
             aiChatBox.style.display = (currentMode === 'ai') ? 'block' : 'none';
+            imageResults.style.display = (currentMode === 'images') ? 'block' : 'none';
+            container.style.display = (currentMode === 'all') ? 'block' : 'none';
 
-            container.className = '';
-            if(currentSearchResults.length === 0) {
-                container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">該当する検索結果がありません。</div>';
+            if (currentSearchResults.length === 0) {
+                if (currentMode === 'all') container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">該当する検索結果がありません。</div>';
+                if (currentMode === 'images') document.getElementById('imageGrid').innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">画像が見つかりませんでした。</div>';
                 return;
             }
 
-            currentSearchResults.forEach((r, idx) => {
-                const item = r.item;
-                const isVisited = visitedUrls.has(item.url);
-                const summaryOrContent = getItemSummary(item);
+            if (currentMode === 'all') {
+                currentSearchResults.forEach((r, idx) => {
+                    const item = r.item;
+                    const isVisited = visitedUrls.has(item.url);
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-header-row">
-                        <div class="site-label">${escapeHtml(item.site_name)}</div>
-                        <button class="more-btn" onclick="toggleMenu(event, ${idx})">メニュー</button>
-                        <div id="cardMenu_${idx}" class="card-menu">
-                            <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
-                            <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">共有</div>
-                            <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">インデックス日時</div>
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header-row">
+                            <div class="site-label">${escapeHtml(item.site_name || 'Web')}</div>
+                            <button class="more-btn" onclick="toggleMenu(event, ${idx})">&#8942;</button>
+                            <div id="cardMenu_${idx}" class="card-menu">
+                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
+                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">共有</div>
+                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">インデックス日時</div>
+                            </div>
                         </div>
-                    </div>
-                    <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
-                    <div class="snippet">${createSnippet(summaryOrContent, query)}</div>
-                `;
-                container.appendChild(card);
-            });
+                        <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
+                        <div class="snippet">${createSnippet(getItemSummary(item), query)}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else if (currentMode === 'images') {
+                const grid = document.getElementById('imageGrid');
+                let count = 0;
+                currentSearchResults.forEach(r => {
+                    const item = r.item;
+                    (item.images || []).forEach(img => {
+                        count++;
+                        const card = document.createElement('a');
+                        card.className = 'image-card';
+                        card.href = item.url;
+                        card.target = '_blank';
+                        card.innerHTML = `<img src="${img.src}" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23ccc%22%2F%3E%3C%2Fsvg%3E';"><div class="image-title">${escapeHtml(item.title)}</div>`;
+                        grid.appendChild(card);
+                    });
+                });
+                if (count === 0) {
+                    grid.innerHTML = '<div style="color:var(--sub-text);">関連画像が見つかりませんでした。</div>';
+                }
+            }
+        }
+
+        function updateTabUI() {
+            document.getElementById('tabAi').classList.toggle('active', currentMode === 'ai');
+            document.getElementById('tabAll').classList.toggle('active', currentMode === 'all');
+            document.getElementById('tabImages').classList.toggle('active', currentMode === 'images');
         }
 
         function switchTab(mode, doSearch = true) {
             currentMode = mode;
-            document.getElementById('tabAi').classList.toggle('active', currentMode === 'ai');
-            document.getElementById('tabAll').classList.toggle('active', currentMode === 'all');
-
-            updateLogo();
+            updateTabUI();
             renderView();
             if (doSearch && document.getElementById('searchInput').value.trim()) {
                 executeSearch();
             }
+        }
+
+        function switchTabAndSearch(mode) {
+            switchTab(mode, true);
         }
 
         function toggleMenu(event, idx) {
@@ -772,14 +787,13 @@
             if(!c) return "本文なし";
             const firstWord = q.replace(/ /g, ' ').split(/\s+/)[0];
             const i = c.toLowerCase().indexOf(firstWord.toLowerCase());
+            if (i === -1) return escapeHtml(c.substring(0, 120));
             const start = Math.max(0, i - 30);
             const end = Math.min(c.length, i + firstWord.length + 60);
             let s = (start > 0 ? "..." : "") + c.substring(start, end) + (end < c.length ? "..." : "");
             return escapeHtml(s).replace(new RegExp(`(${escapeRegExp(firstWord)})`, 'gi'), '<mark>$1</mark>');
         }
 
-        function openComingSoonModal() { document.getElementById('comingSoonOverlay').style.display = 'flex'; }
-        function closeComingSoonModal() { document.getElementById('comingSoonOverlay').style.display = 'none'; }
         function escapeHtml(str) { return str ? str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;') : ''; }
         function escapeRegExp(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
     </script>
