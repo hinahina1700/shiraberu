@@ -44,7 +44,7 @@ async def generate_ai_summary(title, content):
     if len(cleaned_content) < 30:
         return cleaned_content if cleaned_content else f"{title}に関するページです。"
 
-    # APIクライアントが無い場合は本文抜粋にフォールバック（"要約データなし"は絶対に作らない）
+    # APIクライアントが無い場合は本文抜粋にフォールバック
     if not gemini_client:
         return cleaned_content[:140] + ("..." if len(cleaned_content) > 140 else "")
 
@@ -70,7 +70,6 @@ async def generate_ai_summary(title, content):
         return summary
     except Exception as e:
         print(f"  ⚠️ AI要約の生成失敗 ({title}): {e}")
-        # エラー発生時もエラーメッセージではなく本文の抜粋を返す
         return cleaned_content[:140] + ("..." if len(cleaned_content) > 140 else "")
 
 
@@ -115,7 +114,30 @@ async def random_delay(min_sec=3.0, max_sec=5.0):
     await asyncio.sleep(wait_time)
 
 
-# ★ 検索対象サイトの設定リスト
+# ==============================================================================
+# ★ 検索対象サイトの設定リスト ＆ 各タイプの仕組み解説
+# ==============================================================================
+# 【type の種類と仕組みについて】
+#
+# 1. "atwiki" (アットウィキ)
+#    - 仕組み: 指定したwikiの全ページ一覧ページ (`/list`) にアクセスし、
+#      そこに掲載されている全個別ページのURLを自動収集して一括スクレイピングします。
+#      Cloudflare対策のウェイトや、不要な編集・管理ページ（/edit等）の除外処理を含みます。
+#
+# 2. "google_sites" (Googleサイト)
+#    - 仕組み: Googleサイト特有の構造を持つベースURLにアクセスし、
+#      ページ内にあるリンクをたどってサイト内の全下層ページを自動発見して巡回します。
+#
+# 3. "generic" (通常の一般Webサイト)
+#    - 仕組み: 指定した開始URL (`start_url`) からクロールを開始し、
+#      同一ドメイン・同一パス内にあるリンクを再帰的・網羅的に探して全ページを収集します。
+#      個人のWebサイトやブログなどのスクレイピングに向いています。
+#
+# 4. "single_page" (単一ページ)
+#    - 仕組み: リンクを辿って他のページを探したりせず、指定された単一のURL (`url`) のみ
+#      をピンポイントで取得してインデックス登録します（乗換案内や案内ページ等に便利）。
+# ==============================================================================
+
 TARGET_SITES = [
     {
         "site_name": "七浜国wiki",
@@ -248,11 +270,11 @@ async def scrape_atwiki(page, site):
                     )
                 )
 
-                # Wiki本文エリア抽出（サイドバー・ナビ・広告等を除去）
+                # Wiki本文エリア抽出（修正済み：安全な .select を使用）
                 body_elem = page_soup.find("div", id="wikibody") or page_soup.find("div", id="atwiki-body") or page_soup.find("body")
 
                 if body_elem:
-                    for noisy in body_elem.find_all(["script", "style", "iframe", "form", ".sidebar", "#header", "#footer"]):
+                    for noisy in body_elem.select("script, style, iframe, form, .sidebar, #header, #footer"):
                         noisy.decompose()
                     body_text = " ".join(body_elem.text.split())
                 else:
