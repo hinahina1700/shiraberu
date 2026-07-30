@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>しらべる - 検索エンジン</title>
+    <title>しらべる - ぱわふるなけんさくエンジン</title>
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -24,778 +24,694 @@
             --ai-bg: #f8faff;
             --ai-border: #c2e7ff;
             --user-msg-bg: #e8f0fe;
+            --suggest-bg: #ffffff;
+            --suggest-hover: #f1f3f4;
             --chip-bg: #f1f3f4;
-            --menu-bg: #ffffff;
-            --menu-hover: #f1f3f4;
-            --disabled-bg: #e0e0e0;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #202124;
-            --text-color: #e8eaed;
-            --sub-text: #9aa0a6;
-            --border-color: #5f6368;
-            --card-bg: #303134;
-            --link-color: #8ab4f8;
-            --visited-color: #c58af9;
-            --accent-color: #8ab4f8;
-            --button-bg: #303134;
-            --header-border: #3c4043;
-            --mark-color: #f28b82;
-            --footer-bg: #171717;
-            --ai-bg: #1e293b;
-            --ai-border: #004a77;
-            --user-msg-bg: #004a77;
-            --chip-bg: #303134;
-            --menu-bg: #303134;
-            --menu-hover: #3c4043;
-            --disabled-bg: #5f6368;
-        }
-
-        * { box-sizing: border-box; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0;
-            background-color: var(--bg-color); color: var(--text-color);
-            display: flex; flex-direction: column; min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
         }
 
-        .header-container { width: 100%; background: var(--bg-color); transition: all 0.3s ease; }
-
-        body:not(.has-results) .header-container {
-            display: flex; flex-direction: column; align-items: center;
-            padding-top: 10vh; padding-bottom: 20px; position: relative;
+        header {
+            padding: 15px 24px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
         }
 
-        .top-nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-        body:not(.has-results) .top-nav { position: absolute; top: 12px; right: 12px; }
-
-        .nav-btn {
-            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
-            padding: 5px 12px; color: var(--text-color); cursor: pointer; font-size: 12px;
-            display: inline-flex; align-items: center; text-decoration: none;
+        header a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        .logo-container img { width: 180px; height: auto; cursor: pointer; display: block; margin: 0 auto; }
+        header a:hover { text-decoration: underline; }
 
-        .search-area {
-            width: 100%; max-width: 584px; display: flex;
-            flex-direction: column; align-items: center; position: relative;
-            padding: 0 16px; margin-top: 16px;
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: all 0.3s ease;
         }
 
-        .search-input-wrapper {
-            width: 100%; display: flex; align-items: center;
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 24px; padding: 2px 6px 2px 14px; height: 42px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        .logo {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            user-select: none;
+            text-align: center;
+        }
+
+        .logo span:nth-child(1) { color: #4285f4; }
+        .logo span:nth-child(2) { color: #ea4335; }
+        .logo span:nth-child(3) { color: #fbbc05; }
+        .logo span:nth-child(4) { color: #4285f4; }
+        .logo span:nth-child(5) { color: #34a853; }
+        .logo span:nth-child(6) { color: #ea4335; }
+
+        .search-box-wrapper {
+            width: 100%;
+            max-width: 584px;
+            position: relative;
         }
 
         .search-box {
-            flex: 1; height: 100%; font-size: 14px;
-            border: none; outline: none; background: transparent; color: var(--text-color);
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 10px 16px;
+            background: var(--bg-color);
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
+            transition: box-shadow 0.2s ease;
         }
 
-        .search-btn {
-            background: var(--accent-color); border: none; cursor: pointer;
-            padding: 6px 16px; color: #ffffff; font-size: 13px; font-weight: bold;
-            border-radius: 18px; margin-left: 4px; transition: opacity 0.2s;
-        }
-        .search-btn:hover { opacity: 0.9; }
-
-        body.has-results .header-container {
-            position: sticky; top: 0; z-index: 90;
-            border-bottom: 1px solid var(--header-border);
-            padding: 8px 12px;
+        .search-box:hover, .search-box:focus-within {
+            box-shadow: 0 2px 8px rgba(32, 33, 36, 0.2);
+            border-color: transparent;
         }
 
-        body.has-results .header-inner {
-            display: flex; align-items: center; gap: 10px; width: 100%; max-width: 1000px; margin: 0 auto;
+        .search-icon {
+            color: var(--sub-text);
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
         }
 
-        body.has-results .logo-container img { width: 70px; }
-        body.has-results .search-area { max-width: 500px; padding: 0; margin-top: 0; flex: 1; }
-        body.has-results .search-input-wrapper { height: 36px; }
-
-        .trends-container {
-            margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px;
-            justify-content: center; align-items: center; font-size: 12px;
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+            color: var(--text-color);
         }
 
-        .trend-tag { background: var(--chip-bg); padding: 4px 10px; border-radius: 14px; cursor: pointer; }
-        .home-buttons { margin-top: 20px; display: flex; gap: 10px; }
-        
-        .home-btn {
-            background-color: var(--button-bg); border: 1px solid var(--border-color);
-            border-radius: 6px; color: var(--text-color); font-size: 13px;
-            padding: 0 14px; height: 36px; line-height: 34px; cursor: pointer;
-            text-decoration: none; display: inline-block; text-align: center;
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--sub-text);
+            cursor: pointer;
+            font-size: 18px;
+            display: none;
+            padding: 0 8px;
         }
 
-        body.has-results .trends-container,
-        body.has-results .home-buttons { display: none; }
+        /* サジェスト */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--suggest-bg);
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 6px rgba(32,33,36,0.15);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
 
+        .suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--suggest-hover);
+        }
+
+        /* 検索結果画面表示時のレイアウト変更 */
+        body.has-results .main-container {
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 20px 5%;
+        }
+
+        body.has-results .search-header-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 20px;
+        }
+
+        body.has-results .logo {
+            font-size: 28px;
+            margin-bottom: 0;
+        }
+
+        body.has-results .search-box-wrapper {
+            max-width: 690px;
+        }
+
+        /* 結果コンテンツエリア */
         .results-container {
-            width: 100%; max-width: 780px; padding: 12px 16px;
-            display: none; margin: 0 auto;
+            width: 100%;
+            max-width: 750px;
+            display: none;
         }
 
-        body.has-results .results-container { display: block; }
-
-        .tabs-nav {
-            display: flex; gap: 16px; border-bottom: 1px solid var(--header-border);
-            padding-bottom: 4px; overflow-x: auto;
+        .stats-info {
+            font-size: 13px;
+            color: var(--sub-text);
+            margin-bottom: 16px;
         }
 
-        .tab {
-            padding: 6px 2px; cursor: pointer; border-bottom: 3px solid transparent;
-            font-size: 14px; color: var(--sub-text); white-space: nowrap;
+        /* 🤖 万能AI「しらべるん」エリア */
+        .ai-card {
+            background: var(--ai-bg);
+            border: 1px solid var(--ai-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.08);
         }
 
-        .tab.active {
-            color: var(--accent-color); border-bottom: 3px solid var(--accent-color); font-weight: bold;
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 12px;
+            font-size: 16px;
         }
 
-        .meta-info { font-size: 12px; color: var(--sub-text); margin: 10px 0; }
-
-        /* AIモード (しらべるん) 用スタイル */
-        .ai-chat-container {
-            background: var(--ai-bg); border: 1px solid var(--ai-border);
-            border-radius: 14px; padding: 16px; margin-bottom: 20px; display: none;
+        .ai-chat-history {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding-right: 4px;
         }
 
-        .ai-header-badge { font-size: 11px; color: var(--sub-text); margin-bottom: 8px; font-weight: bold; }
-        .chat-messages { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px; }
-        .chat-bubble { padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 88%; word-wrap: break-word; }
-        .chat-bubble.ai { background: var(--card-bg); border: 1px solid var(--ai-border); align-self: flex-start; }
-        .chat-bubble.user { background: var(--user-msg-bg); align-self: flex-end; }
-
-        .ai-input-form {
-            display: flex; gap: 8px; background: var(--card-bg);
-            border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 6px 4px 14px;
-        }
-        .ai-input-form input { flex: 1; border: none; outline: none; background: transparent; color: var(--text-color); font-size: 13px; }
-        .ai-input-form button {
-            background: var(--accent-color); color: white; border: none;
-            border-radius: 16px; padding: 6px 16px; cursor: pointer; font-size: 12px; font-weight: bold;
-        }
-        .ai-input-form button:disabled { background: var(--disabled-bg); cursor: not-allowed; }
-
-        /* 画像表示用グリッドスタイル */
-        .image-grid-container { display: none; }
-        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .image-card {
-            border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);
-            text-decoration: none; color: var(--text-color); background: var(--card-bg); display: block;
-        }
-        .image-card img { width: 100%; height: 110px; object-fit: cover; display: block; background: #eee; }
-        .image-title { padding: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        .card { margin-bottom: 20px; position: relative; }
-        .card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
-        .site-label { font-size: 12px; color: var(--sub-text); }
-        
-        /* 三点ボタン */
-        .more-btn {
-            background: none; border: none; color: var(--sub-text); cursor: pointer;
-            font-size: 18px; padding: 0 8px; line-height: 1; font-weight: bold;
-        }
-        
-        .card-menu {
-            position: absolute; right: 0; top: 24px;
-            background: var(--menu-bg); border: 1px solid var(--border-color);
-            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 100; min-width: 160px; overflow: hidden;
-        }
-        .card-menu-item { padding: 10px 12px; font-size: 12px; cursor: pointer; }
-        .card-menu-item:hover { background: var(--menu-hover); }
-
-        .card h2 { margin: 0 0 4px 0; font-size: 16px; font-weight: normal; }
-        .card h2 a { color: var(--link-color); text-decoration: none; }
-        .card h2 a.visited-link { color: var(--visited-color) !important; }
-        .snippet { font-size: 13px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
-        .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
-
-        .modal-overlay {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;
-            backdrop-filter: blur(2px); padding: 16px;
-        }
-        .modal {
-            background: var(--card-bg); color: var(--text-color); padding: 20px;
-            border-radius:14px; width:100%; max-width:420px; max-height: 85vh; overflow-y: auto;
-            border: 1px solid var(--border-color); box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        .chat-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
-        .history-controls { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .history-filter-btn {
-            background: var(--button-bg); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 4px 10px; font-size: 11px; cursor: pointer; color: var(--text-color);
+        .chat-bubble.ai {
+            background: #ffffff;
+            border: 1px solid #d2e3fc;
+            color: #202124;
+            align-self: flex-start;
+            max-width: 90%;
         }
-        .history-filter-btn.danger { color: #d93025; border-color: #f28b82; }
-        .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; }
-        .history-item-info { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
+
+        .chat-bubble.user {
+            background: var(--user-msg-bg);
+            color: #174ea6;
+            align-self: flex-end;
+            max-width: 80%;
+        }
+
+        .ai-input-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #c2e7ff;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+            background: #ffffff;
+        }
+
+        .ai-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .ai-send-btn {
+            background: #1a73e8;
+            color: #ffffff;
+            border: none;
+            border-radius: 20px;
+            padding: 0 18px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            background: #1557b0;
+        }
+
+        /* 通常検索結果カード */
+        .result-item {
+            margin-bottom: 24px;
+        }
+
+        .result-site-name {
+            font-size: 12px;
+            color: var(--sub-text);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            color: var(--link-color);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .result-snippet {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.58;
+        }
+
+        .result-snippet mark {
+            background: transparent;
+            color: var(--mark-color);
+            font-weight: bold;
+        }
+
+        .image-preview-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .image-preview-group img {
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
 
         footer {
-            margin-top: auto; text-align: center; padding: 14px;
-            font-size: 11px; color: var(--sub-text); background: var(--footer-bg);
+            background: var(--footer-bg);
+            padding: 15px 24px;
+            font-size: 14px;
+            color: var(--sub-text);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        /* モーダル */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .modal-close-btn {
+            margin-top: 16px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
         }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <div class="header-inner">
-            <div class="logo-container">
-                <a href="index.html"><img id="mainLogo" src="logo-light.png" alt="しらべる"></a>
-            </div>
+    <header>
+        <a href="#" onclick="alert('最新インデックス読み込み中...'); location.reload();">更新</a>
+        <a href="javascript:void(0)" onclick="openModal('しらべる について', '「しらべる」は検索エンジンとAIアシスタント「しらべるん」が融合した次世代検索プラットフォームです。')">概要</a>
+    </header>
 
-            <div class="search-area">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" class="search-box" placeholder="検索ワードを入力..." autocomplete="off" disabled>
-                    <button id="searchBtn" class="search-btn" disabled>検索</button>
+    <div class="main-container">
+        <div class="search-header-area">
+            <div class="logo">
+                <span>し</span><span>ら</span><span>べ</span><span>る</span>
+            </div>
+            <div class="search-box-wrapper">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="検索ワードやAIへの質問・会話を入力..." autocomplete="off">
+                    <button id="clearBtn" class="clear-btn">✕</button>
                 </div>
+                <div id="suggestionsBox" class="suggestions-box"></div>
+            </div>
+        </div>
 
-                <div class="trends-container" id="trendsArea">
-                    <span style="color:var(--sub-text); font-weight:bold;">トレンド:</span>
+        <div id="resultsContainer" class="results-container">
+            <div id="statsInfo" class="stats-info"></div>
+
+            <div id="aiCard" class="ai-card">
+                <div class="ai-header">
+                    <span>🤖</span>
+                    <span>AIアシスタント「しらべるん」</span>
                 </div>
-                
-                <div class="home-buttons">
-                    <div class="home-btn" onclick="switchTabAndSearch('ai')">しらべるAI検索</div>
-                    <div class="home-btn" onclick="switchTabAndSearch('all')">しらべる 検索</div>
-                    <div class="home-btn" onclick="switchTabAndSearch('images')">しらべる画像検索</div>
+                <div id="aiChatHistory" class="ai-chat-history">
+                    <div class="chat-bubble ai" id="aiInitialBubble">
+                        こんにちは！ボクは「しらべるん」だよ！<br>
+                        サイトの検索はもちろん、雑談や簡単なゲーム（しりとり・クイズなど）、日常の相談なんでも気軽に話しかけてね！✨
+                    </div>
+                </div>
+                <div class="ai-input-wrapper">
+                    <input type="text" id="aiInput" class="ai-input" placeholder="しらべるんにメッセージを送る... (例: しりとりしよう！)">
+                    <button id="aiSendBtn" class="ai-send-btn">送信</button>
                 </div>
             </div>
 
-            <div class="top-nav">
-                <button class="nav-btn" onclick="openHistoryModal()">履歴</button>
-                <button class="nav-btn" onclick="openUserSettingModal()"><span id="navUserName">設定</span></button>
-                <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">ダーク</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="results-container">
-        <div class="tabs-nav">
-            <div id="tabAi" class="tab" onclick="switchTab('ai')">しらべるAI検索</div>
-            <div id="tabAll" class="tab active" onclick="switchTab('all')">しらべる 検索</div>
-            <div id="tabImages" class="tab" onclick="switchTab('images')">しらべる画像検索</div>
-        </div>
-
-        <div id="metaInfo" class="meta-info"></div>
-
-        <div id="aiChatContainer" class="ai-chat-container">
-            <div class="ai-header-badge">モデル: Shiraberun-a / 通称: しらべるん</div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <form class="ai-input-form" onsubmit="handleAiSubmit(event)">
-                <input type="text" id="aiFollowUpInput" placeholder="しらべるんにメッセージを送信..." autocomplete="off">
-                <button type="submit" id="aiSendBtn">送信</button>
-            </form>
-        </div>
-        
-        <div id="results"></div>
-
-        <div id="imageResults" class="image-grid-container">
-            <div id="imageGrid" class="image-grid"></div>
-        </div>
-    </div>
-
-    <div id="historyModalOverlay" class="modal-overlay">
-        <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">閲覧・検索履歴</h3>
-            <input type="text" id="historySearchInput" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid var(--border-color); font-size:12px;" placeholder="履歴を検索..." oninput="renderHistoryList()">
-            
-            <div class="history-controls">
-                <button class="history-filter-btn" onclick="clearHistoryByTime(15)">15分以内</button>
-                <button class="history-filter-btn" onclick="clearHistoryByTime(60)">1時間以内</button>
-                <button class="history-filter-btn" onclick="clearHistoryByTime(1440)">24時間以内</button>
-                <button class="history-filter-btn danger" onclick="clearHistoryByTime('all')">全消去</button>
-            </div>
-
-            <div class="history-list" id="historyList"></div>
-            <button onclick="closeHistoryModal()" style="width:100%; margin-top:12px; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">閉じる</button>
-        </div>
-    </div>
-
-    <div id="userModalOverlay" class="modal-overlay">
-        <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">ユーザー名設定</h3>
-            <input type="text" id="userNameInput" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;" placeholder="例: しらべるユーザー">
-            <div style="display:flex; gap:8px;">
-                <button onclick="skipUserName()" style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">スキップ</button>
-                <button onclick="saveUserName()" style="flex:1; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold;">保存</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="siteDetailModalOverlay" class="modal-overlay">
-        <div class="modal">
-            <h3 style="margin-top:0; font-size:15px;">サイトの詳細</h3>
-            <div id="siteDetailContent" style="font-size:12px; line-height:1.6; margin:12px 0;"></div>
-            <button onclick="closeSiteDetailModal()" style="width:100%; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold;">閉じる</button>
+            <div id="searchResultsList"></div>
         </div>
     </div>
 
     <footer>
-        &copy; shiraberu/hinahina_1700
+        <div>© 2026 しらべる 検索プロジェクト</div>
+        <div>インデックス最終更新: <span id="lastUpdatedTime">読み込み中...</span></div>
     </footer>
 
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalTitle" class="modal-header"></div>
+            <div id="modalBody" style="font-size: 14px; color: #3c4043;"></div>
+            <button class="modal-close-btn" onclick="closeModal()">閉じる</button>
+        </div>
+    </div>
+
     <script>
-        let fuse;
-        let allItems = [];
-        let lastUpdatedTime = "";
-        let currentMode = 'all'; // 'all', 'images', 'ai'
-        let currentSearchResults = [];
-        let isDarkMode = false;
-        let userName = localStorage.getItem('shiraberu_username') || '';
+        let searchIndexData = [];
+        let fuse = null;
         let chatHistory = [];
-        
-        let aiCooldownTimer = null;
-        let aiCooldownSeconds = 0;
 
-        let historyData = JSON.parse(localStorage.getItem('shiraberu_history_items') || '[]');
-        let visitedUrls = new Set(JSON.parse(localStorage.getItem('shiraberu_visited_urls') || '[]'));
+        // インデックスデータの読み込み
+        async function loadSearchIndex() {
+            try {
+                const response = await fetch('search_index.json');
+                if (!response.ok) throw new Error("JSON読み込み失敗");
+                const data = await response.json();
+                
+                searchIndexData = data.items || [];
+                document.getElementById('lastUpdatedTime').textContent = data.last_updated || '不明';
 
-        function katakanaToHiragana(src) {
-            return src ? src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)) : "";
+                // Fuse.js (あいまい検索) 初期化
+                fuse = new Fuse(searchIndexData, {
+                    keys: ['title', 'content', 'site_name', 'ai_summary'],
+                    threshold: 0.4,
+                    ignoreLocation: true
+                });
+            } catch (e) {
+                console.warn("search_index.json の読み込みに失敗しました。ローカルデータなしで動作します。", e);
+                document.getElementById('lastUpdatedTime').textContent = '未取得';
+            }
         }
 
-        function getDefaultUserName() {
-            return `ユーザー${Math.floor(1000 + Math.random() * 9000)}`;
-        }
+        // イベント設定
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearBtn');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
 
-        updateUserNavDisplay();
-
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme(true);
-
-        function toggleTheme() { setTheme(!isDarkMode); }
-        function setTheme(dark) {
-            isDarkMode = dark;
-            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
-            document.getElementById('themeBtn').textContent = dark ? 'ライト' : 'ダーク';
-            updateLogo();
-        }
-
-        function updateLogo() {
-            const logo = document.getElementById('mainLogo');
-            logo.src = isDarkMode ? 'logo-dark.png' : 'logo-light.png';
-        }
-
-        // 外部のクリックで三点メニューを閉じる
-        window.addEventListener('click', () => {
-            document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            clearBtn.style.display = query ? 'block' : 'none';
+            showSuggestions(query);
+            if (query) {
+                executeSearch(query);
+            }
         });
 
-        fetch('search_index.json')
-            .then(res => res.json())
-            .then(data => {
-                allItems = data.items || [];
-                lastUpdatedTime = data.last_updated || "不明";
-
-                const preparedItems = allItems.map(item => ({
-                    ...item,
-                    normTitle: katakanaToHiragana(item.title),
-                    normContent: katakanaToHiragana(item.content),
-                    normSummary: katakanaToHiragana(item.ai_summary || "")
-                }));
-
-                setupTrends();
-
-                fuse = new Fuse(preparedItems, {
-                    keys: [
-                        { name: 'title', weight: 0.4 },
-                        { name: 'normTitle', weight: 0.4 },
-                        { name: 'content', weight: 0.2 },
-                        { name: 'normContent', weight: 0.2 },
-                        { name: 'normSummary', weight: 0.2 },
-                        { name: 'site_name', weight: 0.1 }
-                    ],
-                    threshold: 0.35,
-                    ignoreLocation: true,
-                    useExtendedSearch: true
-                });
-
-                document.getElementById('searchInput').disabled = false;
-                document.getElementById('searchBtn').disabled = false;
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const query = urlParams.get('q');
-                const mode = urlParams.get('mode');
-                const udm = urlParams.get('udm');
-
-                if (udm === '50' || mode === 'ai') currentMode = 'ai';
-                else if (mode === 'images') currentMode = 'images';
-                else if (mode) currentMode = mode;
-
-                updateTabUI();
-
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                suggestionsBox.style.display = 'none';
+                const query = searchInput.value.trim();
                 if (query) {
-                    document.getElementById('searchInput').value = query;
-                    executeSearch();
+                    executeSearch(query);
+                    // 検索ワードをAIに話しかける文脈としても送る
+                    talkToShiraberun(query);
                 }
-            });
+            }
+        });
 
-        function setupTrends() {
-            const trendsArea = document.getElementById('trendsArea');
-            const keywords = [...new Set(allItems.map(i => i.title.split(' ')[0]))].filter(w => w && w.length >= 2).slice(0, 5);
-            keywords.forEach(word => {
-                const tag = document.createElement('span');
-                tag.className = 'trend-tag';
-                tag.textContent = word;
-                tag.onclick = () => {
-                    document.getElementById('searchInput').value = word;
-                    executeSearch();
-                };
-                trendsArea.appendChild(tag);
-            });
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            suggestionsBox.style.display = 'none';
+        });
+
+        aiSendBtn.addEventListener('click', () => {
+            const msg = aiInput.value.trim();
+            if (msg) {
+                talkToShiraberun(msg);
+                aiInput.value = '';
+            }
+        });
+
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const msg = aiInput.value.trim();
+                if (msg) {
+                    talkToShiraberun(msg);
+                    aiInput.value = '';
+                }
+            }
+        });
+
+        // サジェスト表示
+        function showSuggestions(query) {
+            if (!query || !searchIndexData.length) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const matches = searchIndexData
+                .filter(item => item.title.toLowerCase().includes(query.toLowerCase()) || item.site_name.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 5);
+
+            if (matches.length === 0) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            suggestionsBox.innerHTML = matches.map(item => `
+                <div class="suggestion-item" onclick="selectSuggestion('${escapeHtml(item.title)}')">
+                    <span>🔍</span>
+                    <span>${escapeHtml(item.title)}</span>
+                    <span style="color: var(--sub-text); font-size: 12px; margin-left: auto;">${escapeHtml(item.site_name)}</span>
+                </div>
+            `).join('');
+
+            suggestionsBox.style.display = 'block';
         }
 
-        function updateUserNavDisplay() {
-            const navText = document.getElementById('navUserName');
-            const activeName = userName || '設定';
-            navText.textContent = activeName.length > 5 ? activeName.substring(0, 5) + '...' : activeName;
+        function selectSuggestion(title) {
+            searchInput.value = title;
+            suggestionsBox.style.display = 'none';
+            executeSearch(title);
+            talkToShiraberun(title);
         }
 
-        function openUserSettingModal() {
-            document.getElementById('userNameInput').value = userName;
-            document.getElementById('userModalOverlay').style.display = 'flex';
-        }
-
-        function saveUserName() {
-            userName = document.getElementById('userNameInput').value.trim() || getDefaultUserName();
-            localStorage.setItem('shiraberu_username', userName);
-            updateUserNavDisplay();
-            document.getElementById('userModalOverlay').style.display = 'none';
-        }
-
-        function skipUserName() {
-            if (!userName) userName = getDefaultUserName();
-            localStorage.setItem('shiraberu_username', userName);
-            updateUserNavDisplay();
-            document.getElementById('userModalOverlay').style.display = 'none';
-        }
-
-        function executeSearch() {
-            const rawQuery = document.getElementById('searchInput').value.trim();
-            if (!rawQuery) return;
-
+        // 検索実行
+        function executeSearch(query) {
             document.body.classList.add('has-results');
-            updateLogo();
-            recordSearchQuery(rawQuery);
+            document.getElementById('resultsContainer').style.display = 'block';
 
-            const params = new URLSearchParams();
-            params.set('q', rawQuery);
-            if (currentMode === 'ai') params.set('udm', '50');
-            else params.set('mode', currentMode);
-
-            window.history.pushState({}, '', `?${params.toString()}`);
-
-            const hiraQuery = katakanaToHiragana(rawQuery);
-            const start = performance.now();
-            
-            const res1 = fuse.search(rawQuery);
-            const res2 = fuse.search(hiraQuery);
-            
-            const resultMap = new Map();
-            [...res1, ...res2].forEach(r => resultMap.set(r.item.url, r));
-            currentSearchResults = Array.from(resultMap.values());
-
-            const end = performance.now();
-            document.getElementById('metaInfo').textContent = `約 ${((end - start) / 1000).toFixed(3)} 秒 （${currentSearchResults.length} 件）`;
-
-            if (chatHistory.length === 0 || chatHistory.query !== rawQuery) {
-                initAiShiraberun(rawQuery);
+            let results = [];
+            if (fuse && query) {
+                results = fuse.search(query).map(r => r.item);
+            } else if (query) {
+                results = searchIndexData.filter(i => i.title.includes(query) || i.content.includes(query));
             }
 
-            renderView();
-        }
+            // 件数表示
+            document.getElementById('statsInfo').textContent = `「${query}」の検索結果: 約 ${results.length} 件`;
 
-        document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key === 'Enter') executeSearch(); });
-        document.getElementById('searchBtn').addEventListener('click', executeSearch);
-
-        function recordSearchQuery(query) {
-            const newEntry = { id: Date.now(), title: `検索: ${query}`, url: `?q=${encodeURIComponent(query)}`, timestamp: Date.now() };
-            historyData.unshift(newEntry);
-            localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
-        }
-
-        function recordVisit(title, url) {
-            visitedUrls.add(url);
-            localStorage.setItem('shiraberu_visited_urls', JSON.stringify(Array.from(visitedUrls)));
-
-            const newEntry = { id: Date.now(), title, url, timestamp: Date.now() };
-            historyData.unshift(newEntry);
-            localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
-            renderView();
-        }
-
-        function openHistoryModal() {
-            document.getElementById('historyModalOverlay').style.display = 'flex';
-            renderHistoryList();
-        }
-
-        function closeHistoryModal() { document.getElementById('historyModalOverlay').style.display = 'none'; }
-
-        function renderHistoryList() {
-            const listEl = document.getElementById('historyList');
-            const query = (document.getElementById('historySearchInput').value || '').toLowerCase();
-            listEl.innerHTML = '';
-
-            const filtered = historyData.filter(h => h.title.toLowerCase().includes(query) || h.url.toLowerCase().includes(query));
-
-            if (filtered.length === 0) {
-                listEl.innerHTML = '<div style="color:var(--sub-text); padding:10px; text-align:center;">履歴はありません</div>';
+            // 通常検索結果レンダリング
+            const resultsList = document.getElementById('searchResultsList');
+            if (results.length === 0) {
+                resultsList.innerHTML = `<p style="color: var(--sub-text); padding: 20px 0;">一致するWebページが見つかりませんでした。AI「しらべるん」と会話してみてください！</p>`;
                 return;
             }
 
-            filtered.forEach(item => {
-                const dateStr = new Date(item.timestamp).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div class="history-item-info">
-                        <a href="${item.url}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')" style="color:var(--link-color); text-decoration:none;">${escapeHtml(item.title)}</a>
-                        <div style="font-size:10px; color:var(--sub-text);">${dateStr}</div>
-                    </div>
-                    <button onclick="deleteSingleHistory(${item.id})" style="background:none; border:none; cursor:pointer; color:var(--sub-text); font-size:11px;">削除</button>
-                `;
-                listEl.appendChild(div);
-            });
-        }
+            resultsList.innerHTML = results.map(item => {
+                const summaryText = getItemSummary(item);
+                const imagesHtml = (item.images && item.images.length > 0)
+                    ? `<div class="image-preview-group">
+                        ${item.images.slice(0, 4).map(img => `<img src="${escapeHtml(img.src)}" alt="${escapeHtml(img.alt || '')}" onerror="this.style.display='none'">`).join('')}
+                      </div>`
+                    : '';
 
-        function deleteSingleHistory(id) {
-            historyData = historyData.filter(h => h.id !== id);
-            syncVisitedState();
-            renderHistoryList();
-            renderView();
-        }
-
-        function clearHistoryByTime(minutes) {
-            if (minutes === 'all') {
-                historyData = [];
-            } else {
-                const cutoff = Date.now() - (minutes * 60 * 1000);
-                historyData = historyData.filter(h => h.timestamp < cutoff);
-            }
-            syncVisitedState();
-            renderHistoryList();
-            renderView();
-        }
-
-        function syncVisitedState() {
-            visitedUrls = new Set(historyData.map(h => h.url));
-            localStorage.setItem('shiraberu_visited_urls', JSON.stringify(Array.from(visitedUrls)));
-            localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
-        }
-
-        /* --- AI（しらべるん / Shiraberun-a）--- */
-        function getItemSummary(item) {
-            if (item.ai_summary && item.ai_summary !== '要約データなし') return item.ai_summary;
-            return item.content ? item.content.substring(0, 180) + '...' : '詳細説明なし';
-        }
-
-        function initAiShiraberun(query) {
-            chatHistory = [];
-            chatHistory.query = query;
-            const activeUser = userName || 'ユーザー';
-            
-            let greeting = `こんにちは！ボクは「しらべるん」（Shiraberun-a）だよ！<b>${escapeHtml(activeUser)}</b>さん、「<b>${escapeHtml(query)}</b>」について何か気になることはある？何でも聞いてね！`;
-
-            if (currentSearchResults.length > 0) {
-                const topItem = currentSearchResults[0].item;
-                greeting += `<br><br>【要約メモ】<br>${escapeHtml(getItemSummary(topItem))}<br><small style="color:var(--sub-text);">参考: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
-            }
-
-            chatHistory.push({ role: 'ai', text: greeting });
-            renderChatMessages();
-        }
-
-        function renderChatMessages() {
-            const chatBox = document.getElementById('chatMessages');
-            chatBox.innerHTML = '';
-            chatHistory.forEach(msg => {
-                const bubble = document.createElement('div');
-                bubble.className = `chat-bubble ${msg.role}`;
-                bubble.innerHTML = msg.text;
-                chatBox.appendChild(bubble);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function startAiCooldown(seconds = 10) {
-            aiCooldownSeconds = seconds;
-            const btn = document.getElementById('aiSendBtn');
-            btn.disabled = true;
-
-            clearInterval(aiCooldownTimer);
-            aiCooldownTimer = setInterval(() => {
-                aiCooldownSeconds--;
-                if (aiCooldownSeconds > 0) {
-                    btn.textContent = `待機 (${aiCooldownSeconds}s)`;
-                } else {
-                    clearInterval(aiCooldownTimer);
-                    btn.disabled = false;
-                    btn.textContent = '送信';
-                }
-            }, 1000);
-            btn.textContent = `待機 (${aiCooldownSeconds}s)`;
-        }
-
-        function handleAiSubmit(e) {
-            e.preventDefault();
-            if (aiCooldownSeconds > 0) return;
-
-            const input = document.getElementById('aiFollowUpInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            chatHistory.push({ role: 'user', text: escapeHtml(text) });
-            input.value = '';
-            renderChatMessages();
-
-            startAiCooldown(10);
-
-            setTimeout(() => {
-                const reply = generateShiraberunResponse(text);
-                chatHistory.push({ role: 'ai', text: reply });
-                renderChatMessages();
-            }, 1000);
-        }
-
-        function generateShiraberunResponse(userInput) {
-            const q = userInput.toLowerCase();
-            if (q.includes('名前') || q.includes('だれ') || q.includes('誰')) {
-                return `ボクの名前は<b>「しらべるん」</b>！AIモデルの設定は<b>Shiraberun-a</b>だよ！よろしくね！`;
-            }
-
-            if (currentSearchResults.length > 0) {
-                const randomItem = currentSearchResults[Math.floor(Math.random() * currentSearchResults.length)].item;
-                return `「${escapeHtml(userInput)}」についてだね！<br>ボク（Shiraberun-a）のデータによると、関連する情報「<b>${escapeHtml(randomItem.title)}</b>」があるよ。<br><br>${escapeHtml(getItemSummary(randomItem))}`;
-            }
-
-            return `「${escapeHtml(userInput)}」について調べてみたけど、詳しい情報が見つからなかったよ。質問の言葉を変えてみてね！`;
-        }
-
-        /* --- 画面描画制御 --- */
-        function renderView() {
-            const container = document.getElementById('results');
-            const imageResults = document.getElementById('imageResults');
-            const aiChatBox = document.getElementById('aiChatContainer');
-            const query = document.getElementById('searchInput').value;
-            
-            container.innerHTML = '';
-            document.getElementById('imageGrid').innerHTML = '';
-
-            aiChatBox.style.display = (currentMode === 'ai') ? 'block' : 'none';
-            imageResults.style.display = (currentMode === 'images') ? 'block' : 'none';
-            container.style.display = (currentMode === 'all') ? 'block' : 'none';
-
-            if (currentSearchResults.length === 0) {
-                if (currentMode === 'all') container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">該当する検索結果がありません。</div>';
-                if (currentMode === 'images') document.getElementById('imageGrid').innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">画像が見つかりませんでした。</div>';
-                return;
-            }
-
-            if (currentMode === 'all') {
-                currentSearchResults.forEach((r, idx) => {
-                    const item = r.item;
-                    const isVisited = visitedUrls.has(item.url);
-
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-header-row">
-                            <div class="site-label">${escapeHtml(item.site_name || 'Web')}</div>
-                            <button class="more-btn" onclick="toggleMenu(event, ${idx})">&#8942;</button>
-                            <div id="cardMenu_${idx}" class="card-menu">
-                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
-                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">共有</div>
-                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">インデックス日時</div>
-                            </div>
+                return `
+                    <div class="result-item">
+                        <div class="result-site-name">
+                            🌐 ${escapeHtml(item.site_name)}
                         </div>
-                        <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
-                        <div class="snippet">${createSnippet(getItemSummary(item), query)}</div>
-                    `;
-                    container.appendChild(card);
-                });
-            } else if (currentMode === 'images') {
-                const grid = document.getElementById('imageGrid');
-                let count = 0;
-                currentSearchResults.forEach(r => {
-                    const item = r.item;
-                    (item.images || []).forEach(img => {
-                        count++;
-                        const card = document.createElement('a');
-                        card.className = 'image-card';
-                        card.href = item.url;
-                        card.target = '_blank';
-                        card.innerHTML = `<img src="${img.src}" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23ccc%22%2F%3E%3C%2Fsvg%3E';"><div class="image-title">${escapeHtml(item.title)}</div>`;
-                        grid.appendChild(card);
-                    });
-                });
-                if (count === 0) {
-                    grid.innerHTML = '<div style="color:var(--sub-text);">関連画像が見つかりませんでした。</div>';
+                        <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="result-title">
+                            ${escapeHtml(item.title)}
+                        </a>
+                        <div class="result-snippet">${escapeHtml(summaryText)}</div>
+                        ${imagesHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getItemSummary(item) {
+            if (item.ai_summary && item.ai_summary !== '要約データなし' && item.ai_summary !== 'AI要約の取得に失敗しました。') {
+                return item.ai_summary;
+            }
+            if (item.content) {
+                return item.content.length > 130 ? item.content.substring(0, 130) + '...' : item.content;
+            }
+            return '説明はありません。';
+        }
+
+        // 🤖 万能AI「しらべるん」対話ロジック（普通の日常会話・ゲーム・検索案内対応）
+        async function talkToShiraberun(userText) {
+            const historyArea = document.getElementById('aiChatHistory');
+
+            // ユーザーの発言を画面に追加
+            appendChatBubble(userText, 'user');
+            chatHistory.push({ role: 'user', text: userText });
+
+            // タイピング中インジケータ
+            const loadingBubble = appendChatBubble('しらべるんが考え中...', 'ai');
+
+            // サイト検索インデックスからのコンテキスト抽出（関連情報があれば）
+            let relatedContext = '';
+            if (fuse && userText) {
+                const searchMatches = fuse.search(userText).slice(0, 3).map(r => r.item);
+                if (searchMatches.length > 0) {
+                    relatedContext = searchMatches.map(m => `【${m.title} (${m.site_name})】: ${m.ai_summary || m.content.slice(0, 150)}`).join('\n');
                 }
             }
+
+            // AI応答を生成（サーバーまたはスマート応答）
+            const reply = await generateShiraberunResponse(userText, relatedContext);
+
+            // ローディング消去してAIの返答を表示
+            loadingBubble.remove();
+            appendChatBubble(reply, 'ai');
+            chatHistory.push({ role: 'ai', text: reply });
         }
 
-        function updateTabUI() {
-            document.getElementById('tabAi').classList.toggle('active', currentMode === 'ai');
-            document.getElementById('tabAll').classList.toggle('active', currentMode === 'all');
-            document.getElementById('tabImages').classList.toggle('active', currentMode === 'images');
+        function appendChatBubble(text, role) {
+            const historyArea = document.getElementById('aiChatHistory');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${role}`;
+            bubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+            historyArea.appendChild(bubble);
+            historyArea.scrollTop = historyArea.scrollHeight;
+            return bubble;
         }
 
-        function switchTab(mode, doSearch = true) {
-            currentMode = mode;
-            updateTabUI();
-            renderView();
-            if (doSearch && document.getElementById('searchInput').value.trim()) {
-                executeSearch();
+        // しらべるんの応答ロジック（柔軟な対話ルール）
+        async function generateShiraberunResponse(userMsg, context) {
+            const lowerMsg = userMsg.toLowerCase();
+
+            // 1. しりとりゲームのローカル判定ルール
+            if (lowerMsg.includes('しりとり')) {
+                if (lowerMsg.endsWith('ん')) {
+                    return "「ん」がついちゃったからボクの勝ちだね！また遊ぼう！😊";
+                }
+                const shiritoriWords = ['りんご', 'ゴリラ', 'ラッパ', 'パイナップル', 'ルビー', 'リス', 'スイカ', 'カメラ'];
+                const randomChoice = shiritoriWords[Math.floor(Math.random() * shiritoriWords.length)];
+                return `いいね、しりとりしよう！じゃあボクから行くよ！\n\n「${randomChoice}」！ 次は「${randomChoice.slice(-1)}」だよ！`;
             }
+
+            // 2. 挨拶・軽い日常会話パターン
+            if (/^(こんにちは|こんばんは|おはよう|はじめまして|ハロー|hello)/.test(lowerMsg)) {
+                return `こんにちは！今日も良い一日になると良いね✨ 何かお手伝いできることや、お話ししたいことはある？`;
+            }
+            if (lowerMsg.includes('疲れた') || lowerMsg.includes('つかれた')) {
+                return `お疲れ様！毎日本当によくがんばってるね。温かい飲み物でも飲んで、ゆっくり休んでね ☕️`;
+            }
+            if (lowerMsg.includes('おみくじ') || lowerMsg.includes('運勢')) {
+                const luck = ['大吉 🌟 今日のあなたは無敵です！', '中吉 ☘️ 良いことが起きそうな予感！', '小吉 🌸 穏やかで素敵な一日になりそう。', '吉 😄 ラッキーアイテムは温かいお茶！'];
+                return `今日の運勢を占ったよ！\n【結果】${luck[Math.floor(Math.random() * luck.length)]}`;
+            }
+
+            // 3. 検索コンテキストがある場合
+            if (context) {
+                return `「${userMsg}」について、検索データから見つけたよ！\n\n${context.slice(0, 250)}...\n\n詳しく知りたいページがあったら、下の検索結果リンクもチェックしてみてね！もっと別のことも話す？`;
+            }
+
+            // 4. 一般的な質問やその他の会話（万能返答）
+            return `「${userMsg}」だね！\nボクは日常の雑談から、お悩み相談、クイズやゲームまで何でも大歓迎だよ！\n他に気になっていることや、やってみたいゲームはある？`;
         }
 
-        function switchTabAndSearch(mode) {
-            switchTab(mode, true);
+        // ユーティリティ
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#039;');
         }
 
-        function toggleMenu(event, idx) {
-            event.stopPropagation();
-            const targetMenu = document.getElementById(`cardMenu_${idx}`);
-            const isVisible = targetMenu.style.display === 'block';
-            document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
-            targetMenu.style.display = isVisible ? 'none' : 'block';
+        function openModal(title, text) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = text;
+            document.getElementById('infoModal').style.display = 'flex';
         }
 
-        function showSiteDetail(idx) {
-            const item = currentSearchResults[idx].item;
-            document.getElementById('siteDetailContent').innerHTML = `
-                <p><strong>サイト名:</strong> ${escapeHtml(item.site_name)}</p>
-                <p><strong>タイトル:</strong> ${escapeHtml(item.title)}</p>
-                <p style="word-break: break-all;"><strong>URL:</strong> <a href="${item.url}" target="_blank" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.url)}</a></p>
-            `;
-            document.getElementById('siteDetailModalOverlay').style.display = 'flex';
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
         }
 
-        function closeSiteDetailModal() { document.getElementById('siteDetailModalOverlay').style.display = 'none'; }
-        function shareUrl(url) { navigator.clipboard.writeText(url).then(() => alert('コピーしました')).catch(() => alert(url)); }
-        function showIndexedTime(timeStr) { alert('更新日時: ' + timeStr); }
-
-        function createSnippet(c, q) {
-            if(!c) return "本文なし";
-            const firstWord = q.replace(/ /g, ' ').split(/\s+/)[0];
-            const i = c.toLowerCase().indexOf(firstWord.toLowerCase());
-            if (i === -1) return escapeHtml(c.substring(0, 120));
-            const start = Math.max(0, i - 30);
-            const end = Math.min(c.length, i + firstWord.length + 60);
-            let s = (start > 0 ? "..." : "") + c.substring(start, end) + (end < c.length ? "..." : "");
-            return escapeHtml(s).replace(new RegExp(`(${escapeRegExp(firstWord)})`, 'gi'), '<mark>$1</mark>');
-        }
-
-        function escapeHtml(str) { return str ? str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;') : ''; }
-        function escapeRegExp(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+        // 起動時処理
+        window.addEventListener('DOMContentLoaded', loadSearchIndex);
     </script>
 </body>
 </html>
