@@ -25,8 +25,6 @@
             --suggest-bg: #ffffff;
             --suggest-hover: #f1f3f4;
             --chip-bg: #f1f3f4;
-            --chip-active: #e8f0fe;
-            --chip-active-text: #1967d2;
             --menu-bg: #ffffff;
             --menu-hover: #f1f3f4;
         }
@@ -48,8 +46,6 @@
             --suggest-bg: #303134;
             --suggest-hover: #3c4043;
             --chip-bg: #303134;
-            --chip-active: #004a77;
-            --chip-active-text: #c2e7ff;
             --menu-bg: #303134;
             --menu-hover: #3c4043;
         }
@@ -63,20 +59,20 @@
         }
 
         .top-nav {
-            position: absolute; top: 12px; right: 20px;
+            position: absolute; top: 12px; right: 16px;
             display: flex; gap: 8px; z-index: 100;
         }
 
         .nav-btn {
             background: none; border: 1px solid var(--border-color); border-radius: 20px;
             padding: 5px 12px; color: var(--text-color); cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         /* ヘッダー全体 */
         .main-wrapper {
             display: flex; flex-direction: column; align-items: center;
-            width: 100%; padding-top: 15vh;
+            width: 100%; padding-top: 12vh;
             transition: transform 0.3s ease, padding 0.3s ease;
         }
 
@@ -96,7 +92,7 @@
         .header-content {
             width: 100%; max-width: 800px;
             display: flex; flex-direction: column; align-items: center;
-            padding: 0 20px; box-sizing: border-box;
+            padding: 0 16px; box-sizing: border-box;
         }
 
         /* 検索後は完全横並びでコンパクト化 */
@@ -104,19 +100,17 @@
             flex-direction: row;
             max-width: 100%;
             align-items: center;
-            gap: 16px;
-            padding: 0 20px;
+            gap: 12px;
+            padding: 0 16px;
         }
 
         .logo-container img {
-            width: 220px; height: auto;
+            width: 200px; height: auto;
             transition: width 0.2s ease;
-            filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.3));
-            cursor: pointer;
-            display: block;
+            cursor: pointer; display: block;
         }
 
-        body.has-results .logo-container img { width: 95px; }
+        body.has-results .logo-container img { width: 85px; }
 
         .search-area {
             width: 100%; max-width: 584px;
@@ -124,47 +118,42 @@
             position: relative;
         }
 
-        body.has-results .search-area { max-width: 540px; align-items: flex-start; }
+        body.has-results .search-area { max-width: 100%; flex: 1; align-items: flex-start; }
 
         .search-input-wrapper {
             width: 100%; display: flex; align-items: center;
             background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 24px; padding: 2px 8px 2px 16px; box-sizing: border-box;
+            border-radius: 24px; padding: 2px 8px 2px 14px; box-sizing: border-box;
             position: relative; z-index: 10;
         }
 
-        body.has-results .search-input-wrapper {
-            height: 38px;
-        }
+        body.has-results .search-input-wrapper { height: 36px; }
 
         .search-input-wrapper:hover, .search-input-wrapper:focus-within {
-            box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 6px rgba(0,0,0,0.15);
         }
 
         .search-box {
-            flex: 1; height: 38px; font-size: 15px;
+            flex: 1; height: 36px; font-size: 14px;
             border: none; outline: none; background: transparent; color: var(--text-color);
         }
 
         .search-btn {
             background: none; border: none; cursor: pointer;
-            padding: 0 10px; color: var(--accent-color); font-size: 16px;
+            padding: 0 8px; color: var(--accent-color); font-size: 15px;
         }
 
-        /* トレンドエリア */
         .trends-container {
-            margin-top: 15px; display: flex; flex-wrap: wrap;
-            gap: 8px; justify-content: center; align-items: center; font-size: 13px;
+            margin-top: 12px; display: flex; flex-wrap: wrap;
+            gap: 6px; justify-content: center; align-items: center; font-size: 12px;
         }
 
         body.has-results .trends-container { display: none; }
 
         .trend-tag {
-            background: var(--chip-bg); padding: 4px 12px; border-radius: 16px;
-            cursor: pointer; color: var(--text-color); transition: background 0.2s;
+            background: var(--chip-bg); padding: 4px 10px; border-radius: 14px;
+            cursor: pointer; color: var(--text-color);
         }
-
-        .trend-tag:hover { background: var(--border-color); }
 
         .suggestions-box {
             position: absolute; top: 42px; left: 0; width: 100%;
@@ -174,118 +163,108 @@
         }
 
         .suggest-item {
-            padding: 10px 20px; cursor: pointer; display: flex;
-            justify-content: space-between; align-items: center; font-size: 14px;
+            padding: 10px 16px; cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center; font-size: 13px;
         }
 
         .suggest-item:hover { background-color: var(--suggest-hover); }
 
         .suggest-header {
-            padding: 8px 20px 4px; font-size: 11px;
+            padding: 6px 16px 2px; font-size: 11px;
             color: var(--sub-text); font-weight: bold;
         }
 
-        .home-buttons { margin-top: 25px; display: flex; gap: 12px; }
+        .home-buttons { margin-top: 20px; display: flex; gap: 10px; }
         body.has-results .home-buttons { display: none; }
 
         .home-btn {
             background-color: var(--button-bg); border: 1px solid var(--border-color);
-            border-radius: 4px; color: var(--text-color); font-size: 14px;
-            padding: 0 16px; height: 36px; line-height: 34px; cursor: pointer;
+            border-radius: 6px; color: var(--text-color); font-size: 13px;
+            padding: 0 14px; height: 36px; line-height: 34px; cursor: pointer;
         }
 
-        .home-btn:hover { border-color: var(--sub-text); }
-
+        /* 検索結果エリア */
         .results-container {
             width: 100%; max-width: 800px;
-            margin-left: 130px; padding: 15px 20px; box-sizing: border-box;
+            margin-left: 130px; padding: 12px 16px; box-sizing: border-box;
             display: none;
         }
 
         body.has-results .results-container { display: block; }
 
-        @media (max-width: 900px) {
-            body.has-results .results-container { margin-left: 0; }
-            body.has-results .header-content { flex-direction: row; }
+        /* タブナビゲーション [AIモード | すべて | 画像] */
+        .tabs-nav {
+            display: flex; gap: 16px; border-bottom: 1px solid var(--header-border);
+            padding-bottom: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
         }
 
-        .tabs { display: flex; gap: 20px; font-size: 14px; color: var(--sub-text); }
-        .tab { padding: 8px 0; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab {
+            padding: 6px 4px; cursor: pointer; border-bottom: 3px solid transparent;
+            font-size: 14px; color: var(--sub-text); white-space: nowrap;
+        }
+
         .tab.active {
             color: var(--accent-color); border-bottom: 3px solid var(--accent-color);
             font-weight: bold;
         }
 
-        .ai-mode-toggle {
-            margin-left: auto; display: flex; align-items: center; gap: 6px;
-            font-size: 13px; cursor: pointer; user-select: none;
-        }
+        .meta-info { font-size: 12px; color: var(--sub-text); margin: 10px 0; }
 
-        .meta-info { font-size: 13px; color: var(--sub-text); margin: 12px 0; }
-
-        /* AI検索モード カード */
+        /* AI検索カード */
         .ai-response-card {
             background: var(--ai-bg); border: 1px solid var(--ai-border);
-            border-radius: 12px; padding: 18px; margin-bottom: 25px;
-            max-width: 650px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-            display: none;
+            border-radius: 12px; padding: 16px; margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none;
         }
 
         .ai-header {
-            display: flex; align-items: center; gap: 8px;
-            font-weight: bold; font-size: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+            font-weight: bold; font-size: 14px; margin-bottom: 10px;
             color: var(--accent-color);
         }
 
-        .ai-header img {
-            width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
-        }
-
-        .ai-content { font-size: 14px; line-height: 1.7; color: var(--text-color); }
+        .ai-content { font-size: 13px; line-height: 1.6; color: var(--text-color); }
 
         /* 検索結果カード */
-        .card { margin-bottom: 22px; max-width: 650px; position: relative; }
+        .card { margin-bottom: 20px; position: relative; max-width: 650px; }
         
         .card-header-row {
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 2px;
         }
         
-        .site-label { font-size: 13px; color: var(--sub-text); }
+        .site-label { font-size: 12px; color: var(--sub-text); }
         
-        /* 縦三点ボタン */
         .more-btn {
             background: none; border: none; color: var(--sub-text);
-            cursor: pointer; font-size: 16px; padding: 2px 6px;
-            border-radius: 50%; transition: background 0.2s;
+            cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 50%;
         }
         .more-btn:hover { background: var(--suggest-hover); }
 
-        /* ドロップダウンメニュー */
         .card-menu {
             position: absolute; right: 0; top: 24px;
             background: var(--menu-bg); border: 1px solid var(--border-color);
             border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 100; min-width: 180px; overflow: hidden;
+            display: none; z-index: 100; min-width: 170px; overflow: hidden;
         }
 
         .card-menu-item {
-            padding: 10px 14px; font-size: 13px; color: var(--text-color);
+            padding: 10px 12px; font-size: 12px; color: var(--text-color);
             cursor: pointer; display: flex; align-items: center; gap: 8px;
         }
 
         .card-menu-item:hover { background: var(--menu-hover); }
 
-        .card h2 { margin: 0 0 4px 0; font-size: 18px; font-weight: normal; }
+        .card h2 { margin: 0 0 4px 0; font-size: 16px; font-weight: normal; }
         .card h2 a { color: var(--link-color); text-decoration: none; }
         .card h2 a:hover { text-decoration: underline; }
-        .snippet { font-size: 14px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
+        .snippet { font-size: 13px; color: var(--text-color); line-height: 1.5; opacity: 0.9; }
         .snippet mark { background: none; color: var(--mark-color); font-weight: bold; }
 
-        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
         .image-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); background: var(--card-bg); }
-        .image-card img { width: 100%; height: 120px; object-fit: cover; background: #eee; }
-        .image-info { padding: 8px; font-size: 12px; }
+        .image-card img { width: 100%; height: 95px; object-fit: cover; background: #eee; display: block; }
+        .image-info { padding: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* モーダル */
         .modal-overlay {
@@ -294,14 +273,24 @@
             backdrop-filter: blur(2px);
         }
         .modal {
-            background: var(--card-bg); color: var(--text-color); padding:24px;
-            border-radius:16px; width:90%; max-width:450px;
+            background: var(--card-bg); color: var(--text-color); padding:20px;
+            border-radius: 14px; width: 88%; max-width: 400px;
             border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
+        @media (max-width: 768px) {
+            .main-wrapper { padding-top: 8vh; }
+            body.has-results .results-container { margin-left: 0; padding: 10px 12px; }
+            body.has-results .logo-container img { width: 70px; }
+            .card h2 { font-size: 15px; }
+            .snippet { font-size: 12px; }
+            .image-grid { grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; }
+            .image-card img { height: 80px; }
+        }
+
         footer {
-            margin-top: auto; text-align: center; padding: 18px;
-            font-size: 12px; color: var(--sub-text); background: var(--footer-bg);
+            margin-top: auto; text-align: center; padding: 16px;
+            font-size: 11px; color: var(--sub-text); background: var(--footer-bg);
             width: 100%; box-sizing: border-box;
         }
     </style>
@@ -309,7 +298,7 @@
 <body>
 
     <div class="top-nav">
-        <button class="nav-btn" onclick="openUserSettingModal()">👤 <span id="navUserName">ユーザー設定</span></button>
+        <button class="nav-btn" onclick="openUserSettingModal()">👤 <span id="navUserName">設定</span></button>
         <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 ダーク</button>
     </div>
 
@@ -328,7 +317,7 @@
                 <div id="suggestions" class="suggestions-box"></div>
 
                 <div class="trends-container" id="trendsArea">
-                    <span style="color:var(--sub-text); font-weight:bold;">🔥 トレンド:</span>
+                    <span style="color:var(--sub-text); font-weight:bold;">トレンド:</span>
                 </div>
                 
                 <div class="home-buttons">
@@ -340,15 +329,10 @@
     </div>
 
     <div class="results-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--header-border); padding-bottom:4px;">
-            <div class="tabs">
-                <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
-                <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
-            </div>
-            <label class="ai-mode-toggle">
-                <input type="checkbox" id="aiModeCheck" onchange="toggleAiMode()">
-                <span>しらべるAI検索モード</span>
-            </label>
+        <div class="tabs-nav">
+            <div id="tabAi" class="tab" onclick="switchTab('ai')">AIモード</div>
+            <div id="tabAll" class="tab active" onclick="switchTab('all')">すべて</div>
+            <div id="tabImages" class="tab" onclick="switchTab('images')">画像</div>
         </div>
 
         <div id="metaInfo" class="meta-info"></div>
@@ -360,31 +344,31 @@
 
     <div id="userModalOverlay" class="modal-overlay">
         <div class="modal">
-            <h3 style="margin-top:0; font-size:16px;">👤 ユーザー名設定</h3>
-            <p style="font-size:13px; color:var(--sub-text);">AI検索時の呼びかけや表示に使用されます。</p>
-            <input type="text" id="userNameInput" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); box-sizing:border-box; margin-bottom:15px;" placeholder="例: しらべるユーザー">
+            <h3 style="margin-top:0; font-size:15px;">ユーザー名設定</h3>
+            <p style="font-size:12px; color:var(--sub-text);">AI検索モードで呼びかける名前に使われます。</p>
+            <input type="text" id="userNameInput" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); box-sizing:border-box; margin-bottom:12px;" placeholder="例: しらべるユーザー">
             <div style="display:flex; gap:8px;">
-                <button onclick="skipUserName()" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border-color); background:transparent; color:var(--text-color); cursor:pointer;">スキップ</button>
-                <button onclick="saveUserName()" style="flex:1; padding:8px; border-radius:8px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">保存する</button>
+                <button onclick="skipUserName()" style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color); cursor:pointer;">スキップ</button>
+                <button onclick="saveUserName()" style="flex:1; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">保存する</button>
             </div>
         </div>
     </div>
 
     <div id="siteDetailModalOverlay" class="modal-overlay">
         <div class="modal">
-            <h3 style="margin-top:0; font-size:16px;">🌐 サイトの詳細情報</h3>
-            <div id="siteDetailContent" style="font-size:13px; line-height:1.6; color:var(--text-color); margin:15px 0;"></div>
-            <button onclick="closeSiteDetailModal()" style="width:100%; padding:8px; border-radius:8px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">閉じる</button>
+            <h3 style="margin-top:0; font-size:15px;">サイトの詳細情報</h3>
+            <div id="siteDetailContent" style="font-size:12px; line-height:1.6; color:var(--text-color); margin:12px 0;"></div>
+            <button onclick="closeSiteDetailModal()" style="width:100%; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">閉じる</button>
         </div>
     </div>
 
     <div id="comingSoonOverlay" class="modal-overlay">
         <div class="modal" style="text-align:center;">
             <h3 style="margin-top:0;">🚧 近日リリース予定</h3>
-            <p style="font-size:14px; color:var(--sub-text); line-height:1.6;">
-                サイト登録申請機能は現在準備中です！<br>次回のアップデートをお楽しみに。
+            <p style="font-size:13px; color:var(--sub-text); line-height:1.5;">
+                サイト登録申請機能は現在準備中です！現在はdiscordのDM等で順次受け付けています！
             </p>
-            <button onclick="closeComingSoonModal()" style="padding:8px 24px; border-radius:20px; border:none; background:var(--accent-color); color:white; cursor:pointer; font-weight:bold;">閉じる</button>
+            <button onclick="closeComingSoonModal()" style="padding:6px 20px; border-radius:16px; border:none; background:var(--accent-color); color:white; cursor:pointer; font-weight:bold;">閉じる</button>
         </div>
     </div>
 
@@ -396,7 +380,7 @@
         let fuse;
         let allItems = [];
         let lastUpdatedTime = "";
-        let currentTab = 'all';
+        let currentMode = 'all'; // 'ai', 'all', 'images'
         let currentSearchResults = [];
         let isDarkMode = false;
         let userName = localStorage.getItem('shiraberu_username') || '';
@@ -406,8 +390,7 @@
         }
 
         function getDefaultUserName() {
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            return `しらべるユーザー${randomNum}`;
+            return `しらべるユーザー${Math.floor(1000 + Math.random() * 9000)}`;
         }
 
         updateUserNavDisplay();
@@ -427,7 +410,7 @@
 
         function updateLogo() {
             const logo = document.getElementById('mainLogo');
-            if (currentTab === 'images') {
+            if (currentMode === 'images') {
                 logo.src = isDarkMode ? 'logo-img-dark.png' : 'logo-img-light.png';
             } else {
                 logo.src = isDarkMode ? 'logo-dark.png' : 'logo-light.png';
@@ -481,11 +464,9 @@
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const query = urlParams.get('q');
-                const tbm = urlParams.get('tbm');
-                const isAi = urlParams.get('ai');
+                const mode = urlParams.get('mode');
 
-                if (tbm === 'isch') switchTab('images', false);
-                if (isAi === 'on') document.getElementById('aiModeCheck').checked = true;
+                if (mode) switchTab(mode, false);
 
                 if (query) {
                     input.value = query;
@@ -495,7 +476,7 @@
 
         function setupTrends() {
             const trendsArea = document.getElementById('trendsArea');
-            const keywords = [...new Set(allItems.map(i => i.title.split(' ')[0]))].filter(w => w && w.length >= 2).slice(0, 6);
+            const keywords = [...new Set(allItems.map(i => i.title.split(' ')[0]))].filter(w => w && w.length >= 2).slice(0, 5);
             
             keywords.forEach(word => {
                 const tag = document.createElement('span');
@@ -511,8 +492,8 @@
 
         function updateUserNavDisplay() {
             const navText = document.getElementById('navUserName');
-            const activeName = userName || 'ユーザー設定';
-            navText.textContent = activeName.length > 10 ? activeName.substring(0, 10) + '...' : activeName;
+            const activeName = userName || '設定';
+            navText.textContent = activeName.length > 6 ? activeName.substring(0, 6) + '...' : activeName;
         }
 
         function openUserSettingModal() {
@@ -521,27 +502,17 @@
         }
 
         function saveUserName() {
-            const val = document.getElementById('userNameInput').value.trim();
-            userName = val || getDefaultUserName();
+            userName = document.getElementById('userNameInput').value.trim() || getDefaultUserName();
             localStorage.setItem('shiraberu_username', userName);
             updateUserNavDisplay();
             document.getElementById('userModalOverlay').style.display = 'none';
         }
 
         function skipUserName() {
-            if (!userName) {
-                userName = getDefaultUserName();
-                localStorage.setItem('shiraberu_username', userName);
-            }
+            if (!userName) userName = getDefaultUserName();
+            localStorage.setItem('shiraberu_username', userName);
             updateUserNavDisplay();
             document.getElementById('userModalOverlay').style.display = 'none';
-        }
-
-        function toggleAiMode() {
-            if (document.getElementById('aiModeCheck').checked && !localStorage.getItem('shiraberu_username')) {
-                openUserSettingModal();
-            }
-            executeSearch();
         }
 
         function showSuggestions() {
@@ -586,12 +557,9 @@
             document.body.classList.add('has-results');
             updateLogo();
 
-            const isAiMode = document.getElementById('aiModeCheck').checked;
-
             const params = new URLSearchParams();
             params.set('q', rawQuery);
-            if (currentTab === 'images') params.set('tbm', 'isch');
-            if (isAiMode) params.set('ai', 'on');
+            params.set('mode', currentMode);
             window.history.pushState({}, '', `?${params.toString()}`);
 
             const hiraQuery = katakanaToHiragana(rawQuery);
@@ -608,12 +576,6 @@
 
             document.getElementById('metaInfo').textContent = `約 ${((end - start) / 1000).toFixed(3)} 秒 （${currentSearchResults.length} 件）`;
 
-            if (isAiMode && currentTab === 'all') {
-                runAiSearch(rawQuery);
-            } else {
-                document.getElementById('aiResponseContainer').style.display = 'none';
-            }
-
             renderView();
         }
 
@@ -622,13 +584,40 @@
 
         function renderView() {
             const container = document.getElementById('results');
+            const aiContainer = document.getElementById('aiResponseContainer');
             container.innerHTML = '';
             const query = document.getElementById('searchInput').value;
 
-            if (currentTab === 'all') {
+            // AIモードの表示
+            if (currentMode === 'ai') {
+                aiContainer.style.display = 'block';
+                runAiSearch(query);
+            } else {
+                aiContainer.style.display = 'none';
+            }
+
+            if (currentMode === 'images') {
+                container.className = 'image-grid';
+                let imgCount = 0;
+                currentSearchResults.forEach(r => {
+                    (r.item.images || []).forEach(img => {
+                        imgCount++;
+                        const a = document.createElement('a');
+                        a.className = 'image-card';
+                        a.href = r.item.url; a.target = '_blank'; a.rel = 'noopener';
+                        a.innerHTML = `<img src="${img.src}" referrerpolicy="no-referrer" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23ccc%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23666%22%20dy%3D%22.3em%22%20text-anchor%3D%22middle%22%3E%E7%94%BB%E2%85%87%E3%81%AA%E3%81%97%3C%2Ftext%3E%3C%2Fsvg%3E';"><div class="image-info"><b>${escapeHtml(r.item.title)}</b></div>`;
+                        container.appendChild(a);
+                    });
+                });
+
+                if(imgCount === 0) {
+                    container.className = '';
+                    container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">画像が見つかりませんでした。</div>';
+                }
+            } else {
                 container.className = '';
                 if(currentSearchResults.length === 0) {
-                    container.innerHTML = '<div style="color:var(--sub-text); padding: 20px 0;">一致する検索結果が見つかりませんでした。</div>';
+                    container.innerHTML = '<div style="color:var(--sub-text); padding: 15px 0;">一致する検索結果が見つかりませんでした。</div>';
                     return;
                 }
 
@@ -641,9 +630,9 @@
                             <div class="site-label">${escapeHtml(item.site_name)}</div>
                             <button class="more-btn" onclick="toggleMenu(event, ${idx})">⋮</button>
                             <div id="cardMenu_${idx}" class="card-menu">
-                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">🌐 サイトの詳細</div>
-                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">🔗 共有</div>
-                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">🕒 インデックス登録日時</div>
+                                <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
+                                <div class="card-menu-item" onclick="shareUrl('${escapeHtml(item.url)}')">共有</div>
+                                <div class="card-menu-item" onclick="showIndexedTime('${escapeHtml(item.indexed_at || lastUpdatedTime)}')">インデックス登録日時</div>
                             </div>
                         </div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h2>
@@ -651,28 +640,22 @@
                     `;
                     container.appendChild(card);
                 });
-            } else {
-                container.className = 'image-grid';
-                let imgCount = 0;
-                currentSearchResults.forEach(r => {
-                    (r.item.images || []).forEach(img => {
-                        imgCount++;
-                        const a = document.createElement('a');
-                        a.className = 'image-card';
-                        a.href = r.item.url; a.target = '_blank'; a.rel = 'noopener';
-                        a.innerHTML = `<img src="${img.src}" referrerpolicy="no-referrer" onerror="this.parentElement.style.display='none'"><div class="image-info"><b>${escapeHtml(r.item.title)}</b><br>${escapeHtml(r.item.site_name)}</div>`;
-                        container.appendChild(a);
-                    });
-                });
-
-                if(imgCount === 0) {
-                    container.className = '';
-                    container.innerHTML = '<div style="color:var(--sub-text); padding: 20px 0;">画像が見つかりませんでした。</div>';
-                }
             }
         }
 
-        // 縦三点メニュー表示切替
+        function switchTab(mode, doSearch = true) {
+            currentMode = mode;
+            document.getElementById('tabAi').classList.toggle('active', currentMode === 'ai');
+            document.getElementById('tabAll').classList.toggle('active', currentMode === 'all');
+            document.getElementById('tabImages').classList.toggle('active', currentMode === 'images');
+
+            updateLogo();
+            renderView();
+            if (doSearch && document.getElementById('searchInput').value.trim()) {
+                executeSearch();
+            }
+        }
+
         function toggleMenu(event, idx) {
             event.stopPropagation();
             const targetMenu = document.getElementById(`cardMenu_${idx}`);
@@ -681,15 +664,13 @@
             targetMenu.style.display = isVisible ? 'none' : 'block';
         }
 
-        // サイトの詳細を表示
         function showSiteDetail(idx) {
             const item = currentSearchResults[idx].item;
-            const content = document.getElementById('siteDetailContent');
-            content.innerHTML = `
+            document.getElementById('siteDetailContent').innerHTML = `
                 <p><strong>サイト名:</strong> ${escapeHtml(item.site_name)}</p>
-                <p><strong>ページタイトル:</strong> ${escapeHtml(item.title)}</p>
+                <p><strong>タイトル:</strong> ${escapeHtml(item.title)}</p>
                 <p style="word-break: break-all;"><strong>URL:</strong> <a href="${item.url}" target="_blank" style="color:var(--accent-color);">${escapeHtml(item.url)}</a></p>
-                <p><strong>インデックス日時:</strong> ${escapeHtml(item.indexed_at || lastUpdatedTime)}</p>
+                <p><strong>更新日時:</strong> ${escapeHtml(item.indexed_at || lastUpdatedTime)}</p>
             `;
             document.getElementById('siteDetailModalOverlay').style.display = 'flex';
         }
@@ -698,80 +679,52 @@
             document.getElementById('siteDetailModalOverlay').style.display = 'none';
         }
 
-        // 共有（URLコピー）
         function shareUrl(url) {
-            navigator.clipboard.writeText(url).then(() => {
-                alert('リンクをクリップボードにコピーしました！');
-            }).catch(() => {
-                alert('URL: ' + url);
-            });
+            navigator.clipboard.writeText(url).then(() => alert('リンクをコピーしました！')).catch(() => alert('URL: ' + url));
         }
 
-        // インデックス登録日時のポップアップ
         function showIndexedTime(timeStr) {
-            alert('🕒 最終インデックス更新日時:\n' + timeStr);
+            alert('🕒 インデックス更新日時:\n' + timeStr);
         }
 
-        // AI検索モード
-        async function runAiSearch(query) {
+        function runAiSearch(query) {
             const aiContainer = document.getElementById('aiResponseContainer');
             const activeUser = userName || 'しらべるユーザー';
 
             aiContainer.innerHTML = `
-                <div class="ai-header">
-                    <img src="favicon.ico" onerror="this.style.display='none'"> 
-                    <span>🤖 しらべる AI エージェント</span>
-                </div>
-                <div class="ai-content">こんにちは、<b>${escapeHtml(activeUser)}</b>さん！「${escapeHtml(query)}」について検索結果から回答を生成中...</div>
+                <div class="ai-header">🤖 しらべる AI 回答</div>
+                <div class="ai-content"><b>${escapeHtml(activeUser)}</b>さん、「${escapeHtml(query)}」について検索結果から集約中...</div>
             `;
-            aiContainer.style.display = 'block';
 
             if (currentSearchResults.length === 0) {
-                aiContainer.querySelector('.ai-content').innerHTML = `<b>${escapeHtml(activeUser)}</b>さん、申し訳ありません。「${escapeHtml(query)}」に関する情報は見つかりませんでした。`;
+                aiContainer.querySelector('.ai-content').innerHTML = `<b>${escapeHtml(activeUser)}</b>さん、該当する情報が見つかりませんでした。`;
                 return;
             }
 
             setTimeout(() => {
                 const topItem = currentSearchResults[0].item;
-                const summaryText = topItem.ai_summary && topItem.ai_summary !== '要約データなし' 
-                    ? topItem.ai_summary 
-                    : (topItem.content ? topItem.content.substring(0, 150) + '...' : '詳細情報なし');
+                const summaryText = topItem.ai_summary || (topItem.content ? topItem.content.substring(0, 150) + '...' : '詳細情報なし');
 
                 aiContainer.querySelector('.ai-content').innerHTML = `
-                    <b>${escapeHtml(activeUser)}</b>さん、「<strong>${escapeHtml(query)}</strong>」についてお答えしますね！<br><br>
+                    <b>${escapeHtml(activeUser)}</b>さん、「<strong>${escapeHtml(query)}</strong>」に関する要約です：<br><br>
                     ${escapeHtml(summaryText)}
-                    <div style="margin-top:10px; font-size:12px; color:var(--sub-text);">
-                        💡 出典元: <a href="${topItem.url}" target="_blank" style="color:var(--accent-color);">${escapeHtml(topItem.site_name)} - ${escapeHtml(topItem.title)}</a>
+                    <div style="margin-top:10px; font-size:11px; color:var(--sub-text);">
+                        出典: <a href="${topItem.url}" target="_blank" style="color:var(--accent-color);">${escapeHtml(topItem.site_name)} - ${escapeHtml(topItem.title)}</a>
                     </div>
                 `;
-            }, 400);
-        }
-
-        function switchTab(t, doSearch = true) {
-            currentTab = t;
-            document.getElementById('tabAll').classList.toggle('active', currentTab === 'all');
-            document.getElementById('tabImages').classList.toggle('active', currentTab === 'images');
-
-            const btnText = document.getElementById('homeSearchBtnText');
-            if(btnText) btnText.textContent = (currentTab === 'images') ? 'しらべる画像検索' : 'しらべる検索';
-
-            renderView();
-            if (doSearch && document.getElementById('searchInput').value.trim()) {
-                executeSearch();
-            }
+            }, 300);
         }
 
         function createSnippet(c, q) {
             if(!c) return "本文なし";
             const firstWord = q.replace(/ /g, ' ').split(/\s+/)[0];
             const i = c.toLowerCase().indexOf(firstWord.toLowerCase());
-            const start = Math.max(0, i - 40);
-            const end = Math.min(c.length, i + firstWord.length + 80);
+            const start = Math.max(0, i - 30);
+            const end = Math.min(c.length, i + firstWord.length + 60);
             let s = (start > 0 ? "..." : "") + c.substring(start, end) + (end < c.length ? "..." : "");
             return escapeHtml(s).replace(new RegExp(`(${escapeRegExp(firstWord)})`, 'gi'), '<mark>$1</mark>');
         }
 
-        // スクロール連動ヘッダーの表示切替
         let lastScrollY = window.scrollY;
         window.addEventListener('scroll', () => {
             if (!document.body.classList.contains('has-results')) return;
