@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import random
+import re
 import zoneinfo
 from datetime import datetime
 from urllib.parse import urljoin, urlparse
@@ -13,7 +14,6 @@ from playwright.async_api import async_playwright
 # ==========================================
 # 1. Gemini API クライアントの設定
 # ==========================================
-# GitHub Secrets や環境変数から API キーを取得
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 gemini_client = None
@@ -29,13 +29,20 @@ else:
     )
 
 
+def clean_url(url):
+    """URLから `#` 以降のハッシュ（アンカー）を除去して重複を防ぐ"""
+    if not url:
+        return ""
+    return url.split("#")[0]
+
+
 async def generate_ai_summary(title, content):
-    """Gemini API（gemini-2.5-flash）を使って本文からAI要約を生成する非同期関数"""
+    """Gemini API（gemini-2.5-flash）を使ってAIエージェント用の要約・解説文を生成"""
     if not gemini_client or not content or len(content) < 30:
         return "要約データなし"
 
     prompt = f"""
-以下のWebページの内容を読み、検索結果一覧に表示するための分かりやすい要約（100文字〜150文字程度）を作成してください。
+以下のWebページの内容を読み、対話型AI検索エンジン（Google AI Overview風）の回答として適切な、分かりやすい要約・解説（100文字〜150文字程度）を作成してください。
 
 【ページタイトル】: {title}
 【本文】:
@@ -43,7 +50,6 @@ async def generate_ai_summary(title, content):
 """
 
     try:
-        # 非同期実行のために loop.run_in_executor を使用
         loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(
             None,
@@ -53,8 +59,7 @@ async def generate_ai_summary(title, content):
             ),
         )
         summary = response.text.strip()
-        # APIレート制限対策に少し待機
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(1.0)  # レート制限対策
         return summary
     except Exception as e:
         print(f"  ⚠️ AI要約の生成失敗 ({title}): {e}")
@@ -127,14 +132,13 @@ def extract_images(soup, base_url):
         src = img["src"]
         if src.startswith("data:"):
             continue
-        full_img_url = urljoin(base_url, src)
+        full_img_url = clean_url(urljoin(base_url, src))
         alt_text = img.get("alt", "").strip()
         images.append({"src": full_img_url, "alt": alt_text})
     return images[:15]
 
 
 async def random_delay(min_sec=5.0, max_sec=8.0):
-    """5秒〜8秒のランダム待機"""
     wait_time = random.uniform(min_sec, max_sec)
     print(f"       ⏳ 人間らしく {wait_time:.2f} 秒待機中...")
     await asyncio.sleep(wait_time)
@@ -163,7 +167,8 @@ async def scrape_atwiki(page, site):
 
     page_urls = []
     for a_tag in soup.find_all("a", href=True):
-        full_url = urljoin(base_url, a_tag["href"])
+        # #タグ（アンカー）を除去して整形
+        full_url = clean_url(urljoin(base_url, a_tag["href"]))
         if (
             f"/{wiki_id}/pages/" in full_url
             and full_url.endswith(".html")
@@ -198,6 +203,8 @@ async def scrape_atwiki(page, site):
                     continue
 
                 page_soup = BeautifulSoup(html_content, "html.parser")
+
+                # タイトル取得
                 title_elem = page_soup.find("h2", id="page_title")
                 title = (
                     title_elem.text.strip()
@@ -209,16 +216,22 @@ async def scrape_atwiki(page, site):
                     )
                 )
 
+                # Wiki本文のピンポイント抽出（ナビゲーションやゴミを除外）
                 body_elem = page_soup.find(
                     "div", id="wikibody"
                 ) or page_soup.find("div", id="atwiki-body")
-                body_text = (
-                    " ".join(body_elem.text.split()) if body_elem else ""
-                )
+
+                if body_elem:
+                    # プラグインやナビ要素を削って本文精度をUP
+                    for noisy in body_elem.find_all(
+                        ["script", "style", "iframe", "form"]
+                    ):
+                        noisy.decompose()
+                    body_text = " ".join(body_elem.text.split())
+                else:
+                    body_text = ""
 
                 images = extract_images(page_soup, url)
-
-                # 🤖 AI要約を生成
                 ai_summary = await generate_ai_summary(title, body_text)
 
                 data_list.append({
@@ -226,7 +239,7 @@ async def scrape_atwiki(page, site):
                     "title": title,
                     "url": url,
                     "content": body_text,
-                    "ai_summary": ai_summary,  # ← 追加
+                    "ai_summary": ai_summary,
                     "images": images,
                 })
                 break
@@ -239,7 +252,7 @@ async def scrape_atwiki(page, site):
 
 
 async def scrape_google_sites(page, site):
-    base_url = site["base_url"]
+    base_url = clean_url(site["base_url"])
     print(f"\n--- [Google Sites: {site['site_name']}] 取得開始 ---")
     try:
         await page.goto(base_url, wait_until="networkidle", timeout=30000)
@@ -251,7 +264,7 @@ async def scrape_google_sites(page, site):
     soup = BeautifulSoup(await page.content(), "html.parser")
     page_urls = [base_url]
     for a_tag in soup.find_all("a", href=True):
-        full_url = urljoin(base_url, a_tag["href"])
+        full_url = clean_url(urljoin(base_url, a_tag["href"]))
         if full_url.startswith(base_url) and full_url not in page_urls:
             page_urls.append(full_url)
 
@@ -271,7 +284,6 @@ async def scrape_google_sites(page, site):
                 " ".join(page_soup.body.text.split()) if page_soup.body else ""
             )
 
-            # 🤖 AI要約を生成
             ai_summary = await generate_ai_summary(title, body_text)
 
             data_list.append({
@@ -279,7 +291,7 @@ async def scrape_google_sites(page, site):
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "ai_summary": ai_summary,  # ← 追加
+                "ai_summary": ai_summary,
                 "images": extract_images(page_soup, url),
             })
         except Exception as e:
@@ -288,7 +300,7 @@ async def scrape_google_sites(page, site):
 
 
 async def scrape_generic(page, site):
-    start_url = site["start_url"]
+    start_url = clean_url(site["start_url"])
     print(f"\n--- [一般Webサイト: {site['site_name']}] 取得開始 ---")
     try:
         await page.goto(
@@ -305,7 +317,7 @@ async def scrape_generic(page, site):
     base_domain_path = start_parsed.netloc + start_parsed.path
 
     for a_tag in soup.find_all("a", href=True):
-        full_url = urljoin(start_url, a_tag["href"])
+        full_url = clean_url(urljoin(start_url, a_tag["href"]))
         parsed_url = urlparse(full_url)
         if (parsed_url.netloc + parsed_url.path).startswith(
             base_domain_path
@@ -332,7 +344,6 @@ async def scrape_generic(page, site):
                 " ".join(page_soup.body.text.split()) if page_soup.body else ""
             )
 
-            # 🤖 AI要約を生成
             ai_summary = await generate_ai_summary(title, body_text)
 
             data_list.append({
@@ -340,7 +351,7 @@ async def scrape_generic(page, site):
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "ai_summary": ai_summary,  # ← 追加
+                "ai_summary": ai_summary,
                 "images": extract_images(page_soup, url),
             })
         except Exception as e:
@@ -349,7 +360,7 @@ async def scrape_generic(page, site):
 
 
 async def scrape_single_page(page, site):
-    url = site.get("url") or site.get("start_url")
+    url = clean_url(site.get("url") or site.get("start_url"))
     print(f"\n--- [単一ページ: {site['site_name']}] 取得開始 ---")
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=30000)
@@ -364,7 +375,6 @@ async def scrape_single_page(page, site):
             " ".join(page_soup.body.text.split()) if page_soup.body else ""
         )
 
-        # 🤖 AI要約を生成
         ai_summary = await generate_ai_summary(title, body_text)
 
         return [{
@@ -372,7 +382,7 @@ async def scrape_single_page(page, site):
             "title": title,
             "url": url,
             "content": body_text,
-            "ai_summary": ai_summary,  # ← 追加
+            "ai_summary": ai_summary,
             "images": extract_images(page_soup, url),
         }]
     except Exception as e:
