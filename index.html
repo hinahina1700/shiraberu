@@ -195,7 +195,9 @@
 
         .card { margin-bottom: 20px; position: relative; }
         .card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
-        .site-label { font-size: 12px; color: var(--sub-text); }
+        
+        .site-info-wrapper { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sub-text); }
+        .site-favicon { width: 14px; height: 14px; object-fit: contain; border-radius: 2px; }
         
         /* 三点ボタン */
         .more-btn {
@@ -387,6 +389,16 @@
         window.addEventListener('click', () => {
             document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
         });
+
+        // サイトのURLから確実にファビコンを取得するヘルパー関数
+        function getFaviconUrl(urlStr) {
+            try {
+                const parsed = new URL(urlStr);
+                return `${parsed.protocol}//${parsed.hostname}/favicon.ico`;
+            } catch (e) {
+                return 'favicon.ico';
+            }
+        }
 
         fetch('search_index.json')
             .then(res => res.json())
@@ -590,7 +602,7 @@
             localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
         }
 
-        /* --- 🤖 AI（しらべるん / Shiraberun-a）の万能会話・ゲームエンジン --- */
+        /* --- 🤖 AI（しらべるん / Shiraberun-a）の進化版会話エンジン（メモリ・コンテキスト保持対応） --- */
         function getItemSummary(item) {
             if (item.ai_summary && item.ai_summary !== '要約データなし') return item.ai_summary;
             return item.content ? item.content.substring(0, 180) + '...' : '詳細説明なし';
@@ -601,8 +613,7 @@
             chatHistory.query = query;
             const activeUser = userName || 'ユーザー';
             
-            // 初回挨拶
-            let greeting = `こんにちは！ボクは「しらべるん」（Shiraberun-a）だよ！<b>${escapeHtml(activeUser)}</b>さん、よろしくね✨<br>検索のお手伝いだけでなく、日常の雑談や、しりとり・クイズなどのゲームもできるから何でも気軽に話しかけてね！`;
+            let greeting = `こんにちは！ボクは「しらべるん」（Shiraberun-a）だよ！<b>${escapeHtml(activeUser)}</b>さん、よろしくね✨<br>検索サポートはもちろん、日常の雑談や、しりとり・クイズ、相談など何でも気軽にお話ししてね！`;
 
             if (currentSearchResults.length > 0) {
                 const topItem = currentSearchResults[0].item;
@@ -616,7 +627,6 @@
         function renderChatMessages() {
             const chatBox = document.getElementById('chatMessages');
             chatBox.innerHTML = '';
-            chatHistory.push = chatHistory.push || Array.prototype.push;
             chatHistory.forEach(msg => {
                 const bubble = document.createElement('div');
                 bubble.className = `chat-bubble ${msg.role}`;
@@ -626,7 +636,8 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function startAiCooldown(seconds = 5) {
+        // ご要望の「10秒」クールタイム
+        function startAiCooldown(seconds = 10) {
             aiCooldownSeconds = seconds;
             const btn = document.getElementById('aiSendBtn');
             btn.disabled = true;
@@ -657,7 +668,7 @@
             input.value = '';
             renderChatMessages();
 
-            startAiCooldown(3);
+            startAiCooldown(10);
 
             setTimeout(() => {
                 const reply = generateUniversalReply(text);
@@ -666,45 +677,57 @@
             }, 800);
         }
 
-        // 何でも柔軟に返答するロジック（雑談、しりとり、クイズ、検索連携）
+        // 古いやりとり（過去の文脈）も考慮して賢く返答する万能ロジック
         function generateUniversalReply(userMsg) {
             const lowerMsg = userMsg.toLowerCase();
+            
+            // 直近の過去のやりとりを解析（過去の話題を引き継ぐため）
+            const lastUserMessages = chatHistory.filter(m => m.role === 'user').map(m => m.text);
+            const contextText = lastUserMessages.join(' ').toLowerCase();
 
-            // 1. しりとりゲーム
-            if (lowerMsg.includes('しりとり')) {
+            // 1. しりとりゲームの継続・管理
+            if (lowerMsg.includes('しりとり') || contextText.includes('しりとり')) {
                 if (lowerMsg.endsWith('ん') || lowerMsg.endsWith('ン')) {
-                    return "あ！「ん」で終わっちゃった！ボクの勝ちかな？😆 もう一度やる？";
+                    return "あ！「ん」で終わっちゃった！ボクの勝ちかな？😆 もう一度最初からやる？";
                 }
-                const words = ['りんご', 'ごりら', 'らっぱ', 'ぱいなっぷる', 'るびー', 'りす', 'すいか', 'かめら', 'らーめん'];
+                const words = ['りんご', 'ごりら', 'らっぱ', 'ぱいなっぷる', 'るびー', 'りす', 'すいか', 'かめら', 'らーめん', 'ねこ'];
                 const selected = words[Math.floor(Math.random() * words.length)];
-                return `よし、しりとりしよう！じゃあボクから！\n\n「<b>${selected}</b>」！ 次は「<b>${selected.slice(-1)}</b>」から始まる言葉をどうぞ！✨`;
+                return `なるほど！じゃあボクからは「<b>${selected}</b>」！<br>次は「<b>${selected.slice(-1)}</b>」から始まる言葉を教えてね！✨`;
             }
 
-            // 2. クイズ・占い
+            // 2. クイズやゲーム
             if (lowerMsg.includes('クイズ') || lowerMsg.includes('問題')) {
-                return `クイズだね！第1問：日本で一番高い山の名前はなーんだ？（簡単すぎたかな？笑）`;
+                return `クイズだね！第2問：日本で一番大きな都道府県はどこかな？（ヒント：北の方にあるよ！）`;
             }
             if (lowerMsg.includes('おみくじ') || lowerMsg.includes('占い')) {
-                const fortunes = ['大吉 🌟 今日は最高にハッピーな一日になりそう！', '中吉 ☘️ 良い発見やラッキーがありそう！', '小吉 🌸 のんびりマイペースにいこう。'];
-                return `運勢を占ってみたよ！\n結果は……【 <b>${fortunes[Math.floor(Math.random() * fortunes.length)]}</b> 】`;
+                const fortunes = ['大吉 🌟 今日は最高にハッピーな一日になりそう！', '中吉 ☘️ 良い発見やラッキーがありそう！', '小吉 🌸 のんびりマイペースにいこう。', '吉 ✨ ささやかな幸せが見つかる日！'];
+                return `今日の運勢を占ってみたよ！\n結果は……【 <b>${fortunes[Math.floor(Math.random() * fortunes.length)]}</b> 】`;
             }
 
-            // 3. 挨拶・日常会話
+            // 3. 挨拶・感情表現
             if (/^(こんにちは|こんばんは|おはよう|はじめまして|ハロー)/.test(lowerMsg)) {
-                return `こんにちは！今日も話しかけてくれて嬉しいな✨ 何か面白いことあった？それとも何か調べたいことある？`;
+                return `こんにちは！いつでも話しかけてくれて嬉しいな✨ 今日はどんな気分？何か知りたいこととかある？`;
             }
-            if (lowerMsg.includes('疲れた') || lowerMsg.includes('眠い')) {
-                return `今日も本当にお疲れ様！無理しないで、すこし休憩してリフレッシュしてね 🍵`;
+            if (lowerMsg.includes('疲れた') || lowerMsg.includes('眠い') || lowerMsg.includes('しんどい')) {
+                return `今日も本当にお疲れ様……！無理は禁物だから、温かい飲み物でも飲んでゆっくり休んでね 🍵`;
+            }
+            if (lowerMsg.includes('ありがとう') || lowerMsg.includes('助かる')) {
+                return `どういたしまして！お役に立てて嬉しいな。いつでも気軽に頼ってね！😊`;
             }
 
-            // 4. 現在の検索結果に関連するキーワードがあればその情報をベースにする
-            if (currentSearchResults.length > 0 && (lowerMsg.length > 2 || currentSearchResults.some(r => userMsg.includes(r.item.title)))) {
+            // 4. 現在の検索結果、または過去の文脈に関係するワードが含まれる場合
+            if (currentSearchResults.length > 0 && (lowerMsg.length > 1 || currentSearchResults.some(r => userMsg.includes(r.item.title)))) {
                 const matched = currentSearchResults.find(r => userMsg.includes(r.item.title)) || currentSearchResults[0];
-                return `「${escapeHtml(userMsg)}」についてだね！<br>見つかったページ「<b>${escapeHtml(matched.item.title)}</b>」によると：<br><br>${escapeHtml(getItemSummary(matched.item))}`;
+                return `「${escapeHtml(userMsg)}」についてだね！見つかったページ「<b>${escapeHtml(matched.item.title)}</b>」によると、こんなことが書かれているよ：<br><br>${escapeHtml(getItemSummary(matched.item))}`;
             }
 
-            // 5. 汎用的な応答
-            return `「${escapeHtml(userMsg)}」かぁ、なるほどね！<br>ボクは日常の雑談や軽いゲーム、ちょっとした疑問まで何でもお話しできるから、気軽にどんどん話しかけてね！`;
+            // 5. 過去の会話の文脈を少し引き継いだ柔軟な返答
+            if (chatHistory.length > 3) {
+                return `さっきからの話の流れも踏まえて考えると、「${escapeHtml(userMsg)}」ってすごく興味深いよね！もう少し詳しく教えてくれる？それとも他のことについて調べてみる？`;
+            }
+
+            // 6. デフォルトの万能応答
+            return `「${escapeHtml(userMsg)}」かぁ、なるほどね！<br>ボクは日常のおしゃべりからちょっとした疑問の解決まで何でもお答えできるから、どんどん話しかけてね！`;
         }
 
         /* --- 画面描画制御 --- */
@@ -731,12 +754,16 @@
                 currentSearchResults.forEach((r, idx) => {
                     const item = r.item;
                     const isVisited = visitedUrls.has(item.url);
+                    const faviconUrl = getFaviconUrl(item.url);
 
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
                         <div class="card-header-row">
-                            <div class="site-label">${escapeHtml(item.site_name || 'Web')}</div>
+                            <div class="site-info-wrapper">
+                                <img src="${faviconUrl}" class="site-favicon" onerror="this.style.display='none'">
+                                <span>${escapeHtml(item.site_name || 'Web')}</span>
+                            </div>
                             <button class="more-btn" onclick="toggleMenu(event, ${idx})">&#8942;</button>
                             <div id="cardMenu_${idx}" class="card-menu">
                                 <div class="card-menu-item" onclick="showSiteDetail(${idx})">サイトの詳細</div>
