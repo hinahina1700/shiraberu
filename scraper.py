@@ -40,11 +40,9 @@ async def generate_ai_summary(title, content):
     """Gemini API（gemini-2.5-flash）を使って要約を生成。エラー時は本文抜粋を返す"""
     cleaned_content = " ".join(content.split()) if content else ""
 
-    # 本文が短い場合は本文冒頭を返す
     if len(cleaned_content) < 30:
         return cleaned_content if cleaned_content else f"{title}に関するページです。"
 
-    # APIクライアントが無い場合は本文抜粋にフォールバック
     if not gemini_client:
         return cleaned_content[:140] + ("..." if len(cleaned_content) > 140 else "")
 
@@ -66,7 +64,7 @@ async def generate_ai_summary(title, content):
             ),
         )
         summary = response.text.strip()
-        await asyncio.sleep(1.0)  # レート制限対策
+        await asyncio.sleep(0.8)  # レート制限対策
         return summary
     except Exception as e:
         print(f"  ⚠️ AI要約の生成失敗 ({title}): {e}")
@@ -74,69 +72,50 @@ async def generate_ai_summary(title, content):
 
 
 def extract_images(soup, base_url):
-    """アイキャッチ(OGP)優先＋ノイズ画像除外ロジックで画像を取得"""
+    """【精度向上】アイキャッチ(OGP)および本文中の主要画像を高品質に抽出"""
     images = []
 
     # 1. OGP画像（アイキャッチ）があれば最優先で追加
-    og_image = soup.find("meta", property="og:image") or soup.find("meta", name="twitter:image")
-    if og_image and og_image.get("content"):
-        og_url = clean_url(urljoin(base_url, og_image["content"]))
-        images.append({"src": og_url, "alt": "アイキャッチ画像"})
+    for prop in ["og:image", "twitter:image"]:
+        og_tag = soup.find("meta", property=prop) or soup.find("meta", attrs={"name": prop})
+        if og_tag and og_tag.get("content"):
+            og_url = clean_url(urljoin(base_url, og_tag["content"]))
+            if og_url and not any(item["src"] == og_url for item in images):
+                images.append({"src": og_url, "alt": "アイキャッチ画像"})
+                break
 
-    # ヘッダー・フッター・ナビゲーション等のノイズを除外したエリアから取得
+    # ノイズになりやすいエリアを除外
     soup_copy = BeautifulSoup(str(soup), "html.parser")
-    for noisy in soup_copy.select("header, footer, nav, .header, .footer, .nav, .sidebar, #sidebar, .comment"):
+    for noisy in soup_copy.select("header, footer, nav, .header, .footer, .nav, .sidebar, #sidebar, .comment, script, style, form"):
         noisy.decompose()
 
-    # 2. 本文エリアの画像を取得
+    # 2. 本文エリアの画像を高精度に取得
     for img in soup_copy.find_all("img", src=True):
         src = img["src"]
-        if src.startswith("data:") or src.endswith((".svg", ".ico", ".gif")):
-            continue
+        if not src or src.startswith("data:") or src.lower().endswith((".svg", ".ico", ".gif", ".png")):
+            # 小さなアイコンやボタン等の拡張子・データURIを除外
+            if src.lower().endswith((".svg", ".ico", ".gif")):
+                continue
 
         full_img_url = clean_url(urljoin(base_url, src))
 
-        # アイコン・ロゴ系などの不要画像フィルタ
-        ng_keywords = ["logo", "icon", "banner", "btn", "button", "avatar", "common", "favicon"]
+        # 不要なサムネイルやアイコン・ボタンのキーワードフィルタ
+        ng_keywords = ["logo", "icon", "banner", "btn", "button", "avatar", "common", "favicon", "parts", "spacer"]
         if any(ng in full_img_url.lower() for ng in ng_keywords):
             continue
 
         if not any(item["src"] == full_img_url for item in images):
-            alt_text = img.get("alt", "").strip()
+            alt_text = img.get("alt", "").strip() or "ページ画像"
             images.append({"src": full_img_url, "alt": alt_text})
 
     return images[:15]
 
 
-async def random_delay(min_sec=3.0, max_sec=5.0):
+async def random_delay(min_sec=2.0, max_sec=4.0):
     wait_time = random.uniform(min_sec, max_sec)
     print(f"       ⏳ {wait_time:.2f} 秒待機中...")
     await asyncio.sleep(wait_time)
 
-
-# ==============================================================================
-# ★ 検索対象サイトの設定リスト ＆ 各タイプの仕組み解説
-# ==============================================================================
-# 【type の種類と仕組みについて】
-#
-# 1. "atwiki" (アットウィキ)
-#    - 仕組み: 指定したwikiの全ページ一覧ページ (`/list`) にアクセスし、
-#      そこに掲載されている全個別ページのURLを自動収集して一括スクレイピングします。
-#      Cloudflare対策のウェイトや、不要な編集・管理ページ（/edit等）の除外処理を含みます。
-#
-# 2. "google_sites" (Googleサイト)
-#    - 仕組み: Googleサイト特有の構造を持つベースURLにアクセスし、
-#      ページ内にあるリンクをたどってサイト内の全下層ページを自動発見して巡回します。
-#
-# 3. "generic" (通常の一般Webサイト)
-#    - 仕組み: 指定した開始URL (`start_url`) からクロールを開始し、
-#      同一ドメイン・同一パス内にあるリンクを再帰的・網羅的に探して全ページを収集します。
-#      個人のWebサイトやブログなどのスクレイピングに向いています。
-#
-# 4. "single_page" (単一ページ)
-#    - 仕組み: リンクを辿って他のページを探したりせず、指定された単一のURL (`url`) のみ
-#      をピンポイントで取得してインデックス登録します（乗換案内や案内ページ等に便利）。
-# ==============================================================================
 
 TARGET_SITES = [
     {
@@ -205,25 +184,36 @@ async def scrape_atwiki(page, site):
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
 
     soup = None
-    for attempt in range(1, 4):
+    for attempt in range(1, 5):
         try:
-            print(f"  一覧を取得中 (試行 {attempt}/3)...")
+            print(f"  一覧を取得中 (試行 {attempt}/4)...")
             await page.goto(list_url, wait_until="networkidle", timeout=60000)
             await random_delay(3.0, 5.0)
-            soup = BeautifulSoup(await page.content(), "html.parser")
-            break
+            html_content = await page.content()
+            
+            # しばらくお待ちください（Cloudflare等）対策
+            if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content or "Just a moment" in html_content:
+                print(f"  ⚠️ ブロック画面を検出。8秒待機して再試行します...")
+                await asyncio.sleep(8)
+                continue
+
+            soup = BeautifulSoup(html_content, "html.parser")
+            if soup.find_all("a", href=True):
+                break
         except Exception as e:
             print(f"  └ 失敗: {e}")
-            if attempt == 3:
+            if attempt == 4:
                 return []
-            await asyncio.sleep(10)
+            await asyncio.sleep(6)
+
+    if not soup:
+        return []
 
     page_urls = []
     for a_tag in soup.find_all("a", href=True):
         full_url = clean_url(urljoin(base_url, a_tag["href"]))
         
-        # atwiki管理ページ・編集ページのURLを除外
-        ng_paths = ["/edit", "/diff", "/keyword/", "/cmd/", "/tag/"]
+        ng_paths = ["/edit", "/diff", "/keyword/", "/cmd/", "/tag/", "/counter/"]
         if any(ng in full_url for ng in ng_paths):
             continue
 
@@ -241,24 +231,21 @@ async def scrape_atwiki(page, site):
     for index, url in enumerate(page_urls, 1):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
 
+        success = False
         for attempt in range(1, 4):
             try:
                 await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-                await random_delay(2.0, 4.0)
-                await page.evaluate("window.scrollBy(0, 200);")
+                await random_delay(1.5, 3.0)
+                await page.evaluate("window.scrollBy(0, 300);")
 
                 html_content = await page.content()
-                if (
-                    "Just a moment" in html_content
-                    or "ロボットではありません" in html_content
-                ):
-                    print(f"    └ Cloudflareブロックを検出。10秒待機して再試行 ({attempt}/3)")
+                if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content or "Just a moment" in html_content:
+                    print(f"    └ ブロック画面検出。10秒待機して再試行 ({attempt}/3)")
                     await asyncio.sleep(10)
                     continue
 
                 page_soup = BeautifulSoup(html_content, "html.parser")
 
-                # タイトル取得
                 title_elem = page_soup.find("h2", id="page_title")
                 title = (
                     title_elem.text.strip()
@@ -270,7 +257,6 @@ async def scrape_atwiki(page, site):
                     )
                 )
 
-                # Wiki本文エリア抽出（修正済み：安全な .select を使用）
                 body_elem = page_soup.find("div", id="wikibody") or page_soup.find("div", id="atwiki-body") or page_soup.find("body")
 
                 if body_elem:
@@ -295,11 +281,14 @@ async def scrape_atwiki(page, site):
                     "images": images,
                     "indexed_at": indexed_at
                 })
+                success = True
                 break
             except Exception as e:
                 print(f"    └ エラー ({attempt}/3): {e}")
                 if attempt < 3:
                     await asyncio.sleep(5)
+        if not success:
+            print(f"    ❌ ページの取得をスキップしました: {url}")
 
     return data_list
 
@@ -326,7 +315,7 @@ async def scrape_google_sites(page, site):
         print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
             await page.goto(url, wait_until="networkidle", timeout=30000)
-            await random_delay(2.0, 4.0)
+            await random_delay(1.5, 3.0)
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = (
                 page_soup.find("title").text.strip()
@@ -338,7 +327,6 @@ async def scrape_google_sites(page, site):
             )
 
             ai_summary = await generate_ai_summary(title, body_text)
-
             tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
             indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -400,7 +388,6 @@ async def scrape_generic(page, site):
             )
 
             ai_summary = await generate_ai_summary(title, body_text)
-
             tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
             indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -435,7 +422,6 @@ async def scrape_single_page(page, site):
         )
 
         ai_summary = await generate_ai_summary(title, body_text)
-
         tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
         indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
