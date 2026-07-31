@@ -175,7 +175,6 @@ async def scrape_atwiki(page, site):
 
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
 
-    # 最初にメインページを開いてCookie / セッションを確立する
     try:
         print("  初期セッションを確立中...")
         await page.goto(base_url, wait_until="domcontentloaded", timeout=30000)
@@ -236,7 +235,6 @@ async def scrape_atwiki(page, site):
                 await random_delay(0.8, 1.5)
 
                 html_content = await page.content()
-                # ブロック画面を検知した場合、少し待って自動でJavaScript等によるリダイレクトを待つ
                 if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content:
                     await asyncio.sleep(3)
                     html_content = await page.content()
@@ -245,7 +243,7 @@ async def scrape_atwiki(page, site):
                     if attempt < 2:
                         continue
                     else:
-                        print(f"  [{index}/{len(page_urls)] ❌ スキップ (ブロック継続): {url}")
+                        print(f"  [{index}/{len(page_urls)}] ❌ スキップ (ブロック継続): {url}")
                         break
 
                 page_soup = BeautifulSoup(html_content, "html.parser")
@@ -464,7 +462,6 @@ async def main():
         )
         page = await context.new_page()
         
-        # ボット検知回避スクリプトの強化
         await page.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
             window.navigator.chrome = { runtime: {} };
