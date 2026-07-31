@@ -1498,16 +1498,6 @@
     "sameSite": "None"
   },
   {
-    "name": "ssplink",
-    "value": "https://sync.inmobi.com/setuid?bidderID=1083&dspUserId=f83a952b-5255-5216-834e-71c1552d5a76",
-    "domain": "measureadv.com",
-    "path": "/",
-    "expires": 1785497250.368725,
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
     "name": "gdpr",
     "value": "0",
     "domain": "measureadv.com",
@@ -1583,16 +1573,6 @@
     "domain": ".eyeota.net",
     "path": "/",
     "expires": 1817032650.524449,
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "SERVERID",
-    "value": "17019~DM",
-    "domain": ".eyeota.net",
-    "path": "/",
-    "expires": 1785497250.599804,
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
@@ -2047,16 +2027,6 @@
     "domain": "syncingbridge.com",
     "path": "/",
     "expires": 1787656652.000992,
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "ssplink",
-    "value": "https://sync.inmobi.com/setuid?bidderID=869&dspUserId=f83a952b-5255-5216-834e-71c1552d5a76",
-    "domain": "syncingbridge.com",
-    "path": "/",
-    "expires": 1785497250.868286,
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
@@ -3132,16 +3102,6 @@
     "httpOnly": false,
     "secure": false,
     "sameSite": "Lax"
-  },
-  {
-    "name": "ids",
-    "value": "{\"23\":\"3aded113-75f1-4698-acc1-6f22b98787c5\",\"175\":\"C-eAGrVjIysVSyUjIxsjCxtDAyNTCytDAzszA0MDAIMzRQqgUAcNcG8w\",\"186\":\"41b7e0eb-63f6-44c4-b6f3-6183604c9bf2\"}",
-    "domain": "measureadv.com",
-    "path": "/",
-    "expires": 1785497252.294776,
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None"
   },
   {
     "name": "did",
