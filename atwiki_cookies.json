@@ -1,0 +1,1180 @@
+[
+  {
+    "name": "atwiki_liked",
+    "value": "%5B%5D",
+    "domain": "w.atwiki.jp",
+    "path": "/nanahamakoku/",
+    "expires": 1785510000.773547,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sync",
+    "value": "CgoIoQEQg6Tqt_szCgoIxAIQg6Tqt_szCgoI5gEQg6Tqt_szCgoIhwIQg6Tqt_szCgoIxwIQg6Tqt_szCgkIOhCDpOq3-zMKCgi7AhCDpOq3-zMKCQgbEIOk6rf7MwoKCIwCEIOk6rf7MwoKCL8CEIOk6rf7Mw==",
+    "domain": ".3lift.com",
+    "path": "/sync",
+    "expires": 1788073302.540652,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_li_ss",
+    "value": "CggKBgiiARCdHg",
+    "domain": "i.liadm.com",
+    "path": "/s",
+    "expires": 1788073303.372952,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__flux_u",
+    "value": "41dd73a5d40c4e7083907da09696f4d4",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1820041302.407252,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_flux_dataharbor",
+    "value": "1",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1793257297,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "sharedid",
+    "value": "b3219de8-4a48-46eb-a005-37d78128d9ce",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1787900497,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "sharedid_cst",
+    "value": "zix7LPQsHA%3D%3D",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1787900497,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "__flux_s",
+    "value": "1785481297582|1785481297582|66f7f2ebb64442b38cdd225da82c268d|1",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1820041302.409079,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "__flux_ls",
+    "value": "0|0",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1820041302.409379,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "CLID",
+    "value": "3607199cb3ef4a858ef996ae0f6853a7.20260731.20270731",
+    "domain": "www.clarity.ms",
+    "path": "/",
+    "expires": 1817017299.04878,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "khaos",
+    "value": "MS8LGSAN-27-HQ0G",
+    "domain": ".rubiconproject.com",
+    "path": "/",
+    "expires": 1817017300.113973,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "audit",
+    "value": "1|/FiJjZ+CXyOAx1EfSNy+i32Bqx77crXZRQt+1eHfwPEZ0liBUFFjBDznR+MzOfhBSBx2P3in8zMuZ1QGCOkyBCKPLRELhl3xIo8tEQuGXfEijy0RC4Zd8SKPLRELhl3xGLmP30iNJH4=",
+    "domain": ".rubiconproject.com",
+    "path": "/",
+    "expires": 1817017300.114019,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__pmguid_",
+    "value": "e7314756-fff5-49ed-8ebd-b6e0fce3df42",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1817017300,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ss_pp_utm",
+    "value": "%7B%7D",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1817017300,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "__amc",
+    "value": "1_1785481300_1785481300",
+    "domain": ".prebid.a-mo.net",
+    "path": "/",
+    "expires": 1817017300.290617,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1817017303.986097,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sd_amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".prebid.a-mo.net",
+    "path": "/",
+    "expires": 1817017303.195093,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "pamuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1817017303.987684,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "psd_amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".prebid.a-mo.net",
+    "path": "/",
+    "expires": 1817017300.290839,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "receive-cookie-deprecation",
+    "value": "1",
+    "domain": ".adtdp.com",
+    "path": "/",
+    "expires": 1801033300.387972,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "pr",
+    "value": "aja",
+    "domain": ".adtdp.com",
+    "path": "/",
+    "expires": 1817017300.388127,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "uid",
+    "value": "9ead3cad-ec48-436e-b63e-3a8551838a10",
+    "domain": ".adtdp.com",
+    "path": "/",
+    "expires": 1817017300.388069,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "c",
+    "value": "1785481300",
+    "domain": ".impact-ad.jp",
+    "path": "/",
+    "expires": 1817017300.550197,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "tuuid",
+    "value": "95272a1e-c4ef-45b1-8b33-0d13ac445a43",
+    "domain": ".impact-ad.jp",
+    "path": "/",
+    "expires": 1817017301.458764,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__cf_bm",
+    "value": "szwsiwAJNNvrc8fOByym.VDOzedWDfKibk.TrOIqMFM-1785481300.60865-1.0.1.1-dQH_UV3P3JzbIaETzi.SZuQHxTRBCNdY5KLUEh56q3T5oL0gB9iuDXAea4OY2mU9BvHkABIdPVGHnHs9RF0ReXQ3jphuNqaF9VpNKfGN8xrO4rbLctTM9tizqPEJKROW",
+    "domain": ".twitter.com",
+    "path": "/",
+    "expires": 1785483100.631027,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "TR",
+    "value": "fe5780f9505740ce182f56a14989d417",
+    "domain": ".send.microad.jp",
+    "path": "/",
+    "expires": 1793257300.772309,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "SOC",
+    "value": "amxIVMCo8HMAAMgGebMAAAAA",
+    "domain": ".socdm.com",
+    "path": "/",
+    "expires": 1820041301.075575,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "tuuid_lu",
+    "value": "1785481301",
+    "domain": ".impact-ad.jp",
+    "path": "/",
+    "expires": 1817017301.461421,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_ga",
+    "value": "GA1.1.301122267.1785481302",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1820041301.699446,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "rise_enhance_uuid",
+    "value": "bc62ad94-ac4a-46a9-9e5a-4d2a61282ca7",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1817017301,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "matw_uuid_ADU-6ZM57766",
+    "value": "{\"tags\":[{\"tagId\":\"6891a2bcfe53b87e38a40e5e\",\"count\":0,\"start\":\"2026-07-31T07:01:41.981Z\",\"frequency\":\"HOURLY\",\"repeat\":\"1\",\"version\":\"20\"}]}",
+    "domain": "w.atwiki.jp",
+    "path": "/",
+    "expires": 1785484901,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "cf_clearance",
+    "value": "ZvRs3sZdo8IvjfPkMH3X2kTh7DPcsVOzbLKdXz_w91k-1785481302-1.2.1.1-h6ufscWHnwhbehOMNTeK4LMvTx6jXV9AUbG9k3phLoSP4ecZmPSLnYh1dH_I3ea8A3A_gl.9dsJhWsHz1nUoXCfzXWZnFcLvJqw0XLQNnRAeiijKOeVR52PBDx.43sA1oo3oTDcwjiobmPrQDapQavwwAMbViU6OC72yCTdj2TDIyFxogvh1hv4rvwmqbreaCfrV5jO7v9aXMH97_xFDOe7OzYLcQ_zrzoDuE6KYonYTiLttdM0IEf__JWubPXSU6JAzka6xDpyBTOBi_Dsn9L3S.hXuMp.ZMMf434Xf13wlhTe3oqhM073KpLlygcrd7.xKQNv2UbaF7P4AzxVnZxS.teSm0YMegxjvpMO1UgY",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1817017302.05488,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": false
+  },
+  {
+    "name": "FCCDCF",
+    "value": "%5Bnull%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull%2C%5B%5B32%2C%22%5B%5C%229153e4ad-ee13-460b-a1e5-de880caade0b%5C%22%2C%5B1785481300%2C674000000%5D%5D%22%5D%5D%5D",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1819177302,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "__gads",
+    "value": "ID=87f4f78902e64817:T=1785481301:RT=1785481301:S=ALNI_MaVQHrmCghRI_9xBpCEnXwvpJ9Bbw",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1819177301,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__gpi",
+    "value": "UID=000014cdccb22798:T=1785481301:RT=1785481301:S=ALNI_MZ-TwFwVU3pH4i7goGCQLmn4KgFkQ",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1819177301,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__eoi",
+    "value": "ID=904dbe6fb29a96ac:T=1785481301:RT=1785481301:S=AA-AfjZ3eD-H8vkRj8y0rC8tM6zD",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1801033301,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_clck",
+    "value": "cnojqa%5E2%5Eg87%5E0%5E2403",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1817017302,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "gid",
+    "value": "02c65b308e0e5cdaff1fc6bf7873b8c1",
+    "domain": ".gsspat.jp",
+    "path": "/",
+    "expires": 1820041302.439142,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "tluid",
+    "value": "4344062103142832763344",
+    "domain": ".3lift.com",
+    "path": "/",
+    "expires": 1793257303.965822,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "IDE",
+    "value": "AHWqTUk6sQO89-kRzgnxy5AsSjYADEt7uMY5v9wiZZIgvQ_DqYh05hZVPS852JS-Erw",
+    "domain": ".doubleclick.net",
+    "path": "/",
+    "expires": 1820041302.576984,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_clsk",
+    "value": "19a9e0n%5E1785481302766%5E1%5E0%5Ev.clarity.ms%2Fcollect",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1785567702,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "TDID",
+    "value": "4a2f740c-59a9-4922-b10b-72eede1956c4",
+    "domain": ".adsrvr.org",
+    "path": "/",
+    "expires": 1817017303.118041,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "A3",
+    "value": "d=AQABBFZIbGoCEHbKNj2z3qJeXPi_tXm_tKIFEgEBAQGZbWp2atxP0iMA_eMDAA&S=AQAAAvNI6nkkB7NHrhrTT3jpMlA",
+    "domain": ".yahoo.com",
+    "path": "/",
+    "expires": 1817038902.924446,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "li_sugr",
+    "value": "45e00cf2-2131-4fe8-ae83-7bbb3fe8faef",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": 1793257302.90025,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "bcookie",
+    "value": "\"v=2&c45dcee8-3121-4041-898a-b8cdc6bb7e75\"",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": 1817017302.900743,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "lidc",
+    "value": "\"b=VGST07:s=V:r=V:a=V:p=V:g=3515:u=1:x=1:i=1785481302:t=1785567702:v=2:sig=AQHzyucownhFonC9WR9pnTEw3NiGBRe9\"",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": 1785567702.900824,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "__cf_bm",
+    "value": "7..2DwRBCp2tBwb67TsGCBfUzo9DgODZgZNMhWlJixk-1785481302.8498461-1.0.1.1-t4IIdW0_rXXk32VA.HHjI5fmRJDkHnauPGi4EgtRKaFQhrJnOyrnFwzgoh.TrEnDRGOFb2caD2asChtE_puGyZ7eRJVx6T.BqVOwlnHpv0rynOv.l_kcM1wUQmq7MqSs",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": 1785483102.900928,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id",
+    "value": "s%3A0-6839a901-0443-543a-69fa-53ecbfff5fa8.%2FurVUR%2Bzf4%2Bnn6qFZLxlYbECEjuQBixRjr%2BDTI6N2ro",
+    "domain": "sync.srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.914641,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id",
+    "value": "s%3A0-6839a901-0443-543a-69fa-53ecbfff5fa8.%2FurVUR%2Bzf4%2Bnn6qFZLxlYbECEjuQBixRjr%2BDTI6N2ro",
+    "domain": ".srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.915946,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v2",
+    "value": "s%3AaDmpAQRDVDpp-lPsv_9fqCPzw78.YnEc11pxJ0vGD5fewOME5QfC8LfeBOyktdnCsegiFVo",
+    "domain": "sync.srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.91602,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v2",
+    "value": "s%3AaDmpAQRDVDpp-lPsv_9fqCPzw78.YnEc11pxJ0vGD5fewOME5QfC8LfeBOyktdnCsegiFVo",
+    "domain": ".srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.91606,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v3",
+    "value": "s%3AAQAKICotkmjMSL8vVf578izL_Be6ATyxq2E_-ps6gOGDyMi8EHwYBCDWkLHTBjABOgT7-sM6QgTsP-dK.PV77mp9aRjr3Pin3SamPajW%2F4xR3rCviVrKdEjC62KU",
+    "domain": "sync.srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.916096,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v3",
+    "value": "s%3AAQAKICotkmjMSL8vVf578izL_Be6ATyxq2E_-ps6gOGDyMi8EHwYBCDWkLHTBjABOgT7-sM6QgTsP-dK.PV77mp9aRjr3Pin3SamPajW%2F4xR3rCviVrKdEjC62KU",
+    "domain": ".srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.916133,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v4",
+    "value": "s%3ACiQwMTlmYjZmYS05Mzc4LTc5NGUtODE1OC1kMmQ0ZGE4NzE4ODYQBBoCTkEgNg.SzR4GSK%2FJI4RpMenpiYLnl7Hz4cBd1aq68JSvSC1XaA",
+    "domain": "sync.srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.916167,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sa-user-id-v4",
+    "value": "s%3ACiQwMTlmYjZmYS05Mzc4LTc5NGUtODE1OC1kMmQ0ZGE4NzE4ODYQBBoCTkEgNg.SzR4GSK%2FJI4RpMenpiYLnl7Hz4cBd1aq68JSvSC1XaA",
+    "domain": ".srv.stackadapt.com",
+    "path": "/",
+    "expires": 1817017302.916198,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "uids",
+    "value": "eyJ0ZW1wVUlEcyI6eyJ0cmlwbGVsaWZ0Ijp7InVpZCI6IjQzNDQwNjIxMDMxNDI4MzI3NjMzNDQiLCJleHBpcmVzIjoiMjAyNi0wOC0xNFQwNzowMTo0Mi44OTgxMTI2NjJaIn19fQ==",
+    "domain": ".pbs.yahoo.com",
+    "path": "/",
+    "expires": 1801206102.91687,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "IDSYNC",
+    "value": "19h0~2xdj",
+    "domain": ".analytics.yahoo.com",
+    "path": "/",
+    "expires": 1817017302.922093,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "lidid",
+    "value": "40546a05-bf89-40ff-b505-833144c45d99",
+    "domain": ".liadm.com",
+    "path": "/",
+    "expires": 1820041303.373044,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "TDCPM",
+    "value": "CAESFgoHc3Z4OXQ1MBILCKL8xsHztrc_EAUYASABKAIyCwie8ILxibe3PxAFOAFaB2JyZ2V1MjNgAg..",
+    "domain": ".adsrvr.org",
+    "path": "/",
+    "expires": 1817017303.118162,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "zync-uuid",
+    "value": "9ce91acd-b97b-4960-be21-816ab9ffa09e:1785481303.085853",
+    "domain": ".rezync.com",
+    "path": "/",
+    "expires": 1819177303.335658,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "SSPR_71",
+    "value": "aHR0cHM6Ly91LjRkZXguaW8vc2V0dWlkP2JpZGRlcj1tYWRvcGkmaXQ9YWRnLXBiLWNsdCZ1aWQ9QTI0MjcxOTI1ODU1MjE1MzcwMA==",
+    "domain": ".adkernel.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "SSPZ",
+    "value": "256788",
+    "domain": ".adkernel.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "DSP2F_71",
+    "value": "343983",
+    "domain": ".adkernel.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ADKUID",
+    "value": "A242719258552153700",
+    "domain": ".adkernel.com",
+    "path": "/",
+    "expires": 1788073303.178615,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_sv3_17",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.195189,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "mc",
+    "value": "eyJpZCI6ImJhN2ViNDk0LTQ2YTctNDM2ZC1hYzE1LTM0ZWNhOTJjMGFhOSIsImwiOjE3ODU0ODEzMDMxOTAsInQiOjN9",
+    "domain": ".thrtle.com",
+    "path": "/",
+    "expires": 1802761303.203598,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sc",
+    "value": "eyJpIjoiYmE3ZWI0OTQtNDZhNy00MzZkLWFjMTUtMzRlY2E5MmMwYWE5Iiwic2lkIjoic2lkLWFmY2Q3ZTAyLThjYWQtMTFmMS1hMzMwLTAyNDIwYTAwMDRiYSIsIm1zIjoyLCJwcyI6Miwic3AiOjUwNDQsInBwIjoyLCJ0c2UiOjIsImx0c2UiOjE3ODU0ODEzMDMxMzd9",
+    "domain": ".thrtle.com",
+    "path": "/",
+    "expires": 1802761303.203823,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "rud",
+    "value": "H4sIAAAAAAAA_-MSNjS3MDY3Nzc2M7IwNTezNDAxNBPiM9Q10PUqjchO9ggzC4gEAJlFgH4lAAAA",
+    "domain": ".rfihub.com",
+    "path": "/",
+    "expires": 1819177303.21299,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "euds",
+    "value": "H4sIAAAAAAAA_wXBwRGAMAgEwI_t4IAEwtkNJKQQK3f3uxyrIbk2FWbRgDNVP0IhnoVzktGvzLARoqw3h4XpD02yveE5AAAA",
+    "domain": ".rfihub.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "eud",
+    "value": "H4sIAAAAAAAA_13IuxGAQAgFwAqMrg4ckPvw7AbuU5ChoZUaOmO4e6WKPiHeBwVaUEZlinkImVQPrOWMeUqzkk2UdWcrVvRO23cCfX5-ATunDiFZAAAA",
+    "domain": ".rfihub.com",
+    "path": "/",
+    "expires": 1819177303.213463,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ruds",
+    "value": "H4sIAAAAAAAA_-MSNjS3MDY3Nzc2M7IwNTezNDAxNBPiM9Q10PUqjchO9ggzC4gEAJlFgH4lAAAA",
+    "domain": ".rfihub.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "yieldmo_id",
+    "value": "waDTRDDqqTDqKxRzLtTi%7C1785456000000%7C0",
+    "domain": ".yieldmo.com",
+    "path": "/",
+    "expires": 1817017303.319088,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sd-session-id",
+    "value": ".eJwNzE0KwyAQQOG7zDoWJ_6M42WCmglIG1tiumnI3evywce7YPnIsacm7YR4Hl-ZoLzqqA7xgl5_uzwhAlIwRGT8HBx51hY93BN06b2-21LXYbgIYyqrykxZWfZaZZlRBfQp87YlzRLHyNmARpuHDi44A_cfqUAmEw.amxIVw.rMCBk8FLf0npDRdzI5dqfSb16QI",
+    "domain": "live.rezync.com",
+    "path": "/",
+    "expires": 1819177303.336986,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "FCNEC",
+    "value": "%5B%5B%22AKsRol9aM4-gpKn-mov5KjmW8evn7oz0LIBqpOuNmtwB-2nkYXRDW2rR-inma5taE9PAiTgtFpP-SmMcGSUfZKCmcGSxaEpVsToTP7w-YPjVxV9jHAGiGLSf_2sic927-F4ZIrTfk4urlc0HTUlRlNuE7XouRWVeww%3D%3D%22%5D%5D",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1817017303,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "sd_amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".use3-sync.a-mo.net",
+    "path": "/",
+    "expires": 1817017303.938598,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "psd_amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".use3-sync.a-mo.net",
+    "path": "/",
+    "expires": 1817017303.987753,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "_sv3_4",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.409978,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "did",
+    "value": "tigd-6AZHijSMIET",
+    "domain": ".pippio.com",
+    "path": "/",
+    "expires": 1817017303.453558,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "didts",
+    "value": "1785481303",
+    "domain": ".pippio.com",
+    "path": "/",
+    "expires": 1817017303.453681,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "nnls",
+    "value": "",
+    "domain": ".pippio.com",
+    "path": "/",
+    "expires": 1790665303.453719,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "pxrc",
+    "value": "CAA=",
+    "domain": ".pippio.com",
+    "path": "/",
+    "expires": 1790665303.453752,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "KTPCACOOKIE",
+    "value": "YES",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1785567703.510416,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "SyncRTB4",
+    "value": "1786665600%3A220",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1793257303.533233,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "KADUSERCOOKIE",
+    "value": "2C2B3F26-4487-447E-8968-32B883335D6D",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1817017303.669038,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "KRTBCOOKIE_80",
+    "value": "0-CAESEA57YkvLChtSQ98FDhoj4yQ",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1793257303.644056,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "PugT",
+    "value": "1785481303",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1788073303.64428,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "pi",
+    "value": "158355:3",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1785567703.668918,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "chkChromeAb67Sec",
+    "value": "2",
+    "domain": ".pubmatic.com",
+    "path": "/",
+    "expires": 1793257303.669082,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_sv3_13",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.688701,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "i",
+    "value": "c4c20849-24fe-4710-99ef-35b93cbeb52e|1785481303",
+    "domain": ".openx.net",
+    "path": "/",
+    "expires": 1817017303.699644,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_sv3_14",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.74137,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "amuid2",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".a-mx.com",
+    "path": "/",
+    "expires": 1817017303.840836,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "amuid2_p",
+    "value": "5a497b40-16d6-457b-ae99-1896e134718e",
+    "domain": ".a-mx.com",
+    "path": "/",
+    "expires": 1817017303.841137,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "amdt_t",
+    "value": "p::1785481303818",
+    "domain": ".a-mx.com",
+    "path": "/",
+    "expires": 1817017303.841316,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "amdt_t_p",
+    "value": "p::1785481303818",
+    "domain": ".a-mx.com",
+    "path": "/",
+    "expires": 1817017303.841542,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "_sv3_0",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.865143,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "XANDR_PANID",
+    "value": "vQeJU3HPFQ34ry-uGPWeYSNNpqbpn6uEOgCF-WAhFPPXIF9XApGFsKLHVOl004uR3EQ-pTr1R8RwCyTrOkBgLr1nEmLioeRLESXT8taBOuY.",
+    "domain": ".adnxs.com",
+    "path": "/",
+    "expires": 1793257303.920192,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "uuid2",
+    "value": "9122656472808266952",
+    "domain": ".adnxs.com",
+    "path": "/",
+    "expires": 1793257303.920489,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_sv3_11",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.939854,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_sv3_3",
+    "value": "1",
+    "domain": ".a-mo.net",
+    "path": "/",
+    "expires": 1785567703.987813,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ljt_reader",
+    "value": "NF4F0LZHAZ-2-pf_YGWMtbI5",
+    "domain": ".lijit.com",
+    "path": "/",
+    "expires": 1817017304.070872,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "MUID",
+    "value": "24BB3A749965664A27632DD398B367E6",
+    "domain": ".bing.com",
+    "path": "/",
+    "expires": 1819177305.406772,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "MR",
+    "value": "0",
+    "domain": ".c.bing.com",
+    "path": "/",
+    "expires": 1786086105.406887,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "SRM_B",
+    "value": "24BB3A749965664A27632DD398B367E6",
+    "domain": ".c.bing.com",
+    "path": "/",
+    "expires": 1819177305.406926,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "g",
+    "value": "8oEvaA3FZGWyU2XCOIsU_1785481304416",
+    "domain": ".creativecdn.com",
+    "path": "/",
+    "expires": 1817017304.469946,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ts",
+    "value": "1785481304",
+    "domain": ".creativecdn.com",
+    "path": "/",
+    "expires": 1817017304.47341,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None",
+    "partitionKey": "https://atwiki.jp",
+    "_crHasCrossSiteAncestor": true
+  },
+  {
+    "name": "SM",
+    "value": "C",
+    "domain": ".c.clarity.ms",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "MUID",
+    "value": "24BB3A749965664A27632DD398B367E6",
+    "domain": ".clarity.ms",
+    "path": "/",
+    "expires": 1819177304.510933,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "MR",
+    "value": "0",
+    "domain": ".c.clarity.ms",
+    "path": "/",
+    "expires": 1786086104.510994,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ANONCHK",
+    "value": "0",
+    "domain": ".c.clarity.ms",
+    "path": "/",
+    "expires": 1785481904.511026,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "uids",
+    "value": "H4sIAAAAAAAE_1yQTUvEQAyG_0vOLWSSzHSmxxUPBfXiruBJOh9lF0WLa9Fa5r_LCK60x5e8z0OSBc7zazhDu4By0KrGarGKESsgtcmyyat-rmA6xYtogfQ1lr5DYzQj_Y6hBWERNKSQlZBlagyzCOQKin-LyR-Wnk_dy-H6cX8Ubd66j939eLiRK_P5dDfdUv8-7XfN-D0fu4dQXM6Vi9Yr4MUlYUha9zVTiLVo4tqJ9TU5P_joY0h2gJwr8LGfYfWTf6MgIuafAAAA__9q52vcPwEAAA==",
+    "domain": ".4dex.io",
+    "path": "/",
+    "expires": 1790640000.730243,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_rxuuid",
+    "value": "%7B%22rx_uuid%22%3A%22RX-f9306f82-8d38-45d4-8ebf-5cf94447381b-005%22%2C%22zdxidn%22%3A%222069.82%22%2C%22nxtrdr%22%3A%22https%3A%2F%2Fu.4dex.io%2Fsetuid%3Fbidder%3Dunruly%26it%3Dadg-pb-clt%26uid%3D%5BRX_UUID%5D%22%7D",
+    "domain": ".1rx.io",
+    "path": "/",
+    "expires": 1817017305.262839,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "uid",
+    "value": "69N6gqgO9tkCOIuXjoj8i9",
+    "domain": ".bance.jp",
+    "path": "/",
+    "expires": 1817017305.251899,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "uid",
+    "value": "44b6497d-1989-4559-a114-3b1dae9a71c3",
+    "domain": ".ad-stir.com",
+    "path": "/",
+    "expires": 1817017305.309838,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "bpmkv",
+    "value": "1",
+    "domain": ".ad-stir.com",
+    "path": "/",
+    "expires": 1817017305.310013,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_ga_H9C0SZS704",
+    "value": "GS2.1.s1785481301$o1$g0$t1785481305$j56$l0$h0",
+    "domain": ".atwiki.jp",
+    "path": "/",
+    "expires": 1820041305.372384,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  }
+]
