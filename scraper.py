@@ -64,7 +64,7 @@ async def generate_ai_summary(title, content):
             ),
         )
         summary = response.text.strip()
-        await asyncio.sleep(0.8)  # レート制限対策
+        await asyncio.sleep(0.5)
         return summary
     except Exception as e:
         print(f"  ⚠️ AI要約の生成失敗 ({title}): {e}")
@@ -72,10 +72,9 @@ async def generate_ai_summary(title, content):
 
 
 def extract_images(soup, base_url):
-    """【精度向上】アイキャッチ(OGP)および本文中の主要画像を高品質に抽出"""
+    """アイキャッチ(OGP)および本文中の主要画像を高品質に抽出"""
     images = []
 
-    # 1. OGP画像（アイキャッチ）があれば最優先で追加
     for prop in ["og:image", "twitter:image"]:
         og_tag = soup.find("meta", property=prop) or soup.find("meta", attrs={"name": prop})
         if og_tag and og_tag.get("content"):
@@ -84,22 +83,16 @@ def extract_images(soup, base_url):
                 images.append({"src": og_url, "alt": "アイキャッチ画像"})
                 break
 
-    # ノイズになりやすいエリアを除外
     soup_copy = BeautifulSoup(str(soup), "html.parser")
     for noisy in soup_copy.select("header, footer, nav, .header, .footer, .nav, .sidebar, #sidebar, .comment, script, style, form"):
         noisy.decompose()
 
-    # 2. 本文エリアの画像を高精度に取得
     for img in soup_copy.find_all("img", src=True):
         src = img["src"]
-        if not src or src.startswith("data:") or src.lower().endswith((".svg", ".ico", ".gif", ".png")):
-            # 小さなアイコンやボタン等の拡張子・データURIを除外
-            if src.lower().endswith((".svg", ".ico", ".gif")):
-                continue
+        if not src or src.startswith("data:") or src.lower().endswith((".svg", ".ico", ".gif")):
+            continue
 
         full_img_url = clean_url(urljoin(base_url, src))
-
-        # 不要なサムネイルやアイコン・ボタンのキーワードフィルタ
         ng_keywords = ["logo", "icon", "banner", "btn", "button", "avatar", "common", "favicon", "parts", "spacer"]
         if any(ng in full_img_url.lower() for ng in ng_keywords):
             continue
@@ -111,9 +104,8 @@ def extract_images(soup, base_url):
     return images[:15]
 
 
-async def random_delay(min_sec=2.0, max_sec=4.0):
+async def random_delay(min_sec=1.5, max_sec=3.0):
     wait_time = random.uniform(min_sec, max_sec)
-    print(f"       ⏳ {wait_time:.2f} 秒待機中...")
     await asyncio.sleep(wait_time)
 
 
@@ -183,28 +175,36 @@ async def scrape_atwiki(page, site):
 
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
 
+    # 最初にメインページを開いてCookie / セッションを確立する
+    try:
+        print("  初期セッションを確立中...")
+        await page.goto(base_url, wait_until="domcontentloaded", timeout=30000)
+        await random_delay(2.0, 3.0)
+    except Exception as e:
+        print(f"  └ 初期アクセスの警告: {e}")
+
     soup = None
-    for attempt in range(1, 5):
+    for attempt in range(1, 4):
         try:
-            print(f"  一覧を取得中 (試行 {attempt}/4)...")
-            await page.goto(list_url, wait_until="networkidle", timeout=60000)
-            await random_delay(3.0, 5.0)
-            html_content = await page.content()
+            print(f"  一覧ページを取得中 (試行 {attempt}/3)...")
+            await page.goto(list_url, wait_until="domcontentloaded", timeout=45000)
+            await random_delay(2.0, 3.0)
             
-            # しばらくお待ちください（Cloudflare等）対策
-            if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content or "Just a moment" in html_content:
-                print(f"  ⚠️ ブロック画面を検出。8秒待機して再試行します...")
-                await asyncio.sleep(8)
-                continue
+            html_content = await page.content()
+            if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content:
+                print("  ⚠️ ブロック画面検出。Cookieが通過するのを5秒待機...")
+                await asyncio.sleep(5)
+                await page.reload(wait_until="domcontentloaded")
+                html_content = await page.content()
 
             soup = BeautifulSoup(html_content, "html.parser")
             if soup.find_all("a", href=True):
                 break
         except Exception as e:
-            print(f"  └ 失敗: {e}")
-            if attempt == 4:
+            print(f"  └ 一覧取得エラー: {e}")
+            if attempt == 3:
                 return []
-            await asyncio.sleep(6)
+            await asyncio.sleep(3)
 
     if not soup:
         return []
@@ -229,20 +229,24 @@ async def scrape_atwiki(page, site):
 
     data_list = []
     for index, url in enumerate(page_urls, 1):
-        print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
-
         success = False
-        for attempt in range(1, 4):
+        for attempt in range(1, 3):
             try:
-                await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-                await random_delay(1.5, 3.0)
-                await page.evaluate("window.scrollBy(0, 300);")
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                await random_delay(0.8, 1.5)
 
                 html_content = await page.content()
-                if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content or "Just a moment" in html_content:
-                    print(f"    └ ブロック画面検出。10秒待機して再試行 ({attempt}/3)")
-                    await asyncio.sleep(10)
-                    continue
+                # ブロック画面を検知した場合、少し待って自動でJavaScript等によるリダイレクトを待つ
+                if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content:
+                    await asyncio.sleep(3)
+                    html_content = await page.content()
+
+                if "しばらくお待ちください" in html_content:
+                    if attempt < 2:
+                        continue
+                    else:
+                        print(f"  [{index}/{len(page_urls)] ❌ スキップ (ブロック継続): {url}")
+                        break
 
                 page_soup = BeautifulSoup(html_content, "html.parser")
 
@@ -282,13 +286,14 @@ async def scrape_atwiki(page, site):
                     "indexed_at": indexed_at
                 })
                 success = True
+                print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
                 break
             except Exception as e:
-                print(f"    └ エラー ({attempt}/3): {e}")
-                if attempt < 3:
-                    await asyncio.sleep(5)
+                if attempt == 2:
+                    print(f"  [{index}/{len(page_urls)}] ❌ 失敗: {url} ({e})")
+
         if not success:
-            print(f"    ❌ ページの取得をスキップしました: {url}")
+            continue
 
     return data_list
 
@@ -297,8 +302,8 @@ async def scrape_google_sites(page, site):
     base_url = clean_url(site["base_url"])
     print(f"\n--- [Google Sites: {site['site_name']}] 取得開始 ---")
     try:
-        await page.goto(base_url, wait_until="networkidle", timeout=30000)
-        await random_delay(2.0, 4.0)
+        await page.goto(base_url, wait_until="domcontentloaded", timeout=30000)
+        await random_delay(1.5, 2.5)
     except Exception as e:
         print(f"  └ アクセス失敗: {e}")
         return []
@@ -312,10 +317,9 @@ async def scrape_google_sites(page, site):
 
     data_list = []
     for index, url in enumerate(page_urls, 1):
-        print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
-            await page.goto(url, wait_until="networkidle", timeout=30000)
-            await random_delay(1.5, 3.0)
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await random_delay(1.0, 2.0)
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = (
                 page_soup.find("title").text.strip()
@@ -339,6 +343,7 @@ async def scrape_google_sites(page, site):
                 "images": extract_images(page_soup, url),
                 "indexed_at": indexed_at
             })
+            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
@@ -349,7 +354,7 @@ async def scrape_generic(page, site):
     print(f"\n--- [一般Webサイト: {site['site_name']}] 取得開始 ---")
     try:
         await page.goto(start_url, wait_until="domcontentloaded", timeout=30000)
-        await random_delay(2.0, 4.0)
+        await random_delay(1.5, 2.5)
     except Exception as e:
         print(f"  └ アクセス失敗: {e}")
         return []
@@ -369,10 +374,9 @@ async def scrape_generic(page, site):
 
     data_list = []
     for index, url in enumerate(page_urls, 1):
-        print(f"  [{index}/{len(page_urls)}] 取得中: {url}")
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await random_delay(1.5, 3.0)
+            await random_delay(1.0, 2.0)
             page_soup = BeautifulSoup(await page.content(), "html.parser")
             title = (
                 page_soup.find("h1").text.strip()
@@ -400,6 +404,7 @@ async def scrape_generic(page, site):
                 "images": extract_images(page_soup, url),
                 "indexed_at": indexed_at
             })
+            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
@@ -410,7 +415,7 @@ async def scrape_single_page(page, site):
     print(f"\n--- [単一ページ: {site['site_name']}] 取得開始 ---")
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await random_delay(2.0, 3.0)
+        await random_delay(1.5, 2.5)
         page_soup = BeautifulSoup(await page.content(), "html.parser")
         title = (
             page_soup.find("title").text.strip()
@@ -447,17 +452,24 @@ async def main():
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
+                "--disable-infobars",
+                "--disable-dev-shm-usage",
             ],
         )
         context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800},
             locale="ja-JP",
+            timezone_id="Asia/Tokyo",
         )
         page = await context.new_page()
+        
+        # ボット検知回避スクリプトの強化
         await page.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
             window.navigator.chrome = { runtime: {} };
+            Object.defineProperty(navigator, 'languages', {get: () => ['ja-JP', 'ja', 'en-US', 'en']});
+            Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
         """)
 
         all_search_data = []
