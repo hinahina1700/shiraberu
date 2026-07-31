@@ -2,32 +2,14 @@ import asyncio
 import json
 import os
 import random
-import re
 import zoneinfo
 from datetime import datetime
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
-from google import genai
 from playwright.async_api import async_playwright
 
-# ==========================================
-# 1. Gemini API クライアントの設定
-# ==========================================
-API_KEY = os.environ.get("GEMINI_API_KEY")
-
-gemini_client = None
-if API_KEY:
-    try:
-        gemini_client = genai.Client(api_key=API_KEY)
-        print("✅ Gemini API クライアントの初期化に成功しました。")
-    except Exception as e:
-        print(f"⚠️ Gemini API クライアントの初期化に失敗しました: {e}")
-else:
-    print(
-        "ℹ️ GEMINI_API_KEY が設定されていないため、AI要約の生成は本文抜粋機能にフォールバックします。"
-    )
-
+COOKIE_FILE = "atwiki_cookies.json"
 
 def clean_url(url):
     """URLから `#` 以降のハッシュ（アンカー）を除去して重複を防ぐ"""
@@ -35,47 +17,12 @@ def clean_url(url):
         return ""
     return url.split("#")[0]
 
-
-async def generate_ai_summary(title, content):
-    """Gemini API（gemini-2.5-flash）を使って要約を生成。エラー時は本文抜粋を返す"""
-    cleaned_content = " ".join(content.split()) if content else ""
-
-    if len(cleaned_content) < 30:
-        return cleaned_content if cleaned_content else f"{title}に関するページです。"
-
-    if not gemini_client:
-        return cleaned_content[:140] + ("..." if len(cleaned_content) > 140 else "")
-
-    prompt = f"""
-以下のWebページの内容を読み、対話型AI検索エンジン（Google AI Overview風）の回答として適切な、分かりやすい要約・解説（100文字〜150文字程度）を作成してください。
-
-【ページタイトル】: {title}
-【本文】:
-{cleaned_content[:1500]}
-"""
-
-    try:
-        loop = asyncio.get_running_loop()
-        response = await loop.run_in_executor(
-            None,
-            lambda: gemini_client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-            ),
-        )
-        summary = response.text.strip()
-        await asyncio.sleep(0.5)
-        return summary
-    except Exception as e:
-        print(f"  ⚠️ AI要約の生成失敗 ({title}): {e}")
-        return cleaned_content[:140] + ("..." if len(cleaned_content) > 140 else "")
-
-
 def extract_images(soup, base_url):
-    """アイキャッチ(OGP)および本文中の主要画像を高品質に抽出"""
+    """アイキャッチ(OGP)優先＋ノイズ画像除外ロジックで画像を高精度に取得"""
     images = []
 
-    for prop in ["og:image", "twitter:image"]:
+    # 1. OGP画像・Twitterカード画像を最優先で取得
+    for prop in ["og:image", "twitter:image", "image"]:
         og_tag = soup.find("meta", property=prop) or soup.find("meta", attrs={"name": prop})
         if og_tag and og_tag.get("content"):
             og_url = clean_url(urljoin(base_url, og_tag["content"]))
@@ -83,31 +30,45 @@ def extract_images(soup, base_url):
                 images.append({"src": og_url, "alt": "アイキャッチ画像"})
                 break
 
+    # 2. 本文エリア（不要な要素を除外）のコピーを作成
     soup_copy = BeautifulSoup(str(soup), "html.parser")
-    for noisy in soup_copy.select("header, footer, nav, .header, .footer, .nav, .sidebar, #sidebar, .comment, script, style, form"):
+    for noisy in soup_copy.select("header, footer, nav, .header, .footer, .nav, .sidebar, #sidebar, .comment, script, style, form, .menu, .ad"):
         noisy.decompose()
 
+    # 3. 本文中の画像を取得
     for img in soup_copy.find_all("img", src=True):
         src = img["src"]
-        if not src or src.startswith("data:") or src.lower().endswith((".svg", ".ico", ".gif")):
+        if not src or src.startswith("data:") or src.lower().endswith((".svg", ".ico", ".gif", ".png?")) or "pixel" in src.lower():
             continue
 
         full_img_url = clean_url(urljoin(base_url, src))
-        ng_keywords = ["logo", "icon", "banner", "btn", "button", "avatar", "common", "favicon", "parts", "spacer"]
+
+        # アイコン・ロゴ・ボタンなどの不要画像フィルタ
+        ng_keywords = ["logo", "icon", "banner", "btn", "button", "avatar", "common", "favicon", "parts", "spacer", "counter"]
         if any(ng in full_img_url.lower() for ng in ng_keywords):
             continue
 
         if not any(item["src"] == full_img_url for item in images):
-            alt_text = img.get("alt", "").strip() or "ページ画像"
+            alt_text = img.get("alt", "").strip() or img.get("title", "").strip() or "ページ画像"
             images.append({"src": full_img_url, "alt": alt_text})
 
-    return images[:15]
+    return images[:20]
 
-
-async def random_delay(min_sec=1.5, max_sec=3.0):
+async def random_delay(min_sec=2.0, max_sec=4.0):
     wait_time = random.uniform(min_sec, max_sec)
     await asyncio.sleep(wait_time)
 
+async def human_like_behavior(page):
+    """人間らしいマウスの動きやスクロールをシミュレートしてBot検知を回避"""
+    try:
+        x = random.randint(100, 500)
+        y = random.randint(100, 400)
+        await page.mouse.move(x, y, steps=5)
+        await page.evaluate("window.scrollBy(0, 250);")
+        await asyncio.sleep(random.uniform(0.5, 1.2))
+        await page.evaluate("window.scrollBy(0, -100);")
+    except Exception:
+        pass
 
 TARGET_SITES = [
     {
@@ -167,52 +128,64 @@ TARGET_SITES = [
     },
 ]
 
-
-async def scrape_atwiki(page, site):
+async def scrape_atwiki(page, context, site):
     wiki_id = site["wiki_id"]
     base_url = f"https://w.atwiki.jp/{wiki_id}/"
     list_url = f"{base_url}list"
 
     print(f"\n--- [atwiki: {site['site_name']}] 取得開始 ---")
 
+    # atwiki対策：トップページにアクセスしてセッションをなじませる
     try:
-        print("  初期セッションを確立中...")
+        print("  トップページにアクセスしてセッションを確立中...")
         await page.goto(base_url, wait_until="domcontentloaded", timeout=30000)
+        await human_like_behavior(page)
         await random_delay(2.0, 3.0)
     except Exception as e:
         print(f"  └ 初期アクセスの警告: {e}")
 
     soup = None
-    for attempt in range(1, 4):
+    for attempt in range(1, 5):
         try:
-            print(f"  一覧ページを取得中 (試行 {attempt}/3)...")
+            print(f"  一覧ページを取得中 (試行 {attempt}/4)...")
             await page.goto(list_url, wait_until="domcontentloaded", timeout=45000)
-            await random_delay(2.0, 3.0)
+            await human_like_behavior(page)
+            await random_delay(2.5, 4.0)
             
             html_content = await page.content()
-            if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content:
-                print("  ⚠️ ブロック画面検出。Cookieが通過するのを5秒待機...")
-                await asyncio.sleep(5)
+            if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content or "Just a moment" in html_content:
+                print("  ⚠️ ボットブロック検知。長めの待機＆再読み込みを試行します...")
+                await asyncio.sleep(6)
                 await page.reload(wait_until="domcontentloaded")
+                await random_delay(3.0, 5.0)
                 html_content = await page.content()
 
             soup = BeautifulSoup(html_content, "html.parser")
-            if soup.find_all("a", href=True):
+            if len(soup.find_all("a", href=True)) > 10:
                 break
         except Exception as e:
             print(f"  └ 一覧取得エラー: {e}")
-            if attempt == 3:
+            if attempt == 4:
                 return []
-            await asyncio.sleep(3)
+            await asyncio.sleep(4)
 
     if not soup:
+        print("  ❌ atwikiの一覧ページを取得できませんでした。")
         return []
+
+    # 取得成功したためCookieを保存
+    try:
+        cookies = await context.cookies()
+        with open(COOKIE_FILE, "w", encoding="utf-8") as f:
+            json.dump(cookies, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
     page_urls = []
     for a_tag in soup.find_all("a", href=True):
         full_url = clean_url(urljoin(base_url, a_tag["href"]))
         
-        ng_paths = ["/edit", "/diff", "/keyword/", "/cmd/", "/tag/", "/counter/"]
+        ng_paths = ["/edit", "/diff", "/keyword/", "/cmd/", "/tag/", "/counter/", "/member"]
         if any(ng in full_url for ng in ng_paths):
             continue
 
@@ -231,12 +204,13 @@ async def scrape_atwiki(page, site):
         success = False
         for attempt in range(1, 3):
             try:
-                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                await random_delay(0.8, 1.5)
+                await page.goto(url, wait_until="domcontentloaded", timeout=35000)
+                await human_like_behavior(page)
+                await random_delay(1.0, 2.0)
 
                 html_content = await page.content()
-                if "しばらくお待ちください" in html_content or "ロボットではありません" in html_content:
-                    await asyncio.sleep(3)
+                if "しばらくお待ちください" in html_content:
+                    await asyncio.sleep(4)
                     html_content = await page.content()
 
                 if "しばらくお待ちください" in html_content:
@@ -269,8 +243,6 @@ async def scrape_atwiki(page, site):
                     body_text = ""
 
                 images = extract_images(page_soup, url)
-                ai_summary = await generate_ai_summary(title, body_text)
-
                 tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
                 indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -279,12 +251,11 @@ async def scrape_atwiki(page, site):
                     "title": title,
                     "url": url,
                     "content": body_text,
-                    "ai_summary": ai_summary,
                     "images": images,
                     "indexed_at": indexed_at
                 })
                 success = True
-                print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
+                print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title} (画像 {len(images)}枚)")
                 break
             except Exception as e:
                 if attempt == 2:
@@ -294,7 +265,6 @@ async def scrape_atwiki(page, site):
             continue
 
     return data_list
-
 
 async def scrape_google_sites(page, site):
     base_url = clean_url(site["base_url"])
@@ -328,7 +298,7 @@ async def scrape_google_sites(page, site):
                 " ".join(page_soup.body.text.split()) if page_soup.body else ""
             )
 
-            ai_summary = await generate_ai_summary(title, body_text)
+            images = extract_images(page_soup, url)
             tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
             indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -337,15 +307,13 @@ async def scrape_google_sites(page, site):
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "ai_summary": ai_summary,
-                "images": extract_images(page_soup, url),
+                "images": images,
                 "indexed_at": indexed_at
             })
-            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
+            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title} (画像 {len(images)}枚)")
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
-
 
 async def scrape_generic(page, site):
     start_url = clean_url(site["start_url"])
@@ -389,7 +357,7 @@ async def scrape_generic(page, site):
                 " ".join(page_soup.body.text.split()) if page_soup.body else ""
             )
 
-            ai_summary = await generate_ai_summary(title, body_text)
+            images = extract_images(page_soup, url)
             tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
             indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -398,15 +366,13 @@ async def scrape_generic(page, site):
                 "title": title,
                 "url": url,
                 "content": body_text,
-                "ai_summary": ai_summary,
-                "images": extract_images(page_soup, url),
+                "images": images,
                 "indexed_at": indexed_at
             })
-            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title}")
+            print(f"  [{index}/{len(page_urls)}] ✅ 取得成功: {title} (画像 {len(images)}枚)")
         except Exception as e:
             print(f"    └ スキップ: {e}")
     return data_list
-
 
 async def scrape_single_page(page, site):
     url = clean_url(site.get("url") or site.get("start_url"))
@@ -424,7 +390,7 @@ async def scrape_single_page(page, site):
             " ".join(page_soup.body.text.split()) if page_soup.body else ""
         )
 
-        ai_summary = await generate_ai_summary(title, body_text)
+        images = extract_images(page_soup, url)
         tokyo_tz = zoneinfo.ZoneInfo("Asia/Tokyo")
         indexed_at = datetime.now(tokyo_tz).strftime("%Y-%m-%d %H:%M")
 
@@ -433,14 +399,12 @@ async def scrape_single_page(page, site):
             "title": title,
             "url": url,
             "content": body_text,
-            "ai_summary": ai_summary,
-            "images": extract_images(page_soup, url),
+            "images": images,
             "indexed_at": indexed_at
         }]
     except Exception as e:
         print(f"  └ 取得失敗: {e}")
         return []
-
 
 async def main():
     async with async_playwright() as p:
@@ -460,13 +424,32 @@ async def main():
             locale="ja-JP",
             timezone_id="Asia/Tokyo",
         )
+
+        # 保存されたCookieがあればロードしてブロック率を下げる
+        if os.path.exists(COOKIE_FILE):
+            try:
+                with open(COOKIE_FILE, "r", encoding="utf-8") as f:
+                    cookies = json.load(f)
+                    await context.add_cookies(cookies)
+                print("✅ 保存済みのCookieを読み込みました。")
+            except Exception:
+                pass
+
         page = await context.new_page()
         
+        # 高度なステルス設定（Webフック・フィンガープリント偽装）
         await page.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
             window.navigator.chrome = { runtime: {} };
             Object.defineProperty(navigator, 'languages', {get: () => ['ja-JP', 'ja', 'en-US', 'en']});
             Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+            
+            const getParameter = WebGLRenderingContext.getParameter;
+            WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                if (parameter === 37445) return 'Intel Inc.';
+                if (parameter === 37446) return 'Intel Iris OpenGL Engine';
+                return getParameter(parameter);
+            };
         """)
 
         all_search_data = []
@@ -474,7 +457,7 @@ async def main():
         for site in TARGET_SITES:
             stype = site["type"]
             if stype == "atwiki":
-                data = await scrape_atwiki(page, site)
+                data = await scrape_atwiki(page, context, site)
             elif stype == "google_sites":
                 data = await scrape_google_sites(page, site)
             elif stype == "generic":
@@ -505,7 +488,6 @@ async def main():
             f"\n✨ 全サイト完了！ [{now_tokyo} (JST)] 合計 {len(all_search_data)} 件を `{output_file}` に保存しました。"
         )
         await browser.close()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
