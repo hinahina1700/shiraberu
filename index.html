@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>しらべる - 検索エンジン</title>
+    <title>しらべる - かくうこっかのけんさくえんじん</title>
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -160,7 +160,7 @@
 
         .meta-info { font-size: 12px; color: var(--sub-text); margin: 10px 0; }
 
-        /* AIモード (しらべるん) 用スタイル */
+        /* しらべるん-Jev 用スタイル */
         .ai-chat-container {
             background: var(--ai-bg); border: 1px solid var(--ai-border);
             border-radius: 14px; padding: 16px; margin-bottom: 20px; display: none;
@@ -169,8 +169,12 @@
         .ai-header-badge { font-size: 11px; color: var(--sub-text); margin-bottom: 8px; font-weight: bold; }
         .chat-messages { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px; }
         .chat-bubble { padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 88%; word-wrap: break-word; }
-        .chat-bubble.ai { background: var(--card-bg); border: 1px solid var(--ai-border); align-self: flex-start; }
+        .chat-bubble.ai { background: var(--card-bg); border: 1px solid var(--ai-border); align-self: flex-start; width: 100%; }
         .chat-bubble.user { background: var(--user-msg-bg); align-self: flex-end; }
+
+        .jev-probability-box {
+            font-size: 28px; font-weight: bold; color: #38bdf8; margin: 8px 0;
+        }
 
         .ai-input-form {
             display: flex; gap: 8px; background: var(--card-bg);
@@ -199,7 +203,6 @@
         .site-info-wrapper { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sub-text); }
         .site-favicon { width: 14px; height: 14px; object-fit: contain; border-radius: 2px; }
         
-        /* 三点ボタン */
         .more-btn {
             background: none; border: none; color: var(--sub-text); cursor: pointer;
             font-size: 18px; padding: 0 8px; line-height: 1; font-weight: bold;
@@ -266,7 +269,7 @@
                 </div>
                 
                 <div class="home-buttons">
-                    <div class="home-btn" onclick="switchTabAndSearch('ai')">しらべるAI検索</div>
+                    <div class="home-btn" onclick="switchTabAndSearch('ai')">しらべるん-Jev</div>
                     <div class="home-btn" onclick="switchTabAndSearch('all')">しらべる 検索</div>
                     <div class="home-btn" onclick="switchTabAndSearch('images')">しらべる画像検索</div>
                 </div>
@@ -282,7 +285,7 @@
 
     <div class="results-container">
         <div class="tabs-nav">
-            <div id="tabAi" class="tab" onclick="switchTab('ai')">しらべるAI検索</div>
+            <div id="tabAi" class="tab" onclick="switchTab('ai')">しらべるん-Jev</div>
             <div id="tabAll" class="tab active" onclick="switchTab('all')">しらべる 検索</div>
             <div id="tabImages" class="tab" onclick="switchTab('images')">しらべる画像検索</div>
         </div>
@@ -290,11 +293,11 @@
         <div id="metaInfo" class="meta-info"></div>
 
         <div id="aiChatContainer" class="ai-chat-container">
-            <div class="ai-header-badge">モデル: Shiraberun-a / 通称: しらべるん</div>
+            <div class="ai-header-badge">モデル: Shiraberun-Jev / 判定特化エンジン (12ms)</div>
             <div class="chat-messages" id="chatMessages"></div>
             <form class="ai-input-form" onsubmit="handleAiSubmit(event)">
-                <input type="text" id="aiFollowUpInput" placeholder="しらべるんにメッセージを送信..." autocomplete="off">
-                <button type="submit" id="aiSendBtn">送信</button>
+                <input type="text" id="aiFollowUpInput" placeholder="例: あざみない鉄道は時間通りに来る か？" autocomplete="off">
+                <button type="submit" id="aiSendBtn">Jev判定</button>
             </form>
         </div>
         
@@ -325,7 +328,7 @@
     <div id="userModalOverlay" class="modal-overlay">
         <div class="modal">
             <h3 style="margin-top:0; font-size:15px;">ユーザー名設定</h3>
-            <input type="text" id="userNameInput" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;" placeholder="例: しらべるユーザー">
+            <input type="text" id="userNameInput" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;" placeholder="例: 七浜市民">
             <div style="display:flex; gap:8px;">
                 <button onclick="skipUserName()" style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">スキップ</button>
                 <button onclick="saveUserName()" style="flex:1; padding:8px; border-radius:6px; border:none; background:var(--accent-color); color:white; font-weight:bold;">保存</button>
@@ -342,7 +345,7 @@
     </div>
 
     <footer>
-        &copy; shiraberu/hinahina_1700
+        &copy; shiraberu/hinahina_1700 (七浜国版)
     </footer>
 
     <script>
@@ -366,7 +369,7 @@
         }
 
         function getDefaultUserName() {
-            return `ユーザー${Math.floor(1000 + Math.random() * 9000)}`;
+            return `市民${Math.floor(1000 + Math.random() * 9000)}`;
         }
 
         updateUserNavDisplay();
@@ -390,7 +393,6 @@
             document.querySelectorAll('.card-menu').forEach(m => m.style.display = 'none');
         });
 
-        // サイトのURLから確実にファビコンを取得するヘルパー関数
         function getFaviconUrl(urlStr) {
             try {
                 const parsed = new URL(urlStr);
@@ -518,7 +520,7 @@
             document.getElementById('metaInfo').textContent = `約 ${((end - start) / 1000).toFixed(3)} 秒 （${currentSearchResults.length} 件）`;
 
             if (chatHistory.length === 0 || chatHistory.query !== rawQuery) {
-                initAiShiraberun(rawQuery);
+                initAiJev(rawQuery);
             }
 
             renderView();
@@ -602,23 +604,18 @@
             localStorage.setItem('shiraberu_history_items', JSON.stringify(historyData));
         }
 
-        /* --- 🤖 AI（しらべるん / Shiraberun-a）の進化版会話エンジン（メモリ・コンテキスト保持対応） --- */
-        function getItemSummary(item) {
-            if (item.ai_summary && item.ai_summary !== '要約データなし') return item.ai_summary;
-            return item.content ? item.content.substring(0, 180) + '...' : '詳細説明なし';
-        }
-
-        function initAiShiraberun(query) {
+        /* --- 🚀 しらべるん-Jev（確率判定エンジン） --- */
+        function initAiJev(query) {
             chatHistory = [];
             chatHistory.query = query;
-            const activeUser = userName || 'ユーザー';
+            const activeUser = userName || '市民';
             
-            let greeting = `こんにちは！ボクは「しらべるん」だよ！<b>${escapeHtml(activeUser)}</b>さん、よろしくね！<br>検索サポートはもちろん、日常の雑談や、相談など何でも気軽にお話ししてね！`;
-
-            if (currentSearchResults.length > 0) {
-                const topItem = currentSearchResults[0].item;
-                greeting += `<br><br>ちなみに「<b>${escapeHtml(query)}</b>」について調べてみたら、こんな情報が見つかったよ！<br>・${escapeHtml(getItemSummary(topItem))}<br><small style="color:var(--sub-text);">参考サイト: <a href="${topItem.url}" target="_blank" onclick="recordVisit('${escapeHtml(topItem.title)}', '${escapeHtml(topItem.url)}')">${escapeHtml(topItem.title)}</a></small>`;
-            }
+            const jevResult = calculateJevProbability(query);
+            
+            let greeting = `七浜国判定エンジン「しらべるん-Jev」です。<b>${escapeHtml(activeUser)}</b>さんの入力内容を高速ジャッジしました！<br><br>` +
+                           `対象: <b>${escapeHtml(query)}</b><br>` +
+                           `<div class="jev-probability-box">正解確率: ${jevResult.prob}%</div>` +
+                           `<b>【判定】</b> ${jevResult.message}`;
 
             chatHistory.push({ role: 'ai', text: greeting });
             renderChatMessages();
@@ -636,8 +633,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // ご要望の「10秒」クールタイム
-        function startAiCooldown(seconds = 10) {
+        function startAiCooldown(seconds = 5) {
             aiCooldownSeconds = seconds;
             const btn = document.getElementById('aiSendBtn');
             btn.disabled = true;
@@ -650,7 +646,7 @@
                 } else {
                     clearInterval(aiCooldownTimer);
                     btn.disabled = false;
-                    btn.textContent = '送信';
+                    btn.textContent = 'Jev判定';
                 }
             }, 1000);
             btn.textContent = `待機 (${aiCooldownSeconds}s)`;
@@ -668,66 +664,41 @@
             input.value = '';
             renderChatMessages();
 
-            startAiCooldown(10);
+            startAiCooldown(5);
 
             setTimeout(() => {
-                const reply = generateUniversalReply(text);
+                const jevResult = calculateJevProbability(text);
+                const reply = `対象: <b>${escapeHtml(text)}</b><br>` +
+                              `<div class="jev-probability-box">正解確率: ${jevResult.prob}%</div>` +
+                              `<b>【判定】</b> ${jevResult.message}`;
                 chatHistory.push({ role: 'ai', text: reply });
                 renderChatMessages();
-            }, 800);
+            }, 400); // 爆速判定演出
         }
 
-        // 古いやりとり（過去の文脈）も考慮して賢く返答する万能ロジック
-        function generateUniversalReply(userMsg) {
-            const lowerMsg = userMsg.toLowerCase();
-            
-            // 直近の過去のやりとりを解析（過去の話題を引き継ぐため）
-            const lastUserMessages = chatHistory.filter(m => m.role === 'user').map(m => m.text);
-            const contextText = lastUserMessages.join(' ').toLowerCase();
+        // 七浜国向けの確率と判定メッセージを自動生成するJevロジック
+        function calculateJevProbability(text) {
+            const t = text.toLowerCase();
+            let prob;
+            let message = "";
 
-            // 1. しりとりゲームの継続・管理
-            if (lowerMsg.includes('しりとり') || contextText.includes('しりとり')) {
-                if (lowerMsg.endsWith('ん') || lowerMsg.endsWith('ン')) {
-                    return "あ！「ん」で終わっちゃった！ボクの勝ちかな？😆 もう一度最初からやる？";
-                }
-                const words = ['りんご', 'ごりら', 'らっぱ', 'ぱいなっぷる', 'るびー', 'りす', 'すいか', 'かめら', 'らーめん', 'ねこ'];
-                const selected = words[Math.floor(Math.random() * words.length)];
-                return `なるほど！じゃあボクからは「<b>${selected}</b>」！<br>次は「<b>${selected.slice(-1)}</b>」から始まる言葉を教えてね！✨`;
-            }
-
-            // 2. クイズやゲーム
-            if (lowerMsg.includes('クイズ') || lowerMsg.includes('問題')) {
-                return `クイズだね！第2問：日本で一番大きな都道府県はどこかな？（ヒント：北の方にあるよ！）`;
-            }
-            if (lowerMsg.includes('おみくじ') || lowerMsg.includes('占い')) {
-                const fortunes = ['大吉 🌟 今日は最高にハッピーな一日になりそう！', '中吉 ☘️ 良い発見やラッキーがありそう！', '小吉 🌸 のんびりマイペースにいこう。', '吉 ✨ ささやかな幸せが見つかる日！'];
-                return `今日の運勢を占ってみたよ！\n結果は……【 <b>${fortunes[Math.floor(Math.random() * fortunes.length)]}</b> 】`;
+            if (t.includes("あざみない鉄道") && (t.includes("時間") || t.includes("定刻"))) {
+                prob = Math.floor(Math.random() * 10) + 1; // 1〜10%
+                message = "あざみない鉄道のダイヤ乱れが常態化しているため、極めて低確率です。";
+            } else if (t.includes("七浜国") || t.includes("七浜")) {
+                prob = Math.floor(Math.random() * 30) + 70; // 70〜99%
+                message = "七浜国の公式規定およびローカルルールに完全に合致しています。";
+            } else if (t.includes("か？") || t.includes("か")) {
+                prob = Math.floor(Math.random() * 100);
+                if (prob > 75) message = "検証の結果、ほぼ事実であると判定されました。";
+                else if (prob > 40) message = "七浜国法においてはグレーゾーンの判定となります。";
+                else message = "事実である確率は極めて低いです。";
+            } else {
+                prob = Math.floor(Math.random() * 100);
+                message = "Jev高速演算による解析結果です。";
             }
 
-            // 3. 挨拶・感情表現
-            if (/^(こんにちは|こんばんは|おはよう|はじめまして|ハロー)/.test(lowerMsg)) {
-                return `こんにちは！いつでも話しかけてくれて嬉しいな✨ 今日はどんな気分？何か知りたいこととかある？`;
-            }
-            if (lowerMsg.includes('疲れた') || lowerMsg.includes('眠い') || lowerMsg.includes('しんどい')) {
-                return `今日も本当にお疲れ様……！無理は禁物だから、温かい飲み物でも飲んでゆっくり休んでね 🍵`;
-            }
-            if (lowerMsg.includes('ありがとう') || lowerMsg.includes('助かる')) {
-                return `どういたしまして！お役に立てて嬉しいな。いつでも気軽に頼ってね！😊`;
-            }
-
-            // 4. 現在の検索結果、または過去の文脈に関係するワードが含まれる場合
-            if (currentSearchResults.length > 0 && (lowerMsg.length > 1 || currentSearchResults.some(r => userMsg.includes(r.item.title)))) {
-                const matched = currentSearchResults.find(r => userMsg.includes(r.item.title)) || currentSearchResults[0];
-                return `「${escapeHtml(userMsg)}」についてだね！見つかったページ「<b>${escapeHtml(matched.item.title)}</b>」によると、こんなことが書かれているよ：<br><br>${escapeHtml(getItemSummary(matched.item))}`;
-            }
-
-            // 5. 過去の会話の文脈を少し引き継いだ柔軟な返答
-            if (chatHistory.length > 3) {
-                return `さっきからの話の流れも踏まえて考えると、「${escapeHtml(userMsg)}」ってすごく興味深いよね！もう少し詳しく教えてくれる？それとも他のことについて調べてみる？`;
-            }
-
-            // 6. デフォルトの万能応答
-            return `「${escapeHtml(userMsg)}」かぁ、なるほどね！<br>ボクは日常のおしゃべりからちょっとした疑問の解決まで何でもお答えできるから、どんどん話しかけてね！`;
+            return { prob, message };
         }
 
         /* --- 画面描画制御 --- */
@@ -772,7 +743,7 @@
                             </div>
                         </div>
                         <h2><a href="${item.url}" target="_blank" rel="noopener" class="${isVisited ? 'visited-link' : ''}" onclick="recordVisit('${escapeHtml(item.title)}', '${escapeHtml(item.url)}')">${escapeHtml(item.title)}</a></h2>
-                        <div class="snippet">${createSnippet(getItemSummary(item), query)}</div>
+                        <div class="snippet">${createSnippet(item.content || item.ai_summary, query)}</div>
                     `;
                     container.appendChild(card);
                 });
