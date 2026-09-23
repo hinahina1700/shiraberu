@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>しらべるん-Jev - 七浜国判定エンジン</title>
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --sub-text: #94a3b8;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --button-bg: #0284c7;
+            --button-hover: #0369a1;
+            --user-msg-bg: #004a77;
+            --footer-bg: #090d16;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-color); color: var(--text-color);
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .logo-area {
+            font-size: 18px; font-weight: bold; color: var(--accent-color);
+            text-decoration: none; display: flex; align-items: center; gap: 8px;
+        }
+
+        .back-link {
+            color: var(--sub-text); text-decoration: none; font-size: 13px;
+            border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px;
+            background: var(--bg-color); transition: background 0.2s;
+        }
+        .back-link:hover { background: var(--border-color); color: var(--text-color); }
+
+        main {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            padding: 40px 16px; max-width: 680px; width: 100%; margin: 0 auto;
+        }
+
+        .jev-container {
+            width: 100%; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .jev-title { font-size: 20px; font-weight: bold; margin-bottom: 4px; color: var(--accent-color); }
+        .jev-subtitle { font-size: 12px; color: var(--sub-text); margin-bottom: 24px; }
+
+        .chat-messages {
+            display: flex; flex-direction: column; gap: 16px;
+            max-height: 450px; overflow-y: auto; margin-bottom: 20px; padding-right: 4px;
+        }
+
+        .chat-bubble {
+            padding: 16px; border-radius: 14px; font-size: 14px; line-height: 1.6;
+            width: 100%; word-wrap: break-word; background: var(--bg-color);
+            border: 1px solid var(--border-color);
+        }
+        .chat-bubble.user { background: var(--user-msg-bg); border-color: #0066aa; }
+
+        .jev-probability-box {
+            font-size: 32px; font-weight: bold; color: var(--accent-color); margin: 10px 0;
+        }
+
+        .jev-form {
+            display: flex; gap: 10px; background: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 24px; padding: 6px 8px 6px 16px;
+        }
+        .jev-form input {
+            flex: 1; border: none; outline: none; background: transparent;
+            color: var(--text-color); font-size: 14px;
+        }
+        .jev-form button {
+            background: var(--button-bg); color: white; border: none;
+            border-radius: 18px; padding: 10px 20px; cursor: pointer;
+            font-size: 13px; font-weight: bold; transition: background 0.2s;
+        }
+        .jev-form button:hover { background: var(--button-hover); }
+        .jev-form button:disabled { background: #475569; cursor: not-allowed; }
+
+        footer {
+            text-align: center; padding: 16px; font-size: 11px;
+            color: var(--sub-text); background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="jev.html" class="logo-area">⚡ しらべるん-Jev</a>
+        <a href="index.html" class="back-link">通常検索へ戻る</a>
+    </header>
+
+    <main>
+        <div class="jev-container">
+            <div class="jev-title">七浜国 System-1 判定エンジン</div>
+            <div class="jev-subtitle">「AはBか？」や検証したい内容を入力すると、Jevが高速で確率と判定を下します (12ms)</div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- 初期メッセージ -->
+                <div class="chat-bubble">
+                    こんにちは！七浜国判定エンジンの「しらべるん-Jev」です。<br>
+                    例：「あざみない鉄道は時間通りに来る か？」など、気になる内容を入力してね！
+                </div>
+            </div>
+
+            <form class="jev-form" onsubmit="handleJevSubmit(event)">
+                <input type="text" id="jevInput" placeholder="例: 辰鶴線は快適である か？" autocomplete="off">
+                <button type="submit" id="jevSendBtn">Jev判定</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        &copy; shiraberu/hinahina_1700 (七浜国版 - Jev Dedicated Mode)
+    </footer>
+
+    <script>
+        let chatHistory = [];
+        let cooldownTimer = null;
+        let cooldownSeconds = 0;
+
+        function renderChatMessages() {
+            const chatBox = document.getElementById('chatMessages');
+            chatBox.innerHTML = '';
+            
+            // デフォルトのウェルカムメッセージ
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.className = 'chat-bubble';
+            welcomeDiv.innerHTML = `こんにちは！七浜国判定エンジンの「しらべるん-Jev」です。<br>例：「あざみない鉄道は時間通りに来る か？」など、気になる内容を入力してね！`;
+            chatBox.appendChild(welcomeDiv);
+
+            chatHistory.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${msg.role}`;
+                bubble.innerHTML = msg.text;
+                chatBox.appendChild(bubble);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleJevSubmit(e) {
+            e.preventDefault();
+            if (cooldownSeconds > 0) return;
+
+            const input = document.getElementById('jevInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            chatHistory.push({ role: 'user', text: escapeHtml(text) });
+            input.value = '';
+            renderChatMessages();
+
+            startCooldown(4); // 4秒クールダウン
+
+            setTimeout(() => {
+                const jevResult = calculateJevProbability(text);
+                const reply = `対象: <b>${escapeHtml(text)}</b><br>` +
+                              `<div class="jev-probability-box">正解確率: ${jevResult.prob}%</div>` +
+                              `<b>【判定】</b> ${jevResult.message}`;
+                chatHistory.push({ role: 'ai', text: reply });
+                renderChatMessages();
+            }, 300); // 0.3秒の爆速判定演出
+        }
+
+        function startCooldown(seconds) {
+            cooldownSeconds = seconds;
+            const btn = document.getElementById('jevSendBtn');
+            btn.disabled = true;
+
+            clearInterval(cooldownTimer);
+            cooldownTimer = setInterval(() => {
+                cooldownSeconds--;
+                if (cooldownSeconds > 0) {
+                    btn.textContent = `待機 (${cooldownSeconds}s)`;
+                } else {
+                    clearInterval(cooldownTimer);
+                    btn.disabled = false;
+                    btn.textContent = 'Jev判定';
+                }
+            }, 1000);
+            btn.textContent = `待機 (${cooldownSeconds}s)`;
+        }
+
+        function calculateJevProbability(text) {
+            const t = text.toLowerCase();
+            let prob;
+            let message = "";
+
+            if (t.includes("あざみない鉄道") && (t.includes("時間") || t.includes("定刻"))) {
+                prob = Math.floor(Math.random() * 10) + 1; // 1〜10%
+                message = "あざみない鉄道のダイヤ乱れが常態化しているため、極めて低確率です。";
+            } else if (t.includes("七浜国") || t.includes("七浜")) {
+                prob = Math.floor(Math.random() * 30) + 70; // 70〜99%
+                message = "七浜国の公式規定およびローカルルールに完全に合致しています。";
+            } else if (t.includes("か？") || t.includes("か")) {
+                prob = Math.floor(Math.random() * 100);
+                if (prob > 75) message = "検証の結果、ほぼ事実であると判定されました。";
+                else if (prob > 40) message = "七浜国法においてはグレーゾーンの判定となります。";
+                else message = "事実である確率は極めて低いです。";
+            } else {
+                prob = Math.floor(Math.random() * 100);
+                message = "Jev高速演算による解析結果です。";
+            }
+
+            return { prob, message };
+        }
+
+        function escapeHtml(str) { 
+            return str ? str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;') : ''; 
+        }
+    </script>
+</body>
+</html>
